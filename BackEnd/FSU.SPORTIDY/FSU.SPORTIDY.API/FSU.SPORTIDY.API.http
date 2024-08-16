@@ -1,0 +1,6 @@
+@FSU.SPORTIDY.API_HostAddress = http://localhost:5183
+
+GET {{FSU.SPORTIDY.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
