@@ -16,6 +16,9 @@
 # Mono auto generated files
 mono_crash.*
 
+# Ensure launchSettings.json is not ignored
+!**/launchSettings.json
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -33,6 +36,7 @@ bld/
 [Ll]og/
 [Ll]ogs/
 [Pp]roperties/
+
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
