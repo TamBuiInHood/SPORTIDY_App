@@ -1,4 +1,8 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Repository.Interfaces;
+using FSU.SPORTIDY.Repository.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 
 namespace FSU.SPORTIDY.Repository.UnitOfWork
@@ -6,6 +10,11 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly IConfiguration _configuration;
+        private IDbContextTransaction _transaction;
+
+        public IUserRepository UserRepository { get; private set; }
+        public IRoleRepository RoleRepository { get; private set; }
+        public IUserTokenRepository UserTokenRepository { get; private set; }
 
 
 
@@ -17,8 +26,33 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         {
             _context = context;
             _configuration = configuration;
+            UserRepository = new UserRepository(context);
+            RoleRepository = new RoleRepository(context);
+            UserTokenRepository = new UserTokenRepository(context);
         }
 
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitAsync()
+        {
+
+            try
+            {
+                await _transaction.CommitAsync();
+            }
+            catch
+            {
+                await _transaction.RollbackAsync();
+            }
+            finally
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null!;
+            }
+        }
 
         public void Save()
         {
@@ -46,6 +80,18 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public async Task RollBackAsync()
+        {
+            await _transaction.RollbackAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null!;
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
         }
 
         //GenericRepository<Category> IUnitOfWork.CategoryRepository
