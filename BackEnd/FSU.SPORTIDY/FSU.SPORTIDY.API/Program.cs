@@ -11,6 +11,10 @@ using FSU.SPORTIDY.API.Middlewares;
 using FSU.SPORTIDY.Repository.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using FSU.SPORTIDY.Repository.Interfaces;
+using FSU.SPORTIDY.Repository.Repositories;
+using FSU.SPORTIDY.Service.Interfaces;
+using FSU.SPORTIDY.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,35 +71,41 @@ builder.Services.AddSingleton(mapper.CreateMapper());
 
 // Register repositories
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
+
 
 
 
 // Register servicies
 //builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 
 
 //Config Jwt Token
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-//}).AddJwtBearer(options =>
-//{
-//    options.SaveToken = true;
-//    options.RequireHttpsMetadata = false;
-//    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = true,
-//        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-//        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
-//        ClockSkew = TimeSpan.Zero
-//    };
-//});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 // Add CORS
 builder.Services.AddCors(p => p.AddPolicy("Cors", policy =>
@@ -127,6 +137,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

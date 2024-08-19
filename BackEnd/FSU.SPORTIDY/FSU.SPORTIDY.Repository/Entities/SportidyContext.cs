@@ -43,6 +43,7 @@ public partial class SportidyContext : DbContext
     public virtual DbSet<UserClub> UserClubs { get; set; }
 
     public virtual DbSet<UserMeeting> UserMeetings { get; set; }
+    public virtual DbSet<UserToken> UserTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -63,7 +64,7 @@ public partial class SportidyContext : DbContext
             entity.ToTable("Booking");
 
             entity.Property(e => e.BookingId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("BookingID");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.Description).HasColumnType("text");
@@ -81,7 +82,7 @@ public partial class SportidyContext : DbContext
 
             entity.ToTable("Club");
 
-            entity.Property(e => e.ClubId).ValueGeneratedNever();
+            entity.Property(e => e.ClubId).ValueGeneratedOnAdd();
             entity.Property(e => e.AvartarClub)
                 .HasMaxLength(1)
                 .IsUnicode(false);
@@ -112,7 +113,6 @@ public partial class SportidyContext : DbContext
             entity.ToTable("CommentInMeeting");
 
             entity.Property(e => e.CommentId)
-                .ValueGeneratedNever()
                 .HasColumnName("CommentID");
             entity.Property(e => e.CommentCode)
                 .HasMaxLength(36)
@@ -135,7 +135,6 @@ public partial class SportidyContext : DbContext
             entity.ToTable("Friendship");
 
             entity.Property(e => e.FriendShipId)
-                .ValueGeneratedNever()
                 .HasColumnName("FriendShipID");
             entity.Property(e => e.FriendShipCode)
                 .HasMaxLength(36)
@@ -161,7 +160,7 @@ public partial class SportidyContext : DbContext
             entity.ToTable("ImageField");
 
             entity.Property(e => e.ImageId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("ImageID");
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(300)
@@ -182,7 +181,7 @@ public partial class SportidyContext : DbContext
             entity.ToTable("Meeting");
 
             entity.Property(e => e.MeetingId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("MeetingID");
             entity.Property(e => e.Address).IsUnicode(false);
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
@@ -205,8 +204,7 @@ public partial class SportidyContext : DbContext
 
             entity.ToTable("Notification");
 
-            entity.Property(e => e.NotificationId)
-                .ValueGeneratedNever()
+            entity.Property(e => e.NotificationId).ValueGeneratedOnAdd()
                 .HasColumnName("NotificationID");
             entity.Property(e => e.Message)
                 .HasMaxLength(1)
@@ -230,8 +228,7 @@ public partial class SportidyContext : DbContext
 
             entity.ToTable("PlayField");
 
-            entity.Property(e => e.PlayFieldId)
-                .ValueGeneratedNever()
+            entity.Property(e => e.PlayFieldId).ValueGeneratedOnAdd()
                 .HasColumnName("PlayFieldID");
             entity.Property(e => e.Address)
                 .HasMaxLength(200)
@@ -255,8 +252,7 @@ public partial class SportidyContext : DbContext
 
             entity.ToTable("PlayFieldFeedback");
 
-            entity.Property(e => e.FeedbackId)
-                .ValueGeneratedNever()
+            entity.Property(e => e.FeedbackId).ValueGeneratedOnAdd()
                 .HasColumnName("FeedbackID");
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
             entity.Property(e => e.Content).IsUnicode(false);
@@ -279,8 +275,7 @@ public partial class SportidyContext : DbContext
 
             entity.ToTable("Role");
 
-            entity.Property(e => e.RoleId)
-                .ValueGeneratedNever()
+            entity.Property(e => e.RoleId).ValueGeneratedOnAdd()
                 .HasColumnName("RoleID");
         });
 
@@ -291,7 +286,6 @@ public partial class SportidyContext : DbContext
             entity.ToTable("Sport");
 
             entity.Property(e => e.SportId)
-                .ValueGeneratedNever()
                 .HasColumnName("SportID");
 
             entity.HasMany(d => d.Users).WithMany(p => p.Sports)
@@ -321,11 +315,14 @@ public partial class SportidyContext : DbContext
             entity.ToTable("User");
 
             entity.Property(e => e.UserId)
-                .ValueGeneratedNever()
+                .ValueGeneratedOnAdd()
                 .HasColumnName("UserID");
             entity.Property(e => e.Address)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+            entity.Property(e => e.FullName)
+               .HasMaxLength(200)
+               .IsUnicode(false);
             entity.Property(e => e.Avartar)
                 .HasMaxLength(2000)
                 .IsUnicode(false);
@@ -340,7 +337,7 @@ public partial class SportidyContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("OTP");
             entity.Property(e => e.Password)
-                .HasMaxLength(50)
+                .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
@@ -396,8 +393,24 @@ public partial class SportidyContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserMeeti__UserI__5DCAEF64");
         });
+        modelBuilder.Entity<UserToken>(entity =>
+        {
+            entity.HasKey(e => new { e.UserTokenId }).HasName("PK__UserToken__C423424FG41");
 
-        OnModelCreatingPartial(modelBuilder);
+            entity.ToTable("UserToken");
+            entity.Property(e => e.UserTokenId)
+               .ValueGeneratedOnAdd()
+               .HasColumnName("UserTokenId");
+
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.AccessToken).HasColumnName("AccessToken");
+            entity.Property(e => e.RefreshToken).HasColumnName("RefreshToken");
+            entity.Property(e => e.ExpiredTimeAccessToken).HasColumnName("ExpAccessToken");
+            entity.Property(e => e.ExpiredTimeRefreshToken).HasColumnName("ExpRefreshToken");
+            entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
+        });
+
+            OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
