@@ -15,6 +15,9 @@ using FSU.SPORTIDY.Repository.Interfaces;
 using FSU.SPORTIDY.Repository.Repositories;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Services;
+using FSU.SPORTIDY.Service.Utils.Mail;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,8 +84,16 @@ builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
 // Register servicies
 //builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMailService, MailService>();
 
+// add mail settings
+builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));
 
+// setup firebase
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("sportidy-447fd-firebase-adminsdk-7qf6b-a43214214a.json")
+});
 
 
 //Config Jwt Token
@@ -120,6 +131,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.WriteIndented = true;
 });
+
+builder.Services.AddSwaggerGen(options => {
+    options.MapType<DateOnly>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "date"
+    });
+});
+
 var app = builder.Build();
 
 app.UseCors("Cors");

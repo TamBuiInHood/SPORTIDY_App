@@ -10,5 +10,8 @@ namespace FSU.SPORTIDY.Repository.Interfaces
     public interface IUserTokenRepository
     {
         public Task AddUserToken(UserToken userToken);
+        public Task<UserToken> GetUserTokenByRefreshToken(string refreshToken);
+        public Task<bool> UpdateToken(UserToken userToken);
+        public Task<bool> DeleteToken(string deleteRefreshToken);
     }
 }
