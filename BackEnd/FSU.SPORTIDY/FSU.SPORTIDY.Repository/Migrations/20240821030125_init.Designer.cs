@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     [DbContext(typeof(SportidyContext))]
-    [Migration("20240819022305_init")]
+    [Migration("20240821030125_init")]
     partial class init
     {
         /// <inheritdoc />
