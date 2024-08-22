@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="Utils\Common\Constants\" />
     <Folder Include="Utils\Common\Enums\" />
   </ItemGroup>
@@ -28,3 +27,4 @@
   </ItemGroup>
 
 </Project>
+

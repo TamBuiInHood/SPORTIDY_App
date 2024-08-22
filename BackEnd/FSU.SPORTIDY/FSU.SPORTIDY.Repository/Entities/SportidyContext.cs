@@ -54,19 +54,21 @@ public partial class SportidyContext : DbContext
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         optionsBuilder.UseSqlServer(connectionString);
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951ACD16D6A326");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951ACD27B15586");
 
             entity.ToTable("Booking");
 
             entity.Property(e => e.BookingId)
-                .ValueGeneratedOnAdd()
+                .ValueGeneratedNever()
                 .HasColumnName("BookingID");
+            entity.Property(e => e.BookingDate).HasColumnType("datetime");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.DateEnd).HasColumnType("datetime");
+            entity.Property(e => e.DateStart).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.PlayFieldId).HasColumnName("PlayFieldID");
 
@@ -78,11 +80,11 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Club>(entity =>
         {
-            entity.HasKey(e => e.ClubId).HasName("PK__Club__D35058E76E4F6FBE");
+            entity.HasKey(e => e.ClubId).HasName("PK__Club__D35058E79F8F62DE");
 
             entity.ToTable("Club");
 
-            entity.Property(e => e.ClubId).ValueGeneratedOnAdd();
+            entity.Property(e => e.ClubId).ValueGeneratedNever();
             entity.Property(e => e.AvartarClub)
                 .HasMaxLength(1)
                 .IsUnicode(false);
@@ -108,15 +110,17 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<CommentInMeeting>(entity =>
         {
-            entity.HasKey(e => e.CommentId).HasName("PK__CommentI__C3B4DFAA10C1089B");
+            entity.HasKey(e => e.CommentId).HasName("PK__CommentI__C3B4DFAA471104AD");
 
             entity.ToTable("CommentInMeeting");
 
             entity.Property(e => e.CommentId)
+                .ValueGeneratedNever()
                 .HasColumnName("CommentID");
             entity.Property(e => e.CommentCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
+            entity.Property(e => e.CommentDate).HasColumnType("datetime");
             entity.Property(e => e.Content).IsUnicode(false);
             entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.MeetingId).HasColumnName("MeetingID");
@@ -130,11 +134,12 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Friendship>(entity =>
         {
-            entity.HasKey(e => e.FriendShipId).HasName("PK__Friendsh__190D637815793192");
+            entity.HasKey(e => e.FriendShipId).HasName("PK__Friendsh__190D637884858AB7");
 
             entity.ToTable("Friendship");
 
             entity.Property(e => e.FriendShipId)
+                .ValueGeneratedNever()
                 .HasColumnName("FriendShipID");
             entity.Property(e => e.FriendShipCode)
                 .HasMaxLength(36)
@@ -155,12 +160,12 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<ImageField>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__ImageFie__7516F4EC8701E370");
+            entity.HasKey(e => e.ImageId).HasName("PK__ImageFie__7516F4EC9A3F7261");
 
             entity.ToTable("ImageField");
 
             entity.Property(e => e.ImageId)
-                .ValueGeneratedOnAdd()
+                .ValueGeneratedNever()
                 .HasColumnName("ImageID");
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(300)
@@ -176,15 +181,17 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Meeting>(entity =>
         {
-            entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__E9F9E9AC0A88E9F9");
+            entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__E9F9E9AC468584B2");
 
             entity.ToTable("Meeting");
 
             entity.Property(e => e.MeetingId)
-                .ValueGeneratedOnAdd()
+                .ValueGeneratedNever()
                 .HasColumnName("MeetingID");
             entity.Property(e => e.Address).IsUnicode(false);
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
+            entity.Property(e => e.EndDate).HasColumnType("datetime");
+            entity.Property(e => e.IsPublic);
             entity.Property(e => e.MeetingCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
@@ -196,16 +203,19 @@ public partial class SportidyContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Note).IsUnicode(false);
             entity.Property(e => e.SportId).HasColumnName("SportID");
+            entity.Property(e => e.StartDate).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E3217727BA6");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32B70E75BB");
 
             entity.ToTable("Notification");
 
-            entity.Property(e => e.NotificationId).ValueGeneratedOnAdd()
+            entity.Property(e => e.NotificationId)
+                .ValueGeneratedNever()
                 .HasColumnName("NotificationID");
+            entity.Property(e => e.InviteDate).HasColumnType("datetime");
             entity.Property(e => e.Message)
                 .HasMaxLength(1)
                 .IsUnicode(false);
@@ -228,7 +238,8 @@ public partial class SportidyContext : DbContext
 
             entity.ToTable("PlayField");
 
-            entity.Property(e => e.PlayFieldId).ValueGeneratedOnAdd()
+            entity.Property(e => e.PlayFieldId)
+                .ValueGeneratedNever()
                 .HasColumnName("PlayFieldID");
             entity.Property(e => e.Address)
                 .HasMaxLength(200)
@@ -248,17 +259,19 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<PlayFieldFeedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__PlayFiel__6A4BEDF6312EEF0A");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__PlayFiel__6A4BEDF64C6D3772");
 
             entity.ToTable("PlayFieldFeedback");
 
-            entity.Property(e => e.FeedbackId).ValueGeneratedOnAdd()
+            entity.Property(e => e.FeedbackId)
+                .ValueGeneratedNever()
                 .HasColumnName("FeedbackID");
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
             entity.Property(e => e.Content).IsUnicode(false);
             entity.Property(e => e.FeedbackCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
+            entity.Property(e => e.FeedbackDate).HasColumnType("datetime");
             entity.Property(e => e.ImageUrl).HasColumnName("ImageURL");
             entity.Property(e => e.IsAnonymous).HasColumnName("IsAnonymous_");
             entity.Property(e => e.VideoUrl).HasColumnName("VideoURL");
@@ -271,21 +284,23 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3ACAF3DEC1");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3A038ACFA2");
 
             entity.ToTable("Role");
 
-            entity.Property(e => e.RoleId).ValueGeneratedOnAdd()
+            entity.Property(e => e.RoleId)
+                .ValueGeneratedNever()
                 .HasColumnName("RoleID");
         });
 
         modelBuilder.Entity<Sport>(entity =>
         {
-            entity.HasKey(e => e.SportId).HasName("PK__Sport__7A41AF1C5ACCB452");
+            entity.HasKey(e => e.SportId).HasName("PK__Sport__7A41AF1C1AA63361");
 
             entity.ToTable("Sport");
 
             entity.Property(e => e.SportId)
+                .ValueGeneratedNever()
                 .HasColumnName("SportID");
 
             entity.HasMany(d => d.Users).WithMany(p => p.Sports)
@@ -310,22 +325,20 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CCAC30784265");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CCACB5F6D77C");
 
             entity.ToTable("User");
 
             entity.Property(e => e.UserId)
-                .ValueGeneratedOnAdd()
+                .ValueGeneratedNever()
                 .HasColumnName("UserID");
             entity.Property(e => e.Address)
                 .HasMaxLength(200)
                 .IsUnicode(false);
-            entity.Property(e => e.FullName)
-               .HasMaxLength(200)
-               .IsUnicode(false);
             entity.Property(e => e.Avartar)
                 .HasMaxLength(2000)
                 .IsUnicode(false);
+            entity.Property(e => e.CreateDate).HasColumnType("date");
             entity.Property(e => e.Description)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -337,7 +350,7 @@ public partial class SportidyContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("OTP");
             entity.Property(e => e.Password)
-                .HasMaxLength(200)
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
@@ -347,7 +360,9 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
+            entity.Property(e => e.FullName)
+                .HasMaxLength(80)
+                .IsUnicode(false);
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -356,7 +371,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<UserClub>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.ClubId }).HasName("PK__UserClub__7ABDC922D9740BC9");
+            entity.HasKey(e => new { e.UserId, e.ClubId }).HasName("PK__UserClub__7ABDC9227D05295A");
 
             entity.ToTable("UserClub");
 
@@ -375,13 +390,14 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<UserMeeting>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.MeetingId }).HasName("PK__UserMeet__C917523669223F41");
+            entity.HasKey(e => new { e.UserId, e.MeetingId }).HasName("PK__UserMeet__C9175236CBB90D5E");
 
             entity.ToTable("UserMeeting");
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.MeetingId).HasColumnName("MeetingID");
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
+            entity.Property(e => e.RoleInMeeting).HasColumnName("RoleInMeeting").HasMaxLength(50);
 
             entity.HasOne(d => d.Meeting).WithMany(p => p.UserMeetings)
                 .HasForeignKey(d => d.MeetingId)
@@ -393,6 +409,7 @@ public partial class SportidyContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserMeeti__UserI__5DCAEF64");
         });
+
         modelBuilder.Entity<UserToken>(entity =>
         {
             entity.HasKey(e => new { e.UserTokenId }).HasName("PK__UserToken__C423424FG41");
@@ -409,8 +426,6 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.ExpiredTimeRefreshToken).HasColumnName("ExpRefreshToken");
             entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
         });
-
-            OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

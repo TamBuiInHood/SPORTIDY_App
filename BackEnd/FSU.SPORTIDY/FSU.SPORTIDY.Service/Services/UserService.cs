@@ -79,7 +79,7 @@ namespace FSU.SPORTIDY.Service.Services
                         string refreshToken = await GenerateRefreshToken(email);
                         _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int tokenValidityTime);
 
-                        await _unitOfWork.UserTokenRepository.AddUserToken(new UserToken
+                        await _unitOfWork._UserTokenRepo.AddUserToken(new UserToken
                         {
                             UserId = existUser.UserId,
                             AccessToken = accessToken,
@@ -140,14 +140,14 @@ namespace FSU.SPORTIDY.Service.Services
                     {
                         newUser.Password = PasswordHelper.HashPassword(model.Password);
                     }
-                    var role = await _unitOfWork.RoleRepository.GetRoleByName(model.Role.ToString());
+                    var role = await _unitOfWork._RoleRepo.GetRoleByName(model.Role.ToString());
                     if(role == null)
                     {
                         Role newRole = new Role
                         {
                             RoleName = model.Role.ToString(),
                         };
-                        await _unitOfWork.RoleRepository.AddRoleAsync(newRole);
+                        await _unitOfWork._RoleRepo.AddRoleAsync(newRole);
                         role = newRole;
                         newUser.RoleId = role.RoleId;
                     }
@@ -192,7 +192,7 @@ namespace FSU.SPORTIDY.Service.Services
                         var existUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
                         if (existUser != null)
                         {
-                            var checkExistRefreshToken = await _unitOfWork.UserTokenRepository.GetUserTokenByRefreshToken(jwtToken);
+                            var checkExistRefreshToken = await _unitOfWork._UserTokenRepo.GetUserTokenByRefreshToken(jwtToken);
                             if (checkExistRefreshToken == null)
                             {
                                 throw new Exception("Refresh Token does not exist in system");
@@ -203,7 +203,7 @@ namespace FSU.SPORTIDY.Service.Services
                                 {
                                     var newAccessToken = await GenerateAccessToken(email, existUser);
                                     _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int newTokenValidityInMinutes);
-                                    await _unitOfWork.UserTokenRepository.UpdateToken(new UserToken
+                                    await _unitOfWork._UserTokenRepo.UpdateToken(new UserToken
                                     {
                                         UserId = checkExistRefreshToken.UserId,
                                         AccessToken = newAccessToken,
@@ -221,7 +221,7 @@ namespace FSU.SPORTIDY.Service.Services
                                 } 
                                 else
                                 {
-                                    await _unitOfWork.UserTokenRepository.DeleteToken(jwtToken);
+                                    await _unitOfWork._UserTokenRepo.DeleteToken(jwtToken);
                                     throw new Exception("Refresh Token is expired time. Please log out");
                                 }
                             }
@@ -245,7 +245,7 @@ namespace FSU.SPORTIDY.Service.Services
 
         private async Task<string> GenerateAccessToken(string email, User user)
         {
-            var role = await _unitOfWork.RoleRepository.GetRoleById(user.RoleId);
+            var role = await _unitOfWork._RoleRepo.GetRoleById(user.RoleId);
             var authClaims = new List<Claim>(); 
             if(role != null)
             {
@@ -264,7 +264,7 @@ namespace FSU.SPORTIDY.Service.Services
         private async Task<string> GenerateRefreshToken(string email)
         {
             var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
-            var role = await _unitOfWork.RoleRepository.GetRoleById(user.RoleId);
+            var role = await _unitOfWork._RoleRepo.GetRoleById(user.RoleId);
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, email),
@@ -442,7 +442,7 @@ namespace FSU.SPORTIDY.Service.Services
                     var refreshToken = await GenerateRefreshToken(existUser.Email);
                     _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
                     _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int tokenValidityTime);
-                    await _unitOfWork.UserTokenRepository.AddUserToken(new UserToken
+                    await _unitOfWork._UserTokenRepo.AddUserToken(new UserToken
                     {
                         UserId = existUser.UserId,
                         AccessToken = accessToken,
@@ -484,14 +484,14 @@ namespace FSU.SPORTIDY.Service.Services
                             throw new Exception("Accoust is existed");
                         }
                         newUser.Password = PasswordHelper.HashPassword(Guid.NewGuid().ToString());
-                        var role = await _unitOfWork.RoleRepository.GetRoleByName(RoleEnums.CUSTOMER.ToString());
+                        var role = await _unitOfWork._RoleRepo.GetRoleByName(RoleEnums.CUSTOMER.ToString());
                         if (role == null)
                         {
                             Role newRole = new Role
                             {
                                 RoleName = RoleEnums.CUSTOMER.ToString(),
                             };
-                            await _unitOfWork.RoleRepository.AddRoleAsync(newRole);
+                            await _unitOfWork._RoleRepo.AddRoleAsync(newRole);
                             role = newRole;
                             newUser.RoleId = role.RoleId;
                         }
@@ -503,7 +503,7 @@ namespace FSU.SPORTIDY.Service.Services
                         var refreshToken = await GenerateRefreshToken(newUser.Email);
                         _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
                         _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int tokenValidityTime);
-                        await _unitOfWork.UserTokenRepository.AddUserToken(new UserToken
+                        await _unitOfWork._UserTokenRepo.AddUserToken(new UserToken
                         {
                             UserId = newUser.UserId,
                             AccessToken = accessToken,

@@ -9,13 +9,13 @@ public partial class Booking
 
     public int? BookingCode { get; set; }
 
-    public DateOnly? BookingDate { get; set; }
+    public DateTime? BookingDate { get; set; }
 
     public int? Price { get; set; }
 
-    public DateOnly? DateStart { get; set; }
+    public DateTime? DateStart { get; set; }
 
-    public DateOnly? DateEnd { get; set; }
+    public DateTime? DateEnd { get; set; }
 
     public int? Status { get; set; }
 
