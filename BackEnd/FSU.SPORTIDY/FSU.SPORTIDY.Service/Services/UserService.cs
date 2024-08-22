@@ -394,13 +394,6 @@ namespace FSU.SPORTIDY.Service.Services
                 throw new Exception("clientId is null");
             }
 
-            var settings = new GoogleJsonWebSignature.ValidationSettings()
-            {
-                Audience = new List<string> { clientId },
-                
-               
-            };
-
             var getUser = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(credental);
             // Lấy các Claims từ token
             var payload = new User()
