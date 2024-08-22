@@ -12,23 +12,19 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private readonly IConfiguration _configuration;
         private IDbContextTransaction _transaction;
 
-        public IUserRepository UserRepository { get; private set; }
-        public IRoleRepository RoleRepository { get; private set; }
-        public IUserTokenRepository UserTokenRepository { get; private set; }
-
-
-
-        //private RefreshTokenRepository _refreshTokenRepo;
+        public RoleRepository _RoleRepo { get; private set; }
+        public UserTokenRepository _UserTokenRepo { get; private set; }
+        private MeetingRepository _MeetingRepo;
         private SportidyContext _context;
-
+        private UserRepository _UserRepo;
 
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
-            UserRepository = new UserRepository(context);
-            RoleRepository = new RoleRepository(context);
-            UserTokenRepository = new UserTokenRepository(context);
+            _UserRepo = new UserRepository(context);
+            _RoleRepo = new RoleRepository(context);
+            _UserTokenRepo = new UserTokenRepository(context);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
@@ -94,29 +90,28 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             return await _context.SaveChangesAsync();
         }
 
-        //GenericRepository<Category> IUnitOfWork.CategoryRepository
-        //{
-        //    get
-        //    {
-        //        if (_categoryRepo == null)
-        //        {
-        //            this._categoryRepo = new GenericRepository<Category>(_context);
-        //        }
-        //        return _categoryRepo;
-        //    }
-        //}
-
-        //public AppUserRepository AppUserRepository
-        //{
-        //    get
-        //    {
-        //        if (_appUserRepo == null)
-        //        {
-        //            this._appUserRepo = new AppUserRepository(_context);
-        //        }
-        //        return _appUserRepo;
-        //    }
-        //}
+        public MeetingRepository MeetingRepository
+        {
+            get
+            {
+                if (_MeetingRepo == null)
+                {
+                    this._MeetingRepo = new MeetingRepository(_context);
+                }
+                return _MeetingRepo;
+            }
+        }
+        public UserRepository UserRepository
+        {
+            get
+            {
+                if (_UserRepo == null)
+                {
+                    this._UserRepo = new UserRepository(_context);
+                }
+                return _UserRepo;
+            }
+        }
 
     }
 }

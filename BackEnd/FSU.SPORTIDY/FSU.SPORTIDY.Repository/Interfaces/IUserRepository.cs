@@ -1,4 +1,4 @@
-﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Repository.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,3 +17,4 @@ namespace FSU.SPORTIDY.Repository.Interfaces
         public Task<int> UpdateUserAsync(User user);
     }
 }
+

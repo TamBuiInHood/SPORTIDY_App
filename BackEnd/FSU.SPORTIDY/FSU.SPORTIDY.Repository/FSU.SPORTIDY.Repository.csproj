@@ -28,5 +28,4 @@
   <ItemGroup>
     <Folder Include="Common\Enums\" />
   </ItemGroup>
-
 </Project>

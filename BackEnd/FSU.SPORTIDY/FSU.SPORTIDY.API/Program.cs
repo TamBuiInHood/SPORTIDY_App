@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FSU.SPORTIDY.API.Payloads.Responses;
 using FSU.SPORTIDY.Repository.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,6 +18,7 @@ using FSU.SPORTIDY.Service.Services;
 using FSU.SPORTIDY.Service.Utils.Mail;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Builder.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,7 +78,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
-
+builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 
 
 
@@ -85,6 +86,7 @@ builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
 //builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IMeetingService, MeetingService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));

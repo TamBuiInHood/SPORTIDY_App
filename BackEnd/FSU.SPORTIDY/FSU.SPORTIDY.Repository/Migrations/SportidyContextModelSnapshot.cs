@@ -4,7 +4,6 @@ using FSU.SPORTIDY.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,11 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     [DbContext(typeof(SportidyContext))]
-    [Migration("20240821030125_init")]
-    partial class init
+    partial class SportidyContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,11 +25,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Booking", b =>
                 {
                     b.Property<int>("BookingId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("BookingID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingId"));
 
                     b.Property<int?>("BarCode")
                         .HasColumnType("int");
@@ -40,18 +34,18 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     b.Property<int?>("BookingCode")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly?>("BookingDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("BookingDate")
+                        .HasColumnType("datetime");
 
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int")
                         .HasColumnName("CustomerID");
 
-                    b.Property<DateOnly?>("DateEnd")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("DateEnd")
+                        .HasColumnType("datetime");
 
-                    b.Property<DateOnly?>("DateStart")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("DateStart")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -70,7 +64,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("BookingId")
-                        .HasName("PK__Booking__73951ACD16D6A326");
+                        .HasName("PK__Booking__73951ACD27B15586");
 
                     b.HasIndex("PlayFieldId");
 
@@ -80,10 +74,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Club", b =>
                 {
                     b.Property<int>("ClubId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClubId"));
 
                     b.Property<string>("AvartarClub")
                         .HasMaxLength(1)
@@ -134,7 +125,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ClubId")
-                        .HasName("PK__Club__D35058E76E4F6FBE");
+                        .HasName("PK__Club__D35058E79F8F62DE");
 
                     b.ToTable("Club", (string)null);
                 });
@@ -142,19 +133,16 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.CommentInMeeting", b =>
                 {
                     b.Property<int>("CommentId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("CommentID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"));
 
                     b.Property<string>("CommentCode")
                         .HasMaxLength(36)
                         .IsUnicode(false)
                         .HasColumnType("varchar(36)");
 
-                    b.Property<DateOnly?>("CommentDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("CommentDate")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Content")
                         .IsUnicode(false)
@@ -173,7 +161,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("UserID");
 
                     b.HasKey("CommentId")
-                        .HasName("PK__CommentI__C3B4DFAA10C1089B");
+                        .HasName("PK__CommentI__C3B4DFAA471104AD");
 
                     b.HasIndex("MeetingId");
 
@@ -183,11 +171,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Friendship", b =>
                 {
                     b.Property<int>("FriendShipId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("FriendShipID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FriendShipId"));
 
                     b.Property<DateOnly?>("CreateDate")
                         .HasColumnType("date");
@@ -209,7 +194,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("UserID2");
 
                     b.HasKey("FriendShipId")
-                        .HasName("PK__Friendsh__190D637815793192");
+                        .HasName("PK__Friendsh__190D637884858AB7");
 
                     b.HasIndex("UserId1");
 
@@ -221,11 +206,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.ImageField", b =>
                 {
                     b.Property<int>("ImageId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("ImageID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"));
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(300)
@@ -245,7 +227,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("VideoURL");
 
                     b.HasKey("ImageId")
-                        .HasName("PK__ImageFie__7516F4EC8701E370");
+                        .HasName("PK__ImageFie__7516F4EC9A3F7261");
 
                     b.HasIndex("PlayFieldId");
 
@@ -255,11 +237,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Meeting", b =>
                 {
                     b.Property<int>("MeetingId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("MeetingID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MeetingId"));
 
                     b.Property<string>("Address")
                         .IsUnicode(false)
@@ -272,14 +251,14 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("int")
                         .HasColumnName("ClubID");
 
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime");
 
                     b.Property<int?>("Host")
                         .HasColumnType("int");
 
-                    b.Property<int?>("IsPublic")
-                        .HasColumnType("int");
+                    b.Property<bool?>("IsPublic")
+                        .HasColumnType("bit");
 
                     b.Property<string>("MeetingCode")
                         .HasMaxLength(36)
@@ -304,14 +283,17 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("int")
                         .HasColumnName("SportID");
 
-                    b.Property<DateOnly?>("StartDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TotalMember")
                         .HasColumnType("int");
 
                     b.HasKey("MeetingId")
-                        .HasName("PK__Meeting__E9F9E9AC0A88E9F9");
+                        .HasName("PK__Meeting__E9F9E9AC468584B2");
 
                     b.ToTable("Meeting", (string)null);
                 });
@@ -319,14 +301,11 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("NotificationID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
-
-                    b.Property<DateOnly?>("InviteDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("InviteDate")
+                        .HasColumnType("datetime");
 
                     b.Property<bool?>("IsAccept")
                         .HasColumnType("bit");
@@ -357,7 +336,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("UserID");
 
                     b.HasKey("NotificationId")
-                        .HasName("PK__Notifica__20CF2E3217727BA6");
+                        .HasName("PK__Notifica__20CF2E32B70E75BB");
 
                     b.HasIndex("UserId");
 
@@ -367,22 +346,19 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.PlayField", b =>
                 {
                     b.Property<int>("PlayFieldId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("PlayFieldID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlayFieldId"));
 
                     b.Property<string>("Address")
                         .HasMaxLength(200)
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<DateOnly?>("CloseTime")
-                        .HasColumnType("date");
+                    b.Property<int?>("CloseTime")
+                        .HasColumnType("int");
 
-                    b.Property<DateOnly?>("OpenTime")
-                        .HasColumnType("date");
+                    b.Property<int?>("OpenTime")
+                        .HasColumnType("int");
 
                     b.Property<string>("PlayFieldCode")
                         .HasMaxLength(36)
@@ -412,11 +388,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.PlayFieldFeedback", b =>
                 {
                     b.Property<int>("FeedbackId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("FeedbackID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedbackId"));
 
                     b.Property<int>("BookingId")
                         .HasColumnType("int")
@@ -431,8 +404,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(36)");
 
-                    b.Property<int?>("FeedbackDate")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("FeedbackDate")
+                        .HasColumnType("datetime");
 
                     b.Property<int?>("ImageUrl")
                         .HasColumnType("int")
@@ -450,7 +423,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("VideoURL");
 
                     b.HasKey("FeedbackId")
-                        .HasName("PK__PlayFiel__6A4BEDF6312EEF0A");
+                        .HasName("PK__PlayFiel__6A4BEDF64C6D3772");
 
                     b.HasIndex("BookingId");
 
@@ -460,18 +433,15 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Role", b =>
                 {
                     b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("RoleID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoleId")
-                        .HasName("PK__Role__8AFACE3ACAF3DEC1");
+                        .HasName("PK__Role__8AFACE3A038ACFA2");
 
                     b.ToTable("Role", (string)null);
                 });
@@ -479,11 +449,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.Sport", b =>
                 {
                     b.Property<int>("SportId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("SportID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SportId"));
 
                     b.Property<int?>("SportCode")
                         .HasColumnType("int");
@@ -495,7 +462,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("SportId")
-                        .HasName("PK__Sport__7A41AF1C5ACCB452");
+                        .HasName("PK__Sport__7A41AF1C1AA63361");
 
                     b.ToTable("Sport", (string)null);
                 });
@@ -503,11 +470,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("UserID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Address")
                         .HasMaxLength(200)
@@ -536,9 +500,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("FullName")
-                        .HasMaxLength(200)
+                        .HasMaxLength(80)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("varchar(80)");
 
                     b.Property<int?>("Gender")
                         .HasColumnType("int");
@@ -553,9 +517,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("OTP");
 
                     b.Property<string>("Password")
-                        .HasMaxLength(200)
+                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
@@ -579,7 +543,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("UserId")
-                        .HasName("PK__User__1788CCAC30784265");
+                        .HasName("PK__User__1788CCACB5F6D77C");
 
                     b.HasIndex("RoleId");
 
@@ -599,7 +563,7 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("UserId", "ClubId")
-                        .HasName("PK__UserClub__7ABDC922D9740BC9");
+                        .HasName("PK__UserClub__7ABDC9227D05295A");
 
                     b.HasIndex("ClubId");
 
@@ -620,11 +584,13 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("int")
                         .HasColumnName("ClubID");
 
-                    b.Property<bool?>("IsHost")
-                        .HasColumnType("bit");
+                    b.Property<string>("RoleInMeeting")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("RoleInMeeting");
 
                     b.HasKey("UserId", "MeetingId")
-                        .HasName("PK__UserMeet__C917523669223F41");
+                        .HasName("PK__UserMeet__C9175236CBB90D5E");
 
                     b.HasIndex("MeetingId");
 

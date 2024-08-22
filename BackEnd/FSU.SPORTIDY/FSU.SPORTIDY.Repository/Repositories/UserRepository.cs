@@ -1,4 +1,4 @@
-﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,8 +11,11 @@ namespace FSU.SPORTIDY.Repository.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
+        private readonly SportidyContext _context;
+
         public UserRepository(SportidyContext context) : base(context)
         {
+            _context = context;
         }
 
         public async Task AddUserAsync(User newUser)

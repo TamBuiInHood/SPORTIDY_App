@@ -7,7 +7,7 @@ public partial class UserMeeting
 {
     public int? ClubId { get; set; }
 
-    public bool? IsHost { get; set; }
+    public string? RoleInMeeting { get; set; }
 
     public int UserId { get; set; }
 

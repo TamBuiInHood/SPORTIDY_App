@@ -9,7 +9,7 @@ public partial class CommentInMeeting
 
     public string? CommentCode { get; set; }
 
-    public DateOnly? CommentDate { get; set; }
+    public DateTime? CommentDate { get; set; }
 
     public int UserId { get; set; }
 
