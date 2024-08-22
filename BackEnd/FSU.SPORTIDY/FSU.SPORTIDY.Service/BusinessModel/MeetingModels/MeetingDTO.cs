@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FSU.SPORTIDY.Service.Models.MeetingModels
+namespace FSU.SPORTIDY.Service.BusinessModel.MeetingModels
 {
     public class MeetingDTO
     {

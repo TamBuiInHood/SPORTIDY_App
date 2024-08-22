@@ -15,5 +15,6 @@ namespace FSU.SPORTIDY.Repository.Repositories
         {
             _sportidyContext = context;
         }
+
     }
 }

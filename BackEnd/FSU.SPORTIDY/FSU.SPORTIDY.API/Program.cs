@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FSU.SPORTIDY.API.Payloads.Responses;
 using FSU.SPORTIDY.Repository.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,8 +13,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using FSU.SPORTIDY.Repository.Interfaces;
 using FSU.SPORTIDY.Repository.Repositories;
-using FSU.SPORTIDY.Service.ISerivice;
+using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Services;
+using FSU.SPORTIDY.Service.Utils.Mail;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Builder.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,38 +75,50 @@ builder.Services.AddSingleton(mapper.CreateMapper());
 
 // Register repositories
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
+builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 
 
 
 // Register servicies
 //builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
 
+// add mail settings
+builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));
 
+// setup firebase
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("sportidy-447fd-firebase-adminsdk-7qf6b-a43214214a.json")
+});
 
 
 //Config Jwt Token
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-//}).AddJwtBearer(options =>
-//{
-//    options.SaveToken = true;
-//    options.RequireHttpsMetadata = false;
-//    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = true,
-//        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-//        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
-//        ClockSkew = TimeSpan.Zero
-//    };
-//});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 // Add CORS
 builder.Services.AddCors(p => p.AddPolicy("Cors", policy =>
@@ -117,6 +133,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     options.JsonSerializerOptions.WriteIndented = true;
 });
+
+builder.Services.AddSwaggerGen(options => {
+    options.MapType<DateOnly>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "date"
+    });
+});
+
 var app = builder.Build();
 
 app.UseCors("Cors");
@@ -134,6 +159,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

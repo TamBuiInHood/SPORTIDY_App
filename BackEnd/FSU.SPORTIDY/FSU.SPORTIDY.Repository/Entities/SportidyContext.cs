@@ -43,6 +43,7 @@ public partial class SportidyContext : DbContext
     public virtual DbSet<UserClub> UserClubs { get; set; }
 
     public virtual DbSet<UserMeeting> UserMeetings { get; set; }
+    public virtual DbSet<UserToken> UserTokens { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -57,7 +58,7 @@ public partial class SportidyContext : DbContext
     {
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951ACD9060A0C2");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951ACD27B15586");
 
             entity.ToTable("Booking");
 
@@ -79,7 +80,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Club>(entity =>
         {
-            entity.HasKey(e => e.ClubId).HasName("PK__Club__D35058E7B456A5C2");
+            entity.HasKey(e => e.ClubId).HasName("PK__Club__D35058E79F8F62DE");
 
             entity.ToTable("Club");
 
@@ -109,7 +110,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<CommentInMeeting>(entity =>
         {
-            entity.HasKey(e => e.CommentId).HasName("PK__CommentI__C3B4DFAAC848F258");
+            entity.HasKey(e => e.CommentId).HasName("PK__CommentI__C3B4DFAA471104AD");
 
             entity.ToTable("CommentInMeeting");
 
@@ -133,7 +134,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Friendship>(entity =>
         {
-            entity.HasKey(e => e.FriendShipId).HasName("PK__Friendsh__190D6378A8938145");
+            entity.HasKey(e => e.FriendShipId).HasName("PK__Friendsh__190D637884858AB7");
 
             entity.ToTable("Friendship");
 
@@ -159,7 +160,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<ImageField>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__ImageFie__7516F4EC01E3CB65");
+            entity.HasKey(e => e.ImageId).HasName("PK__ImageFie__7516F4EC9A3F7261");
 
             entity.ToTable("ImageField");
 
@@ -180,7 +181,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Meeting>(entity =>
         {
-            entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__E9F9E9AC22AE82C7");
+            entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__E9F9E9AC468584B2");
 
             entity.ToTable("Meeting");
 
@@ -190,6 +191,7 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.Address).IsUnicode(false);
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
             entity.Property(e => e.EndDate).HasColumnType("datetime");
+            entity.Property(e => e.IsPublic);
             entity.Property(e => e.MeetingCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
@@ -206,7 +208,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32BA0B9769");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32B70E75BB");
 
             entity.ToTable("Notification");
 
@@ -257,7 +259,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<PlayFieldFeedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__PlayFiel__6A4BEDF6F8087581");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__PlayFiel__6A4BEDF64C6D3772");
 
             entity.ToTable("PlayFieldFeedback");
 
@@ -282,7 +284,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3A9CDB2B0D");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3A038ACFA2");
 
             entity.ToTable("Role");
 
@@ -293,7 +295,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Sport>(entity =>
         {
-            entity.HasKey(e => e.SportId).HasName("PK__Sport__7A41AF1CDAB243F8");
+            entity.HasKey(e => e.SportId).HasName("PK__Sport__7A41AF1C1AA63361");
 
             entity.ToTable("Sport");
 
@@ -323,7 +325,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CCAC36EEE425");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CCACB5F6D77C");
 
             entity.ToTable("User");
 
@@ -336,7 +338,7 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.Avartar)
                 .HasMaxLength(2000)
                 .IsUnicode(false);
-            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.CreateDate).HasColumnType("date");
             entity.Property(e => e.Description)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -358,7 +360,9 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
+            entity.Property(e => e.FullName)
+                .HasMaxLength(80)
+                .IsUnicode(false);
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -367,7 +371,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<UserClub>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.ClubId }).HasName("PK__UserClub__7ABDC922CA28D997");
+            entity.HasKey(e => new { e.UserId, e.ClubId }).HasName("PK__UserClub__7ABDC9227D05295A");
 
             entity.ToTable("UserClub");
 
@@ -386,14 +390,14 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<UserMeeting>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.MeetingId }).HasName("PK__UserMeet__C9175236643EE9D1");
+            entity.HasKey(e => new { e.UserId, e.MeetingId }).HasName("PK__UserMeet__C9175236CBB90D5E");
 
             entity.ToTable("UserMeeting");
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.MeetingId).HasColumnName("MeetingID");
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
-            entity.Property(e => e.RoleInMeeting).HasMaxLength(50);
+            entity.Property(e => e.RoleInMeeting).HasColumnName("RoleInMeeting").HasMaxLength(50);
 
             entity.HasOne(d => d.Meeting).WithMany(p => p.UserMeetings)
                 .HasForeignKey(d => d.MeetingId)
@@ -406,7 +410,22 @@ public partial class SportidyContext : DbContext
                 .HasConstraintName("FK__UserMeeti__UserI__5DCAEF64");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        modelBuilder.Entity<UserToken>(entity =>
+        {
+            entity.HasKey(e => new { e.UserTokenId }).HasName("PK__UserToken__C423424FG41");
+
+            entity.ToTable("UserToken");
+            entity.Property(e => e.UserTokenId)
+               .ValueGeneratedOnAdd()
+               .HasColumnName("UserTokenId");
+
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.AccessToken).HasColumnName("AccessToken");
+            entity.Property(e => e.RefreshToken).HasColumnName("RefreshToken");
+            entity.Property(e => e.ExpiredTimeAccessToken).HasColumnName("ExpAccessToken");
+            entity.Property(e => e.ExpiredTimeRefreshToken).HasColumnName("ExpRefreshToken");
+            entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
+        });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

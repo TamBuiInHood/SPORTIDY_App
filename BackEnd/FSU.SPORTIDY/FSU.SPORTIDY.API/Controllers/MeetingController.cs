@@ -2,8 +2,8 @@
 using FSU.SPORTIDY.API.Common.Constants;
 using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.API.Payloads.Request.MeetingRequest;
-using FSU.SPORTIDY.Service.ISerivice;
-using FSU.SPORTIDY.Service.Models.MeetingModels;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+using FSU.SPORTIDY.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var dto = new MeetingDTO();
+                var dto = new Service.BusinessModel.MeetingModels.MeetingDTO();
                 dto.MeetingName = reqObj.MeetingName;
                 dto.Address = reqObj.Address;
                 dto.MeetingImage = reqObj.MeetingImage;

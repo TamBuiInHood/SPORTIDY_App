@@ -2,9 +2,9 @@
 using FSU.SPORTIDY.Repository.Common.Enums;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.UnitOfWork;
-using FSU.SPORTIDY.Service.ISerivice;
-using FSU.SPORTIDY.Service.Models.MeetingModels;
-using FSU.SPORTIDY.Service.Models.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -47,7 +47,7 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<PageEntity<MeetingDTO>> Get(int CurrentIDLogin, string searchKey, int? PageSize, int? PageIndex)
         {
-            Expression<Func<Meeting, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.MeetingName.Contains(searchKey, StringComparison.OrdinalIgnoreCase) : null!;
+            Expression<Func<Meeting, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.MeetingName!.Contains(searchKey, StringComparison.OrdinalIgnoreCase) : null!;
 
             Func<IQueryable<Meeting>, IOrderedQueryable<Meeting>> orderBy = q => q.OrderByDescending(x => (x.StartDate!.Value.Date - DateTime.Now.Date).TotalHours);
             string includeProperties = "CommentInMeetings,UserMeetings";

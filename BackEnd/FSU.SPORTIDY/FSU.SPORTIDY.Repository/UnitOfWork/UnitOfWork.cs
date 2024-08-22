@@ -1,5 +1,8 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Repository.Interfaces;
 using FSU.SPORTIDY.Repository.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 
 namespace FSU.SPORTIDY.Repository.UnitOfWork
@@ -7,9 +10,10 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly IConfiguration _configuration;
+        private IDbContextTransaction _transaction;
 
-
-
+        public RoleRepository _RoleRepo { get; private set; }
+        public UserTokenRepository _UserTokenRepo { get; private set; }
         private MeetingRepository _MeetingRepo;
         private SportidyContext _context;
         private UserRepository _UserRepo;
@@ -18,8 +22,33 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         {
             _context = context;
             _configuration = configuration;
+            _UserRepo = new UserRepository(context);
+            _RoleRepo = new RoleRepository(context);
+            _UserTokenRepo = new UserTokenRepository(context);
         }
 
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitAsync()
+        {
+
+            try
+            {
+                await _transaction.CommitAsync();
+            }
+            catch
+            {
+                await _transaction.RollbackAsync();
+            }
+            finally
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null!;
+            }
+        }
 
         public void Save()
         {
@@ -49,17 +78,17 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             GC.SuppressFinalize(this);
         }
 
-        //GenericRepository<Category> IUnitOfWork.CategoryRepository
-        //{
-        //    get
-        //    {
-        //        if (_categoryRepo == null)
-        //        {
-        //            this._categoryRepo = new GenericRepository<Category>(_context);
-        //        }
-        //        return _categoryRepo;
-        //    }
-        //}
+        public async Task RollBackAsync()
+        {
+            await _transaction.RollbackAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null!;
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
 
         public MeetingRepository MeetingRepository
         {
@@ -83,5 +112,6 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                 return _UserRepo;
             }
         }
+
     }
 }

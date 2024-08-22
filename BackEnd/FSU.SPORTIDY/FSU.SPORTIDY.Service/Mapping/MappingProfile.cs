@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FSU.SPORTIDY.Repository.Entities;
-using FSU.SPORTIDY.Service.Models.MeetingModels;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

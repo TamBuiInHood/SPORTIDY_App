@@ -12,6 +12,7 @@ public partial class User
     public string? UserName { get; set; }
 
     public string? Password { get; set; }
+    public string? FullName { get; set; }
 
     public string? Address { get; set; }
 
@@ -29,7 +30,7 @@ public partial class User
 
     public int RoleId { get; set; }
 
-    public DateTime? CreateDate { get; set; }
+    public DateOnly? CreateDate { get; set; }
 
     public int? Status { get; set; }
 

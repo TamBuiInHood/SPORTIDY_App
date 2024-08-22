@@ -1,6 +1,6 @@
 ﻿namespace FSU.SPORTIDY.Repository.Utils
 {
-    public class NumberHelper
+    public class NumberTypeHelper
     {
         public static bool IsValidInteger(int value)
         {
