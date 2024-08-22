@@ -9,6 +9,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         UserRepository UserRepository { get; }
         RoleRepository _RoleRepo { get; }
         UserTokenRepository _UserTokenRepo { get; }
+        FriendShipRepository FriendShipRepository { get; }
         void Save();
         Task<int> SaveAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();

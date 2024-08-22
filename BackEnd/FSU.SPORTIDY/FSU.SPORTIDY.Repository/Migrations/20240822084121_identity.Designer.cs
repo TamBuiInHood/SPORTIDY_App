@@ -4,6 +4,7 @@ using FSU.SPORTIDY.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     [DbContext(typeof(SportidyContext))]
-    partial class SportidyContextModelSnapshot : ModelSnapshot
+    [Migration("20240822084121_identity")]
+    partial class identity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -553,9 +556,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("OTP");
 
                     b.Property<string>("Password")
-                        .HasMaxLength(200)
+                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)

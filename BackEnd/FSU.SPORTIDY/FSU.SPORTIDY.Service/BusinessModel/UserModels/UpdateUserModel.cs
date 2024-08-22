@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FSU.SPORTIDY.Service.BusinessModel
+namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
 {
     public class UpdateUserModel
     {

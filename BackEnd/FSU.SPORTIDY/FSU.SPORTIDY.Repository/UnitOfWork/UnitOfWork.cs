@@ -17,6 +17,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private MeetingRepository _MeetingRepo;
         private SportidyContext _context;
         private UserRepository _UserRepo;
+        private FriendShipRepository _FriendShipRepo;
 
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
@@ -25,6 +26,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             _UserRepo = new UserRepository(context);
             _RoleRepo = new RoleRepository(context);
             _UserTokenRepo = new UserTokenRepository(context);
+            _FriendShipRepo = new FriendShipRepository(context);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
@@ -110,6 +112,18 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._UserRepo = new UserRepository(_context);
                 }
                 return _UserRepo;
+            }
+        }
+
+        public FriendShipRepository FriendShipRepository
+        {
+            get
+            {
+                if (_FriendShipRepo == null)
+                {
+                    this._FriendShipRepo = new FriendShipRepository(_context);
+                }
+                return _FriendShipRepo;
             }
         }
 

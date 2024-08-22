@@ -2,7 +2,7 @@
 {
     public static class APIRoutes
     {
-        public const string Base = "api";
+        public const string Base = "/api";
 
         public static class Sportidy
         {
@@ -35,6 +35,22 @@
 
             public const string Add = Base + "/meetings/";
         }
-       
+        public static class User
+        {
+            public const string GetAll = Base + "/users/";
+
+            public const string GetByID = Base + "/users/{id}";
+
+            public const string GetByEmail = Base + "/users/by-email/{email}";
+
+            public const string Update = Base + "/users/";
+
+            public const string SoftDelete = Base + "/users/soft-delete/{id}";
+
+            public const string Delete = Base + "/users/delete-user/{id}";
+
+            public const string Add = Base + "/users/";
+        }
+
     }
 }
