@@ -29,7 +29,7 @@ public partial class User
 
     public int RoleId { get; set; }
 
-    public DateOnly? CreateDate { get; set; }
+    public DateTime? CreateDate { get; set; }
 
     public int? Status { get; set; }
 

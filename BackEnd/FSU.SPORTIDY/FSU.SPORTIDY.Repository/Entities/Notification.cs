@@ -17,7 +17,7 @@ public partial class Notification
 
     public bool? IsAccept { get; set; }
 
-    public DateOnly? InviteDate { get; set; }
+    public DateTime? InviteDate { get; set; }
 
     public bool? IsRead { get; set; }
 

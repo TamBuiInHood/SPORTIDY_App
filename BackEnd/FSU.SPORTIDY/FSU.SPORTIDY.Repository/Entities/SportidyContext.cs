@@ -53,19 +53,21 @@ public partial class SportidyContext : DbContext
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         optionsBuilder.UseSqlServer(connectionString);
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951ACD16D6A326");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951ACD9060A0C2");
 
             entity.ToTable("Booking");
 
             entity.Property(e => e.BookingId)
                 .ValueGeneratedNever()
                 .HasColumnName("BookingID");
+            entity.Property(e => e.BookingDate).HasColumnType("datetime");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.DateEnd).HasColumnType("datetime");
+            entity.Property(e => e.DateStart).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.PlayFieldId).HasColumnName("PlayFieldID");
 
@@ -77,7 +79,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Club>(entity =>
         {
-            entity.HasKey(e => e.ClubId).HasName("PK__Club__D35058E76E4F6FBE");
+            entity.HasKey(e => e.ClubId).HasName("PK__Club__D35058E7B456A5C2");
 
             entity.ToTable("Club");
 
@@ -107,7 +109,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<CommentInMeeting>(entity =>
         {
-            entity.HasKey(e => e.CommentId).HasName("PK__CommentI__C3B4DFAA10C1089B");
+            entity.HasKey(e => e.CommentId).HasName("PK__CommentI__C3B4DFAAC848F258");
 
             entity.ToTable("CommentInMeeting");
 
@@ -117,6 +119,7 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.CommentCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
+            entity.Property(e => e.CommentDate).HasColumnType("datetime");
             entity.Property(e => e.Content).IsUnicode(false);
             entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.MeetingId).HasColumnName("MeetingID");
@@ -130,7 +133,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Friendship>(entity =>
         {
-            entity.HasKey(e => e.FriendShipId).HasName("PK__Friendsh__190D637815793192");
+            entity.HasKey(e => e.FriendShipId).HasName("PK__Friendsh__190D6378A8938145");
 
             entity.ToTable("Friendship");
 
@@ -156,7 +159,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<ImageField>(entity =>
         {
-            entity.HasKey(e => e.ImageId).HasName("PK__ImageFie__7516F4EC8701E370");
+            entity.HasKey(e => e.ImageId).HasName("PK__ImageFie__7516F4EC01E3CB65");
 
             entity.ToTable("ImageField");
 
@@ -177,7 +180,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Meeting>(entity =>
         {
-            entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__E9F9E9AC0A88E9F9");
+            entity.HasKey(e => e.MeetingId).HasName("PK__Meeting__E9F9E9AC22AE82C7");
 
             entity.ToTable("Meeting");
 
@@ -186,6 +189,7 @@ public partial class SportidyContext : DbContext
                 .HasColumnName("MeetingID");
             entity.Property(e => e.Address).IsUnicode(false);
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
+            entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.MeetingCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
@@ -197,17 +201,19 @@ public partial class SportidyContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Note).IsUnicode(false);
             entity.Property(e => e.SportId).HasColumnName("SportID");
+            entity.Property(e => e.StartDate).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E3217727BA6");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32BA0B9769");
 
             entity.ToTable("Notification");
 
             entity.Property(e => e.NotificationId)
                 .ValueGeneratedNever()
                 .HasColumnName("NotificationID");
+            entity.Property(e => e.InviteDate).HasColumnType("datetime");
             entity.Property(e => e.Message)
                 .HasMaxLength(1)
                 .IsUnicode(false);
@@ -251,7 +257,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<PlayFieldFeedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__PlayFiel__6A4BEDF6312EEF0A");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__PlayFiel__6A4BEDF6F8087581");
 
             entity.ToTable("PlayFieldFeedback");
 
@@ -263,6 +269,7 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.FeedbackCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
+            entity.Property(e => e.FeedbackDate).HasColumnType("datetime");
             entity.Property(e => e.ImageUrl).HasColumnName("ImageURL");
             entity.Property(e => e.IsAnonymous).HasColumnName("IsAnonymous_");
             entity.Property(e => e.VideoUrl).HasColumnName("VideoURL");
@@ -275,7 +282,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3ACAF3DEC1");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE3A9CDB2B0D");
 
             entity.ToTable("Role");
 
@@ -286,7 +293,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<Sport>(entity =>
         {
-            entity.HasKey(e => e.SportId).HasName("PK__Sport__7A41AF1C5ACCB452");
+            entity.HasKey(e => e.SportId).HasName("PK__Sport__7A41AF1CDAB243F8");
 
             entity.ToTable("Sport");
 
@@ -316,7 +323,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CCAC30784265");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CCAC36EEE425");
 
             entity.ToTable("User");
 
@@ -329,6 +336,7 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.Avartar)
                 .HasMaxLength(2000)
                 .IsUnicode(false);
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Description)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -359,7 +367,7 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<UserClub>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.ClubId }).HasName("PK__UserClub__7ABDC922D9740BC9");
+            entity.HasKey(e => new { e.UserId, e.ClubId }).HasName("PK__UserClub__7ABDC922CA28D997");
 
             entity.ToTable("UserClub");
 
@@ -378,13 +386,14 @@ public partial class SportidyContext : DbContext
 
         modelBuilder.Entity<UserMeeting>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.MeetingId }).HasName("PK__UserMeet__C917523669223F41");
+            entity.HasKey(e => new { e.UserId, e.MeetingId }).HasName("PK__UserMeet__C9175236643EE9D1");
 
             entity.ToTable("UserMeeting");
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.MeetingId).HasColumnName("MeetingID");
             entity.Property(e => e.ClubId).HasColumnName("ClubID");
+            entity.Property(e => e.RoleInMeeting).HasMaxLength(50);
 
             entity.HasOne(d => d.Meeting).WithMany(p => p.UserMeetings)
                 .HasForeignKey(d => d.MeetingId)

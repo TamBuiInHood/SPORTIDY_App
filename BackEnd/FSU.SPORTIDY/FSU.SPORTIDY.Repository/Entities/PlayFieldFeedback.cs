@@ -13,7 +13,7 @@ public partial class PlayFieldFeedback
 
     public int? Rating { get; set; }
 
-    public int? FeedbackDate { get; set; }
+    public DateTime? FeedbackDate { get; set; }
 
     public int? ImageUrl { get; set; }
 

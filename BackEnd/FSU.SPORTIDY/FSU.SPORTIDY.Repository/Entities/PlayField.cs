@@ -15,11 +15,11 @@ public partial class PlayField
 
     public string? Address { get; set; }
 
-    public DateOnly? OpenTime { get; set; }
+    public int? OpenTime { get; set; }
 
     public int? UserId { get; set; }
 
-    public DateOnly? CloseTime { get; set; }
+    public int? CloseTime { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

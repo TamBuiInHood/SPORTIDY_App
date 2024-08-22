@@ -1,4 +1,5 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Repository.Repositories;
 using Microsoft.Extensions.Configuration;
 
 namespace FSU.SPORTIDY.Repository.UnitOfWork
@@ -9,9 +10,9 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
 
 
 
-        //private RefreshTokenRepository _refreshTokenRepo;
+        private MeetingRepository _MeetingRepo;
         private SportidyContext _context;
-
+        private UserRepository _UserRepo;
 
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
@@ -60,17 +61,27 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         //    }
         //}
 
-        //public AppUserRepository AppUserRepository
-        //{
-        //    get
-        //    {
-        //        if (_appUserRepo == null)
-        //        {
-        //            this._appUserRepo = new AppUserRepository(_context);
-        //        }
-        //        return _appUserRepo;
-        //    }
-        //}
-
+        public MeetingRepository MeetingRepository
+        {
+            get
+            {
+                if (_MeetingRepo == null)
+                {
+                    this._MeetingRepo = new MeetingRepository(_context);
+                }
+                return _MeetingRepo;
+            }
+        }
+        public UserRepository UserRepository
+        {
+            get
+            {
+                if (_UserRepo == null)
+                {
+                    this._UserRepo = new UserRepository(_context);
+                }
+                return _UserRepo;
+            }
+        }
     }
 }

@@ -11,6 +11,10 @@ using FSU.SPORTIDY.API.Middlewares;
 using FSU.SPORTIDY.Repository.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using FSU.SPORTIDY.Repository.Interfaces;
+using FSU.SPORTIDY.Repository.Repositories;
+using FSU.SPORTIDY.Service.ISerivice;
+using FSU.SPORTIDY.Service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,11 +71,14 @@ builder.Services.AddSingleton(mapper.CreateMapper());
 
 // Register repositories
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 
 // Register servicies
 //builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IMeetingService, MeetingService>();
 
 
 
