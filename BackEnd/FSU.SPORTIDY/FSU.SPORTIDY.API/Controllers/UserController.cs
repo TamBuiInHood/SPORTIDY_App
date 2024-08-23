@@ -31,7 +31,7 @@ namespace FSU.SPORTIDY.API.Controllers
                     {
                         StatusCode = StatusCodes.Status200OK,
                         Message = "Get all user success",
-                        Data = result.List,
+                        Data = result,
                         IsSuccess = true
                     });
                 } 
@@ -41,7 +41,7 @@ namespace FSU.SPORTIDY.API.Controllers
                     {
                         StatusCode = StatusCodes.Status404NotFound,
                         Message = "No user found",
-                        Data = result.List,
+                        Data = result,
                         IsSuccess = false
                     });
                 }
