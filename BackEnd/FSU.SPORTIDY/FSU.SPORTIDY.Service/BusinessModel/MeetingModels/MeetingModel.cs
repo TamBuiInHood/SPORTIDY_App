@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FSU.SPORTIDY.Service.BusinessModel.MeetingModels
 {
-    public class MeetingDTO
+    public class MeetingModel
     {
         public int MeetingId { get; set; }
 

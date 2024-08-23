@@ -87,6 +87,7 @@ builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
+builder.Services.AddScoped<ISportService, SportService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));

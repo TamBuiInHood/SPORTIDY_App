@@ -45,7 +45,7 @@ namespace FSU.SPORTIDY.Service.Services
             return result;
         }
 
-        public async Task<PageEntity<MeetingDTO>> Get(int CurrentIDLogin, string searchKey, int? PageSize, int? PageIndex)
+        public async Task<PageEntity<MeetingModel>> Get(int CurrentIDLogin, string searchKey, int? PageSize, int? PageIndex)
         {
             Expression<Func<Meeting, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.MeetingName!.Contains(searchKey, StringComparison.OrdinalIgnoreCase) : null!;
 
@@ -54,8 +54,8 @@ namespace FSU.SPORTIDY.Service.Services
 
             var entities = await _unitOfWork.MeetingRepository
                 .Get(filter: filter, orderBy: orderBy, includeProperties: includeProperties, pageIndex: PageIndex, pageSize: PageSize);
-            var pagin = new PageEntity<MeetingDTO>();
-            pagin.List = _mapper.Map<IEnumerable<MeetingDTO>>(entities).ToList();
+            var pagin = new PageEntity<MeetingModel>();
+            pagin.List = _mapper.Map<IEnumerable<MeetingModel>>(entities).ToList();
             Expression<Func<Meeting, bool>> countMeeting = x => x.Status != (int)MeetingStatus.Deleted && x.Status != (int)MeetingStatus.Finished;
             pagin.TotalRecord = await _unitOfWork.MeetingRepository.Count(countMeeting);
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize!.Value);
@@ -63,7 +63,7 @@ namespace FSU.SPORTIDY.Service.Services
 
         }
 
-        public async Task<IEnumerable<MeetingDTO>> GetAllMeetingByUserID(int userID)
+        public async Task<IEnumerable<MeetingModel>> GetAllMeetingByUserID(int userID)
         {
             Expression<Func<Meeting, bool>> conditionGetMeeting = x => x.UserMeetings.Any(x => x.UserId == userID)  /*&& x.RoleInMeeting.Equals("host", StringComparison.OrdinalIgnoreCase)*/ ;
             Func<IQueryable<Meeting>, IOrderedQueryable<Meeting>> orderBy = x => x
@@ -75,19 +75,19 @@ namespace FSU.SPORTIDY.Service.Services
                 orderBy: orderBy,
                 includeProperties: includeProperties,
                 thenIncludeProperties: thenIncludeProperties);
-            var mapDTO = _mapper.Map<IEnumerable<MeetingDTO>>(meetingOfUser);
+            var mapDTO = _mapper.Map<IEnumerable<MeetingModel>>(meetingOfUser);
             return mapDTO;
         }
 
-        public async Task<MeetingDTO?> GetByID(int meetingID)
+        public async Task<MeetingModel?> GetByID(int meetingID)
         {
             Expression<Func<Meeting, bool>> condition = x => x.MeetingId == meetingID && (x.Status != (int)MeetingStatus.Deleted);
             var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition);
-            return _mapper?.Map<MeetingDTO?>(entity)!;
+            return _mapper?.Map<MeetingModel?>(entity)!;
 
         }
 
-        public async Task<MeetingDTO?> Insert(MeetingDTO EntityInsert, List<int> invitedFriend, int currentLoginID)
+        public async Task<MeetingModel?> Insert(MeetingModel EntityInsert, List<int> invitedFriend, int currentLoginID)
         {
             var userMeeting = new List<UserMeeting>();
             foreach (var player in invitedFriend)
@@ -123,13 +123,13 @@ namespace FSU.SPORTIDY.Service.Services
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             if (result == true)
             {
-                var mapdto = _mapper.Map<MeetingDTO>(meeting);
+                var mapdto = _mapper.Map<MeetingModel>(meeting);
                 return mapdto;
             }
             return null!;
         }
 
-        public async Task<MeetingDTO> Update(MeetingDTO EntityUpdate)
+        public async Task<MeetingModel> Update(MeetingModel EntityUpdate)
         {
             var meeting = await _unitOfWork.MeetingRepository.GetByCondition(x => x.MeetingId == EntityUpdate.MeetingId);
             if (meeting == null)

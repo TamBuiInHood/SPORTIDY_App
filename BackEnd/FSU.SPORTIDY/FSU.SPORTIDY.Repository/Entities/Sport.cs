@@ -7,11 +7,11 @@ public partial class Sport
 {
     public int SportId { get; set; }
 
-    public int? SportCode { get; set; }
+    public string? SportCode { get; set; }
 
-    public int? SportName { get; set; }
+    public string? SportName { get; set; }
 
-    public int? SportIamge { get; set; }
+    public string? SportImage { get; set; }
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

@@ -1,51 +1,44 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
-using FSU.SPORTIDY.API.Common.Constants;
-using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.API.Payloads.Request.MeetingRequest;
-using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.Service.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using FSU.SPORTIDY.Service.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using FSU.SPORTIDY.API.Payloads.Request.SportRequest;
+using FSU.SPORTIDY.Service.BusinessModel.SportBsModels;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+using FSU.SPORTIDY.API.Common.Constants;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     [ApiController]
-    public class MeetingController : ControllerBase
+    public class SportController : ControllerBase
     {
-        private readonly IMeetingService _meetingSerivce;
+        private readonly ISportService _sportService;
 
-        public MeetingController(IMeetingService meetingService)
+        public SportController(ISportService sportService)
         {
-            _meetingSerivce = meetingService;
+            _sportService = sportService;
         }
 
         //[Authorize(Roles = UserRoles.Admin)]
-        [HttpPost(APIRoutes.Meeting.Add, Name = "AddMeetingAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddMeetingRequest reqObj)
+        [HttpPost(APIRoutes.Sport.Add, Name = "AddSportAsync")]
+        public async Task<IActionResult> AddAsync([FromBody] AddSportRequest reqObj)
         {
             try
             {
-                var dto = new Service.BusinessModel.MeetingModels.MeetingModel();
-                dto.MeetingName = reqObj.MeetingName;
-                dto.Address = reqObj.Address;
-                dto.MeetingImage = reqObj.MeetingImage;
-                dto.StartDate = reqObj.StartDate;
-                dto.EndDate = reqObj.EndDate;
-                dto.CancelBefore = reqObj.CancelBefore;
-                dto.Note = reqObj.Note;
-                dto.CancelBefore = reqObj.CancelBefore.Value;
-                dto.ClubId = reqObj.ClubId;
-                dto.IsPublic = reqObj.IsPublic;
-                dto.TotalMember = reqObj.TotalMember;
-                var MeetingAdd = await _meetingSerivce.Insert(dto,reqObj.InvitedFriend,reqObj.currentIDLogin);
-                if (MeetingAdd == null)
+                var dto = new SportDTO();
+                dto.SportImage = reqObj.SportImage;
+                dto.SportName = reqObj.SportName;
+                var sportInsert = await _sportService.Insert(dto);
+                if (sportInsert == null)
                 {
                     return NotFound(new BaseResponse
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Create Meeting fail.",
+                        Message = "Create Sport fail.",
                         Data = null,
                         IsSuccess = false
                     });
@@ -53,8 +46,8 @@ namespace FSU.SPORTIDY.API.Controllers
                 return Ok(new BaseResponse
                 {
                     StatusCode = StatusCodes.Status200OK,
-                    Message = "Creat Meeting Successfully",
-                    Data = MeetingAdd,
+                    Message = "Creat Sport Successfully",
+                    Data = sportInsert,
                     IsSuccess = true
                 });
 
@@ -73,18 +66,18 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoles.Admin)]
-        [HttpDelete(APIRoutes.Meeting.Delete, Name = "DeleteMeetingAsync")]
-        public async Task<IActionResult> DeleteAsynce([FromQuery] int meetingId)
+        [HttpDelete(APIRoutes.Sport.Delete, Name = "DeleteSportAsync")]
+        public async Task<IActionResult> DeleteAsynce([FromQuery(Name = "sport-id")] int sportId)
         {
             try
             {
-                var result = await _meetingSerivce.Delete(meetingId);
+                var result = await _sportService.Delete(sportId);
                 if (!result)
                 {
                     return NotFound(new BaseResponse
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Meeting not found",
+                        Message = "Sport not found",
                         Data = null,
                         IsSuccess = false
                     });
@@ -110,22 +103,16 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoles.Admin)]
-        [HttpPut(APIRoutes.Meeting.Update, Name = "UpdateMeetingAsync")]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UpdateMeetingRequest reqObj)
+        [HttpPut(APIRoutes.Sport.Update, Name = "UpdateSportAsync")]
+        public async Task<IActionResult> UpdateUserAsync(int sportId, [FromBody] AddSportRequest reqObj)
         {
             try
             {
-                var dto = new MeetingModel();
-                dto.MeetingName = reqObj.MeetingName;
-                dto.StartDate = reqObj.StartDate;
-                dto.EndDate = reqObj.EndDate;
-                dto.Address = reqObj.Address;
-                dto.TotalMember = reqObj.TotalMember;
-                dto.CancelBefore = reqObj.CancelBefore;
-                dto.Note = reqObj.Note;
-                dto.IsPublic = reqObj.IsPublic;
-                dto.MeetingImage = reqObj.MeetingImage;
-                var result = await _meetingSerivce.Update(dto);
+                var dto = new SportDTO();
+                dto.SportId = sportId;
+                dto.SportName = reqObj.SportName;
+                dto.SportImage = reqObj.SportImage;
+                var result = await _sportService.Update(dto);
                 if (result != null)
                 {
                     return NotFound(new BaseResponse
@@ -157,21 +144,20 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoles.Admin)]
-        [HttpGet(APIRoutes.Meeting.GetAll, Name = "GetMeetingAsync")]
-        public async Task<IActionResult> GetAllAsync([FromQuery(Name = "curr-id-login")] int currIdLoginID
-           , [FromQuery(Name = "search-key")] string? searchKey
+        [HttpGet(APIRoutes.Sport.GetAll, Name = "GetSportAsync")]
+        public async Task<IActionResult> GetAllAsync([FromQuery(Name = "search-key")] string? searchKey
            , [FromQuery(Name = "page-number")] int pageNumber = Page.DefaultPageIndex
            , [FromQuery(Name = "page-size")] int PageSize = Page.DefaultPageSize)
         {
             try
             {
-                var allAccount = await _meetingSerivce.Get(currIdLoginID, searchKey!, PageIndex: pageNumber, PageSize: PageSize);
+                var getSport = await _sportService.Get( searchKey!, PageIndex: pageNumber, PageSize: PageSize);
 
                 return Ok(new BaseResponse
                 {
                     StatusCode = StatusCodes.Status200OK,
                     Message = "Load successfully",
-                    Data = allAccount,
+                    Data = getSport,
                     IsSuccess = true
                 });
             }
@@ -188,19 +174,19 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoles.Admin)]
-        [HttpGet(APIRoutes.Meeting.GetByID, Name = "GetMeetingByID")]
-        public async Task<IActionResult> GetAsync([FromQuery] int Id)
+        [HttpGet(APIRoutes.Sport.GetByID, Name = "GetSportByID")]
+        public async Task<IActionResult> GetAsync([FromQuery(Name = "sport-id")] int sportId)
         {
             try
             {
-                var user = await _meetingSerivce.GetByID(Id);
+                var user = await _sportService.getById(sportId);
 
                 if (user == null)
                 {
                     return NotFound(new BaseResponse
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Meeting not found",
+                        Message = "Sport not found",
                         Data = null,
                         IsSuccess = false
                     });
@@ -208,7 +194,45 @@ namespace FSU.SPORTIDY.API.Controllers
                 return Ok(new BaseResponse
                 {
                     StatusCode = StatusCodes.Status200OK,
-                    Message = "Get meeting successfully",
+                    Message = "Get sport successfully",
+                    Data = user,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    Data = null,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        //[Authorize(Roles = UserRoles.Admin)]
+        [HttpGet(APIRoutes.Sport.GetAllNotPaging, Name = "GetAllSport")]
+        public async Task<IActionResult> GetAllNotPaging()
+        {
+            try
+            {
+                var user = await _sportService.GetAllSportNotPagin();
+
+                if (user == null)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Sport not found",
+                        Data = null,
+                        IsSuccess = false
+                    });
+                }
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Get sport successfully",
                     Data = user,
                     IsSuccess = true
                 });

@@ -17,7 +17,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private MeetingRepository _MeetingRepo;
         private SportidyContext _context;
         private UserRepository _UserRepo;
-
+        private GenericRepository<Sport> _sportRepo;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -113,5 +113,16 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             }
         }
 
+        public GenericRepository<Sport> SportRepository
+        {
+            get
+            {
+                if(_sportRepo == null)
+                {
+                    this._sportRepo = new GenericRepository<Sport>(_context);
+                }
+                return _sportRepo;
+            }
+        }
     }
 }
