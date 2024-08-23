@@ -39,6 +39,18 @@ namespace FSU.SPORTIDY.Repository.Repositories
             return null;
         }
 
+        public async Task<int> SoftDeleteUserAsync(int userId)
+        {
+            var user = await GetUserByIdAsync(userId);
+            if(user != null)
+            {
+                user.IsDeleted = 1;
+               var result =  await context.SaveChangesAsync();
+                return result;
+            }
+            return 0;
+        }
+
         public async Task<bool> UpdateOtpUser(string email, string otpCode)
         {
             var checkUser = await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));

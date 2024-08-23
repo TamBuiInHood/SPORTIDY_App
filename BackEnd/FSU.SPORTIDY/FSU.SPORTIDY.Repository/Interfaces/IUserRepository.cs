@@ -15,6 +15,7 @@ namespace FSU.SPORTIDY.Repository.Interfaces
 
         public Task<bool> UpdateOtpUser(string email, string otpCode);
         public Task<int> UpdateUserAsync(User user);
+        public Task<int> SoftDeleteUserAsync(int userId);
     }
 }
 

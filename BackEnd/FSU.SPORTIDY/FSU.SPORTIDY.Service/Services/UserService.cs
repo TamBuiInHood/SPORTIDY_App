@@ -29,7 +29,10 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using Microsoft.AspNetCore.Http.HttpResults;
-using FSU.SPORTIDY.Service.BusinessModel;
+using FSU.SPORTIDY.Service.BusinessModel.UserModels;
+using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using System.Linq.Expressions;
+using AutoMapper;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -39,12 +42,14 @@ namespace FSU.SPORTIDY.Service.Services
         private readonly IMailService _mailService;
 
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, IMailService mailService)
+        public UserService(IUnitOfWork unitOfWork, IConfiguration configuration, IMailService mailService, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _mailService = mailService;
+            _mapper = mapper;
         }
 
         public async Task<AuthenModel> LoginByEmailAndPassword(string email, string password)
@@ -394,13 +399,6 @@ namespace FSU.SPORTIDY.Service.Services
                 throw new Exception("clientId is null");
             }
 
-            var settings = new GoogleJsonWebSignature.ValidationSettings()
-            {
-                Audience = new List<string> { clientId },
-                
-               
-            };
-
             var getUser = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(credental);
             // Lấy các Claims từ token
             var payload = new User()
@@ -566,6 +564,211 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 return false;
             }
+        }
+
+        public async Task<PageEntity<UserModel>> GetAllUser(PaginationParameter paginationParameter)
+        {
+            Expression<Func<User, bool>> filter = null!;
+            Func<IQueryable<User>, IOrderedQueryable<User>> orderBy = null!;
+            if (!paginationParameter.Search.IsNullOrEmpty())
+            {
+                int validInt = 0;
+                var checkInt = int.TryParse(paginationParameter.Search, out validInt);
+                if(checkInt)
+                {
+                    filter = x => x.UserId == validInt;
+                }
+                else
+                {
+                    filter = x => x.UserCode.ToLower().Contains(paginationParameter.Search.ToLower())
+                                  || x.UserName.ToLower().Contains(paginationParameter.Search.ToLower())
+                                  || x.FullName.ToLower().Contains(paginationParameter.Search.ToLower())
+                                  || x.Address.ToLower().Contains(paginationParameter.Search.ToLower())
+                                  || x.Email.ToLower().Contains(paginationParameter.Search.ToLower())
+                                  || x.Description.ToLower().Contains(paginationParameter.Search.ToLower())
+                                  || x.Phone.ToLower().Contains(paginationParameter.Search.ToLower())
+                    ;
+                }
+            }
+            switch (paginationParameter.SortBy)
+            {
+                case "userid":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.UserId)
+                               : x => x.OrderBy(x => x.UserId)) : x => x.OrderBy(x => x.UserId);
+                    break;
+                case "usercode":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction) 
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.UserCode)
+                               : x => x.OrderBy(x => x.UserCode)) : x => x.OrderBy(x => x.UserCode);
+                    break;
+                case "username":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.UserName)
+                               : x => x.OrderBy(x => x.UserName)) : x => x.OrderBy(x => x.UserName);
+                    break;
+                case "fullname":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.FullName)
+                               : x => x.OrderBy(x => x.FullName)) : x => x.OrderBy(x => x.FullName);
+                    break;
+                case "address":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.Address)
+                               : x => x.OrderBy(x => x.Address)) : x => x.OrderBy(x => x.Address);
+                    break;
+                case "email":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.Email)
+                               : x => x.OrderBy(x => x.Email)) : x => x.OrderBy(x => x.Email);
+                    break;
+                case "role":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.Role.RoleName)
+                               : x => x.OrderBy(x => x.Role.RoleName)) : x => x.OrderBy(x => x.Role.RoleName);
+                    break;
+                case "phone":
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
+                                ? (paginationParameter.Direction.ToLower().Equals("desc")
+                               ? x => x.OrderByDescending(x => x.Phone)
+                               : x => x.OrderBy(x => x.Phone)) : x => x.OrderBy(x => x.Phone);
+                    break;
+                default:
+                    orderBy =  x => x.OrderBy(x => x.UserId);
+                    break;
+            }
+            string includeProperties = "Role";
+            var entities = await _unitOfWork.UserRepository.Get(filter, orderBy, includeProperties, paginationParameter.PageIndex , paginationParameter.PageSize);
+            var pagin = new PageEntity<UserModel>();
+            pagin.List = _mapper.Map<IEnumerable<UserModel>>(entities).ToList();
+            pagin.TotalRecord = await _unitOfWork.UserRepository.Count();
+            pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, paginationParameter.PageSize);
+            return pagin;
+            
+        }
+
+        public async Task<UserModel> GetUserById(int userId)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            var result = _mapper.Map<UserModel>(user);
+            return result;
+        }
+
+        public async Task<UserModel> GetUserByEmail(string email)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+            var result = _mapper.Map<UserModel>(user);
+            return result;
+        }
+
+        public async Task<bool> SoftDeleteUser(int userId)
+        {
+            var softDeleteUser = await _unitOfWork.UserRepository.SoftDeleteUserAsync(userId);
+            return softDeleteUser > 0;
+        }
+
+        public async Task<bool> DeleteUser(int userId)
+        {
+            string includeProperties = "PlayFields,FriendshipUserId1Navigations,FriendshipUserId2Navigations,UserClubs,UserMeetings,Notifications";
+            var EntityDelete = await _unitOfWork.UserRepository.GetByCondition(x => x.UserId == userId, includeProperties: includeProperties);
+            if (EntityDelete == null)
+            {
+                return false;
+            }
+            EntityDelete!.PlayFields.Clear();
+            foreach (var friendship in EntityDelete.FriendshipUserId1Navigations.ToList())
+            {
+                _unitOfWork.FriendShipRepository.Delete(friendship);
+            }
+
+            foreach (var friendship in EntityDelete.FriendshipUserId2Navigations.ToList())
+            {
+                _unitOfWork.FriendShipRepository.Delete(friendship);
+            }
+            EntityDelete!.UserClubs.Clear();
+            EntityDelete!.UserMeetings.Clear();
+            EntityDelete!.Notifications.Clear();
+            _unitOfWork.UserRepository.Delete(EntityDelete);
+            var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
+            return result;
+        }
+
+        public async Task<bool> CreateUser(CreateAccountModel createAccountModel)
+        {
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    User newUser = new User()
+                    {
+                        Email = createAccountModel.Email,
+                        UserCode = "SPD" + createAccountModel.Email + NumberHelper.GenerateSixDigitNumber(),
+                        FullName = createAccountModel.FullName,
+                        Status = 1,
+                        RoleId = (int)createAccountModel.Role,
+                        IsDeleted = 0,
+                        CreateDate = DateOnly.FromDateTime(DateTime.Now),
+                        Avartar = createAccountModel.AvatarUrl
+                    };
+
+                    var existUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(newUser.Email);
+                    if (existUser != null)
+                    {
+                        throw new Exception("Accoust is existed");
+                    }
+                    if (createAccountModel.Password != null)
+                    {
+                        newUser.Password = PasswordHelper.HashPassword(createAccountModel.Password);
+                    }
+                    var role = await _unitOfWork._RoleRepo.GetRoleByName(createAccountModel.Role.ToString());
+                    if (role == null)
+                    {
+                        Role newRole = new Role
+                        {
+                            RoleName = createAccountModel.Role.ToString(),
+                        };
+                        await _unitOfWork._RoleRepo.AddRoleAsync(newRole);
+                        role = newRole;
+                        newUser.RoleId = role.RoleId;
+                    }
+
+                    await _unitOfWork.UserRepository.AddUserAsync(newUser);
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
+
+        public async Task<bool> BannedUser(int userId)
+        {
+            var existUser = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
+            if(existUser != null)
+            {
+                existUser.Status = 0;
+                var result = await _unitOfWork.SaveAsync();
+                if(result > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                throw new Exception("Not found user for banned");
+            }
+
         }
     }
 }
