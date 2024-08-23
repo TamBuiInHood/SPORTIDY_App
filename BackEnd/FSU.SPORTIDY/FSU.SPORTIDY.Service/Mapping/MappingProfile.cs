@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+using FSU.SPORTIDY.Service.BusinessModel.SportBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace FSU.SPORTIDY.Service.Mapping
         {
             // Mapping classes
 
-            CreateMap<Meeting, MeetingDTO>()
+            CreateMap<Meeting, MeetingModel>()
                 .ForMember(dto => dto.CommentInMeetings, opt => opt.MapFrom(entity => entity.CommentInMeetings))
                 .ForMember(dto => dto.UserMeetings, opt => opt.MapFrom(entity => entity.UserMeetings))
                 .ReverseMap()
@@ -25,6 +26,9 @@ namespace FSU.SPORTIDY.Service.Mapping
 
             CreateMap<User, UserModel>()
                 .ForMember(x => x.RoleName, opt => opt.MapFrom(x => x.Role.RoleName))
+                .ReverseMap();
+            CreateMap<Sport, SportDTO>()
+                .ForMember(dto => dto.Users, opt => opt.MapFrom(entity => entity.Users))
                 .ReverseMap();
         }
     }

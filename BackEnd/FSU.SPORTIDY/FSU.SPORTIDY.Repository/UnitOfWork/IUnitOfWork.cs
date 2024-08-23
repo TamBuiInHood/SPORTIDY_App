@@ -1,6 +1,7 @@
 ﻿using FSU.SPORTIDY.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
 using FSU.SPORTIDY.Repository.Repositories;
+using FSU.SPORTIDY.Repository.Entities;
 
 namespace FSU.SPORTIDY.Repository.UnitOfWork
 {
@@ -16,5 +17,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         Task CommitAsync();
         Task RollBackAsync();
         public MeetingRepository MeetingRepository { get; }
+
+        public GenericRepository<Sport> SportRepository { get; }
     }
 }

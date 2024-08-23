@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="BusinessModel\UserBsModels\" />
     <Folder Include="Utils\Common\Constants\" />
     <Folder Include="Utils\Common\Enums\" />
   </ItemGroup>

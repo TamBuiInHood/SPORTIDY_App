@@ -35,6 +35,21 @@
 
             public const string Add = Base + "/meetings/";
         }
+
+        public static class Sport
+        {
+            public const string GetAll = Base + "/Sports/";
+
+            public const string GetByID = Base + "/Sports/{meeting-id}";
+
+            public const string Update = Base + "/Sports/";
+
+            public const string Delete = Base + "/Sports/";
+
+            public const string Add = Base + "/Sports/";
+
+            public const string GetAllNotPaging = Base + "/Sports/get-all-not-paging";
+        }
         public static class User
         {
             public const string GetAll = Base + "/users/";
