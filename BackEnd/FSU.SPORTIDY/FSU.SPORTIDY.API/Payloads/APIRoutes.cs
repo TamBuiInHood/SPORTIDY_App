@@ -67,5 +67,26 @@
             public const string Add = Base + "/users/";
         }
 
+        public static class Club
+        {
+            public const string GetAll = Base + "/clubs/";
+
+            public const string GetByID = Base + "/clubs/{id}";
+
+            public const string GetClubJoinedByUserId = Base + "/clubs/joined-club/{userId}";
+
+            public const string GetAllMeetingsOfClub = Base + "/clubs/meetings/{clubId}";
+
+            public const string InsertToUserClub = Base + "/clubs/{id}";
+
+            public const string JoinedClub = Base + "/clubs/joined-club";
+
+            public const string Update = Base + "/clubs/";
+
+            public const string Delete = Base + "/clubs/delete-club/{id}";
+
+            public const string Add = Base + "/clubs/{currentUserId}";
+        }
+
     }
 }
