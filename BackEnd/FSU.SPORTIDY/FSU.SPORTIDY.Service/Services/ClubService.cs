@@ -245,13 +245,11 @@ namespace FSU.SPORTIDY.Service.Services
             return false;
 
         }
-        public async Task<CreateClubModel> GetClubById(int clubId)
+        public async Task<ClubModel> GetClubById(int clubId)
         {
-            Expression<Func<Club, bool>> condition = x => x.ClubId == clubId;
-            string includeProperties = "UserClubs";
-
-            var entity = await _unitOfWork.ClubRepository.GetByCondition(condition, includeProperties: includeProperties);
-            return _mapper?.Map<CreateClubModel?>(entity)!;
+            var entities = await _unitOfWork.ClubRepository.GetAllClub();
+            var entity = entities.FirstOrDefault(x => x.ClubId == clubId);
+            return _mapper?.Map<ClubModel?>(entity)!;
         }
 
     }

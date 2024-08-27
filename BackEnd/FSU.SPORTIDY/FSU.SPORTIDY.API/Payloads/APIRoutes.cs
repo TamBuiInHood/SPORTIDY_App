@@ -71,7 +71,7 @@
         {
             public const string GetAll = Base + "/clubs/";
 
-            public const string GetByID = Base + "/clubs/{id}";
+            public const string GetByID = Base + "/clubs/{clubId}";
 
             public const string GetClubJoinedByUserId = Base + "/clubs/joined-club/{userId}";
 
