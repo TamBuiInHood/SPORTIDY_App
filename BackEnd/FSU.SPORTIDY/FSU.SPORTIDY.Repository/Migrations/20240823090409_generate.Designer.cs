@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     [DbContext(typeof(SportidyContext))]
-    [Migration("20240822084612_password")]
-    partial class password
+    [Migration("20240823090409_generate")]
+    partial class generate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,9 +86,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClubId"));
 
                     b.Property<string>("AvartarClub")
-                        .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(1)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("ClubCode")
                         .HasMaxLength(36)
@@ -100,9 +99,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("varchar(max)");
 
                     b.Property<string>("CoverImageClub")
-                        .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(1)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateOnly?>("CreateDate")
                         .HasColumnType("date");
@@ -488,14 +486,14 @@ namespace FSU.SPORTIDY.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SportId"));
 
-                    b.Property<int?>("SportCode")
-                        .HasColumnType("int");
+                    b.Property<string>("SportCode")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SportIamge")
-                        .HasColumnType("int");
+                    b.Property<string>("SportImage")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SportName")
-                        .HasColumnType("int");
+                    b.Property<string>("SportName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SportId")
                         .HasName("PK__Sport__7A41AF1C1AA63361");

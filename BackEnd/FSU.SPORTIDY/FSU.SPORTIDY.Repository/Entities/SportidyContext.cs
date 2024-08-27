@@ -86,14 +86,12 @@ public partial class SportidyContext : DbContext
 
             entity.Property(e => e.ClubId).ValueGeneratedOnAdd();
             entity.Property(e => e.AvartarClub)
-                .HasMaxLength(1)
                 .IsUnicode(false);
             entity.Property(e => e.ClubCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
             entity.Property(e => e.ClubName).IsUnicode(false);
             entity.Property(e => e.CoverImageClub)
-                .HasMaxLength(1)
                 .IsUnicode(false);
             entity.Property(e => e.Infomation).IsUnicode(false);
             entity.Property(e => e.Location)

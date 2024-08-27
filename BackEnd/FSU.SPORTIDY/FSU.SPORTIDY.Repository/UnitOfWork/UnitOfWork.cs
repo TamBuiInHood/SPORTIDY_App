@@ -19,6 +19,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private UserRepository _UserRepo;
         private GenericRepository<Sport> _sportRepo;
         private FriendShipRepository _FriendShipRepo;
+        private ClubRepository _ClubRepository;
+        private UserClubRepository _UserClubRepository;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -27,6 +29,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             _RoleRepo = new RoleRepository(context);
             _UserTokenRepo = new UserTokenRepository(context);
             _FriendShipRepo = new FriendShipRepository(context);
+            _ClubRepository = new ClubRepository(context);
+            _UserClubRepository = new UserClubRepository(context);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
@@ -136,6 +140,30 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._sportRepo = new GenericRepository<Sport>(_context);
                 }
                 return _sportRepo;
+            }
+        }
+
+        public ClubRepository ClubRepository
+        {
+            get
+            {
+                if(_ClubRepository == null)
+                {
+                    this._ClubRepository = new ClubRepository(_context);    
+                }
+                return _ClubRepository;
+            }
+        }
+
+        public UserClubRepository UserClubRepository
+        {
+            get
+            {
+                if(_UserClubRepository == null)
+                {
+                    this._UserClubRepository = new UserClubRepository(_context);
+                }
+                return _UserClubRepository;
             }
         }
     }
