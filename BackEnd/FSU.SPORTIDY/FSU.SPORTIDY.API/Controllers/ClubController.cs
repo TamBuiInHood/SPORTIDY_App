@@ -280,5 +280,43 @@ namespace FSU.SPORTIDY.API.Controllers
                 });
             }
         }
+
+        [HttpGet(APIRoutes.Club.GetByID, Name ="Get Club By Id")]
+        public async Task<IActionResult> GetClubById([FromRoute] int clubId)
+        {
+            try
+            {
+                var result = await _clubService.GetClubById(clubId);
+                if(result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get Club By Id success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not get club with that id",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
     }
 }

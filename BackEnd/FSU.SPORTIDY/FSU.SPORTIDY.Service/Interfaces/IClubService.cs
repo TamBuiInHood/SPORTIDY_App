@@ -15,7 +15,7 @@ namespace FSU.SPORTIDY.Service.Interfaces
     public interface IClubService
     {
         public Task<PageEntity<ClubModel>> GetAllClub(PaginationParameter paginationParameter);
-        public Task<CreateClubModel> GetClubById(int clubId);
+        public Task<ClubModel> GetClubById(int clubId);
 
 
         public Task<bool> DeleteClub(int clubId);
