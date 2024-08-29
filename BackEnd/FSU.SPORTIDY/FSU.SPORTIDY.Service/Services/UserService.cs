@@ -33,6 +33,9 @@ using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using System.Linq.Expressions;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using BaByBoi.Domain.Utils;
+using Firebase.Storage;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -695,6 +698,28 @@ namespace FSU.SPORTIDY.Service.Services
             EntityDelete!.UserClubs.Clear();
             EntityDelete!.UserMeetings.Clear();
             EntityDelete!.Notifications.Clear();
+
+            try
+            {
+                // Create a Firebase Storage client
+                var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                // Parse the image URL to get the file name
+                var fileNameAvatar = EntityDelete.Avartar.Substring(EntityDelete.Avartar.LastIndexOf('/') + 1);
+                fileNameAvatar = fileNameAvatar.Split('?')[0]; // Remove the query parameters
+                var encodedFileAvatar = Path.GetFileName(fileNameAvatar);
+                var fileNameAvatarOfficial = Uri.UnescapeDataString(encodedFileAvatar);
+
+
+                // Delete the avaatar club from Firebase Storage
+                var fileRefAvatar = firebaseStorage.Child(fileNameAvatarOfficial);
+                await fileRefAvatar.DeleteAsync();
+
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the deletion process
+                throw new Exception($"Error deleting image: {ex.Message}");
+            }
             _unitOfWork.UserRepository.Delete(EntityDelete);
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             return result;
@@ -769,6 +794,41 @@ namespace FSU.SPORTIDY.Service.Services
                 throw new Exception("Not found user for banned");
             }
 
+        }
+
+        public async Task<string> UpdateAvatarOfUser(IFormFile avatarOfUser, int id)
+        {
+            try
+            {
+                var existUser = await _unitOfWork.UserRepository.GetUserByIdAsync(id);
+                if (existUser != null)
+                {
+                    string fileName = Path.GetFileName(avatarOfUser.FileName);
+                    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                    await firebaseStorage.Child("user/avatar").Child(fileName).PutAsync(avatarOfUser.OpenReadStream());
+                    var downloadUrl = await firebaseStorage.Child("user/avatar").Child(fileName).GetDownloadUrlAsync();
+                    existUser.Avartar = downloadUrl;
+                    _unitOfWork.UserRepository.Update(existUser);
+                    var result = await _unitOfWork.SaveAsync();
+                    if (result > 0)
+                    {
+                        return downloadUrl;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    throw new Exception("User does not exist");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

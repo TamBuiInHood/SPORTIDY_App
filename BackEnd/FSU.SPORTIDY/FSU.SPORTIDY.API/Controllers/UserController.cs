@@ -320,6 +320,45 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
+        [HttpPatch(APIRoutes.User.UpdateAvatar, Name = "Update Avatar Of User")]
+        public async Task<IActionResult> UpdateAvatarOfUser(IFormFile avatarOfUser, [FromRoute] int id)
+        {
+            try
+            {
+                var result = await _userService.UpdateAvatarOfUser(avatarOfUser, id);
+                if(result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Update avatar of user success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not find user for update avatar",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse() 
+                { 
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+
+            }
+        }
+
         
     }
 }

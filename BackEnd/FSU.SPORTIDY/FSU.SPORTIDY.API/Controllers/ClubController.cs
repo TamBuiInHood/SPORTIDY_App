@@ -318,5 +318,86 @@ namespace FSU.SPORTIDY.API.Controllers
                 });
             }
         }
+
+
+        [HttpPatch(APIRoutes.Club.UpdateAvatarClub, Name ="Update Avatar Club")]
+        public async Task<IActionResult> UpdateAvatarClub(IFormFile avartarClub, [FromRoute] int clubId)
+        {
+            if (avartarClub == null || avartarClub.Length == 0)
+                return BadRequest("No file uploaded.");
+            try
+            {
+                var result = await _clubService.UpdateAvatarClub(avartarClub, clubId);  
+                if(result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Update avatar club success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not find club to update club",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpPatch(APIRoutes.Club.UpdateCoverImageClub, Name ="Update Cover Image Club")]
+        public async Task<IActionResult> UpdateCoverImageClub(IFormFile coverImageClub, [FromRoute] int clubId)
+        {
+            if (coverImageClub == null || coverImageClub.Length == 0)
+                return BadRequest("No file uploaded.");
+            try
+            {
+                var result = await _clubService.UpdateCoverImageClub(coverImageClub, clubId);   
+                if (result != null) 
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Update Cover Image Club",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not find club to update cover image",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
     }
 }

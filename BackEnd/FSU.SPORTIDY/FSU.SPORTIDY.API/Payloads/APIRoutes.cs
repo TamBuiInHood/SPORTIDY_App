@@ -60,6 +60,8 @@
 
             public const string Update = Base + "/users/";
 
+            public const string UpdateAvatar = Base + "/users/update-avatar/{id}";
+
             public const string SoftDelete = Base + "/users/soft-delete/{id}";
 
             public const string Delete = Base + "/users/delete-user/{id}";
@@ -86,6 +88,10 @@
             public const string Delete = Base + "/clubs/delete-club/{id}";
 
             public const string Add = Base + "/clubs/{currentUserId}";
+
+            public const string UpdateAvatarClub = Base + "/clubs/update-avatar-club/{clubId}";
+
+            public const string UpdateCoverImageClub = Base + "/clubs/update-cover-image-club/{clubId}";
         }
 
     }
