@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BaByBoi.Domain.Utils;
+using Firebase.Storage;
 using FSU.SPORTIDY.Repository.Common.Enums;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.Interfaces;
@@ -11,6 +13,7 @@ using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
 using MailKit.Search;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -89,8 +92,39 @@ namespace FSU.SPORTIDY.Service.Services
                 return false;
             }
             EntityDelete!.UserClubs.Clear();
+            try
+            {
+                    // Create a Firebase Storage client
+                    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                    // Parse the image URL to get the file name
+                    var fileNameAvatarClub = EntityDelete.AvartarClub.Substring(EntityDelete.AvartarClub.LastIndexOf('/') + 1);
+                    fileNameAvatarClub = fileNameAvatarClub.Split('?')[0]; // Remove the query parameters
+                    var encodedFileAvatarClub = Path.GetFileName(fileNameAvatarClub);
+                    var fileNameAvatarClubOfficial = Uri.UnescapeDataString(encodedFileAvatarClub);
+
+
+                    // Delete the avaatar club from Firebase Storage
+                    var fileRefAvatar = firebaseStorage.Child(fileNameAvatarClubOfficial);
+                    await fileRefAvatar.DeleteAsync();
+
+                    var fileNameCoverImageClub = EntityDelete.CoverImageClub.Substring(EntityDelete.CoverImageClub.LastIndexOf('/') + 1);
+                    fileNameCoverImageClub = fileNameCoverImageClub.Split('?')[0]; // Remove the query parameters
+                    var encodedFileCoverImageClub = Path.GetFileName(fileNameCoverImageClub);
+                    var fileNameCoverImageClubOfficial = Uri.UnescapeDataString(encodedFileCoverImageClub);
+
+
+                    // Delete the cover image club from Firebase Storage
+                    var fileRefCoverImage = firebaseStorage.Child(fileNameCoverImageClubOfficial);
+                    await fileRefCoverImage.DeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the deletion process
+                throw new Exception($"Error deleting image: {ex.Message}");
+            }
             _unitOfWork.ClubRepository.Delete(EntityDelete);
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
+            
             return result;
         }
 
@@ -252,5 +286,74 @@ namespace FSU.SPORTIDY.Service.Services
             return _mapper?.Map<ClubModel?>(entity)!;
         }
 
+        public async Task<string> UpdateAvatarClub(IFormFile avartarClub, int clubId)
+        {
+            try
+            {
+                var existClub = await _unitOfWork.ClubRepository.GetByID(clubId);
+                if(existClub != null)
+                {
+                    string fileName = Path.GetFileName(avartarClub.FileName);
+                    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                    await firebaseStorage.Child("club/avatar").Child(fileName).PutAsync(avartarClub.OpenReadStream());
+                    var downloadUrl = await firebaseStorage.Child("club/avatar").Child(fileName).GetDownloadUrlAsync();
+                    existClub.AvartarClub = downloadUrl;
+                     _unitOfWork.ClubRepository.Update(existClub);
+                    var result = await _unitOfWork.SaveAsync();
+                    if(result > 0)
+                    {
+                        return downloadUrl;
+                    } 
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Club does not exist");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<string> UpdateCoverImageClub(IFormFile coverImageClub, int clubId)
+        {
+            try
+            {
+                var existClub = await _unitOfWork.ClubRepository.GetByID(clubId);
+                if (existClub != null)
+                {
+                    string fileName = Path.GetFileName(coverImageClub.FileName);
+                    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                    await firebaseStorage.Child("club/cover_image").Child(fileName).PutAsync(coverImageClub.OpenReadStream());
+                    var downloadUrl = await firebaseStorage.Child("club/cover_image").Child(fileName).GetDownloadUrlAsync();
+                    existClub.CoverImageClub = downloadUrl;
+                    _unitOfWork.ClubRepository.Update(existClub);
+                    var result = await _unitOfWork.SaveAsync();
+                    if (result > 0)
+                    {
+                        return downloadUrl;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Club does not exist");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

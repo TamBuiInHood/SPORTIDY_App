@@ -4,6 +4,7 @@ using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.BusinessModel.UserModels;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<List<MeetingModel>> GetMeetingsByClubId(int clubId);
 
         public Task<bool> JoinedClub(int userId, int clubId);
-
+        public Task<string> UpdateAvatarClub(IFormFile avartarClub, int clubId);
+        public Task<string> UpdateCoverImageClub(IFormFile coverImageClub, int clubId);
     }
 }

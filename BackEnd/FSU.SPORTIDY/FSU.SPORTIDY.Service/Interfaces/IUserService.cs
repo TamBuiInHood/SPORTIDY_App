@@ -2,6 +2,7 @@
 using FSU.SPORTIDY.Service.BusinessModel.AuthensModel;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.BusinessModel.UserModels;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,5 +30,6 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<bool> BannedUser(int userId);
         public Task<bool> DeleteUser(int userId);
         public Task<bool> CreateUser(CreateAccountModel createAccountModel);
+        public Task<string> UpdateAvatarOfUser(IFormFile avatarOfUser, int id);
     }
 }
