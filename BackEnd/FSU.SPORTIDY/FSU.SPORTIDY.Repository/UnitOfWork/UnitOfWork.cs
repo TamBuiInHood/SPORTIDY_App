@@ -21,6 +21,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private FriendShipRepository _FriendShipRepo;
         private ClubRepository _ClubRepository;
         private UserClubRepository _UserClubRepository;
+        private PlayFieldRepository _PlayFieldRepository;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -164,6 +165,18 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._UserClubRepository = new UserClubRepository(_context);
                 }
                 return _UserClubRepository;
+            }
+        }
+
+        public PlayFieldRepository PlayFieldRepository
+        {
+            get
+            {
+                if (_PlayFieldRepository == null)
+                {
+                    this._PlayFieldRepository = new PlayFieldRepository(_context);
+                }
+                return _PlayFieldRepository ;
             }
         }
     }

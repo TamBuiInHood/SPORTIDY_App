@@ -222,21 +222,21 @@ namespace FSU.SPORTIDY.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImageId"));
 
+                    b.Property<int?>("ImageIndex")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(300)
                         .IsUnicode(false)
                         .HasColumnType("varchar(300)")
                         .HasColumnName("ImageURL");
 
-                    b.Property<bool?>("IsSportlight")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("PlayFieldId")
                         .HasColumnType("int")
                         .HasColumnName("PlayFieldID");
 
-                    b.Property<int?>("VideoUrl")
-                        .HasColumnType("int")
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("VideoURL");
 
                     b.HasKey("ImageId")
@@ -376,11 +376,14 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<int?>("CloseTime")
-                        .HasColumnType("int");
+                    b.Property<string>("AvatarImage")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OpenTime")
-                        .HasColumnType("int");
+                    b.Property<TimeOnly?>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly?>("OpenTime")
+                        .HasColumnType("time");
 
                     b.Property<string>("PlayFieldCode")
                         .HasMaxLength(36)
@@ -393,6 +396,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("varchar(200)");
 
                     b.Property<int?>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<int?>("UserId")

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     [ApiController]
     public class MeetingController : ControllerBase
     {

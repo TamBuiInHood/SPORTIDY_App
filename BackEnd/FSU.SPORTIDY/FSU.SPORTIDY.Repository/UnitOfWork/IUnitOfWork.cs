@@ -13,13 +13,14 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         FriendShipRepository FriendShipRepository { get; }
         ClubRepository ClubRepository { get; }
         UserClubRepository UserClubRepository { get; }
+        MeetingRepository MeetingRepository { get; }
+        PlayFieldRepository PlayFieldRepository { get; }
+        GenericRepository<Sport> SportRepository { get; }
         void Save();
         Task<int> SaveAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task CommitAsync();
         Task RollBackAsync();
-        public MeetingRepository MeetingRepository { get; }
 
-        public GenericRepository<Sport> SportRepository { get; }
     }
 }
