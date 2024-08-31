@@ -80,6 +80,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IClubRepository, ClubRepository>();
+builder.Services.AddScoped<IPlayFieldRepository, PlayFieldRepository>();
 
 
 
@@ -90,6 +91,7 @@ builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
 builder.Services.AddScoped<ISportService, SportService>();
 builder.Services.AddScoped<IClubService, ClubService>();
+builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));

@@ -9,7 +9,6 @@ using FSU.SPORTIDY.Repository.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.AuthensModel;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
-using FSU.SPORTIDY.Service.Utils.Enums;
 using FSU.SPORTIDY.Service.Utils.Mail;
 using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
@@ -36,6 +35,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using BaByBoi.Domain.Utils;
 using Firebase.Storage;
+using FSU.SPORTIDY.Service.Utils.Common.Enums;
 
 namespace FSU.SPORTIDY.Service.Services
 {
