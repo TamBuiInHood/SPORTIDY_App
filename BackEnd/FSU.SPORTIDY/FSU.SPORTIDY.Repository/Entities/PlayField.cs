@@ -13,7 +13,7 @@ public partial class PlayField
 
     public string? PlayFieldName { get; set; }
 
-    public int? Price { get; set; }
+    public double? Price { get; set; }
 
     public string? Address { get; set; }
 

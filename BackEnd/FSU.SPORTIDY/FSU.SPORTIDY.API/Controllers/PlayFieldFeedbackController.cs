@@ -1,36 +1,37 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
 using FSU.SPORTIDY.API.Payloads;
+using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.Utils;
-using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
+using FSU.SPORTIDY.Service.BusinessModel.PlayFieldFeedbackModels;
 using FSU.SPORTIDY.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
-    [Route("api/club")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class ClubController : ControllerBase
+    public class PlayFieldFeedbackController : ControllerBase
     {
-        public IClubService _clubService;
+        public readonly IPlayFieldFeedbackService _playFieldFeedbackService;
 
-        public ClubController(IClubService clubService)
+        public PlayFieldFeedbackController(IPlayFieldFeedbackService playFieldFeedbackService)
         {
-            _clubService = clubService;
+            _playFieldFeedbackService = playFieldFeedbackService;
         }
 
-        [HttpGet(APIRoutes.Club.GetAll, Name ="Get All Club")]
-        public async Task<IActionResult> GetAllClub(PaginationParameter paginationParameter)
+        [HttpGet(APIRoutes.PlayFieldFeedback.GetAll, Name = "Get All PlayFieldFeedback")]
+        public async Task<IActionResult> GetAllPlayFieldFeedback(PaginationParameter paginationParameter)
         {
             try
             {
-                var result = await _clubService.GetAllClub(paginationParameter);
+                var result = await _playFieldFeedbackService.GetAllPlayFieldFeedback(paginationParameter);
                 if(result != null)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Get All Club success",
+                        Message = "Get all playfield feedback success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -40,7 +41,7 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Not found any club",
+                        Message = "Can not get any playfield feedback",
                         IsSuccess = false
                     });
                 }
@@ -57,18 +58,18 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpGet(APIRoutes.Club.GetClubJoinedByUserId, Name ="Get Club Joined By UserId")]
-        public async Task<IActionResult> GetClubJoinedByUserId([FromRoute] int userId)
+        [HttpGet(APIRoutes.PlayFieldFeedback.GetByID, Name = "Get PlayFieldFeedback by PlayFieldID")]
+        public async Task<IActionResult> GetPlayFieldFeedbackByPlayFieldId([FromRoute] int feedbackId)
         {
             try
             {
-                var result = await _clubService.GetClubJoinedByUserId(userId);
-                if(result != null)
+                var result = await _playFieldFeedbackService.GetPlayFieldFeedbackById(feedbackId);
+                if (result != null)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Get clubs of user success",
+                        Message = "Get playfield feedback by playfield Id success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -78,13 +79,14 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "User does not have any club",
+                        Message = "Can not get playfield feedback with that id",
                         IsSuccess = false
                     });
                 }
             }
             catch (Exception ex)
             {
+
                 return BadRequest(new BaseResponse()
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
@@ -94,18 +96,18 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpGet(APIRoutes.Club.GetAllMeetingsOfClub, Name ="Get All Meetings Of Club")]
-        public async Task<IActionResult> GetAllMettingOfClub([FromRoute] int clubId)
+        [HttpGet(APIRoutes.PlayFieldFeedback.GetByOwnerId, Name = "Get PlayFieldFeedback by OwnerId")]
+        public async Task<IActionResult> GetPlayFieldFeedbackByOwnerId([FromRoute] int ownerId)
         {
             try
             {
-                var result = await _clubService.GetMeetingsByClubId(clubId);
-                if(result != null)
+                var result = await _playFieldFeedbackService.GetPlayFieldFeedbackByOwnerId(ownerId);
+                if (result != null)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Get all meeting of club success",
+                        Message = "Get playfield feedback by owner id success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -115,7 +117,7 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "This club does not have any meeting",
+                        Message = "Can not get any playfield feedback with that owner id",
                         IsSuccess = false
                     });
                 }
@@ -132,28 +134,28 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpPost(APIRoutes.Club.Add, Name ="Create A Club")]
-        public async Task<IActionResult> CreateClub([FromBody] CreateClubModel createClubModel, int currentUserId)
+        [HttpPost(APIRoutes.PlayFieldFeedback.Create, Name ="Create PlayField Feedback")]
+        public async Task<IActionResult> CreatePlayFieldFeedback([FromBody] CreatePlayFieldFeedbackModel createFeedbackModel)
         {
             try
             {
-                var result = await _clubService.CreateClub(createClubModel, currentUserId);
-                if(result != null)
+                var result = await _playFieldFeedbackService.CreateFeedback(createFeedbackModel);
+                if (result != null)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Create a club success",
+                        Message = "Create playfield feedback success",
                         Data = result,
                         IsSuccess = true
                     });
                 }
                 else
                 {
-                    return BadRequest(new BaseResponse()
+                    return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Create a club failed",
+                        Message = "Can not find playfield to feedback",
                         IsSuccess = false
                     });
                 }
@@ -170,18 +172,18 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpPost(APIRoutes.Club.JoinedClub, Name ="Joinned Club")]
-        public async Task<IActionResult> JoinnedClub(int userId, int clubId)
+        [HttpPut(APIRoutes.PlayFieldFeedback.Update, Name ="Update PlayField Feedback")]
+        public async Task<IActionResult> UpdatePlayFieldFeedback([FromBody] UpdatePlayFieldFeedback updatePlayFieldFeedback)
         {
             try
             {
-                var result = await _clubService.JoinedClub(userId, clubId);
+                var result = await _playFieldFeedbackService.UpdatePlayFieldFeedback(updatePlayFieldFeedback);
                 if(result)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Joinned club success",
+                        Message = "Update PlayField Feedback Success",
                         IsSuccess = true
                     });
                 }
@@ -189,8 +191,46 @@ namespace FSU.SPORTIDY.API.Controllers
                 {
                     return NotFound(new BaseResponse()
                     {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Joinned club failed",
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not find play field feedback for update",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        } 
+             
+        [HttpPut(APIRoutes.PlayFieldFeedback.UploadImage, Name = "Upload Image For PlayField Feedback")]
+        public async Task<IActionResult> UploadImageForPlayFieldFeedback(IFormFile imageFeedback)
+        {
+            try
+            {
+                var result = await _playFieldFeedbackService.UploadImageFeedback(imageFeedback);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Upload image for playfield feedback success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not upload image for playfield feedback",
                         IsSuccess = false
                     });
                 }
@@ -207,92 +247,56 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpPut(APIRoutes.Club.Update, Name ="Update Club")]
-        public async Task<IActionResult> UpdateClub([FromBody] UpdateClubModel updateClubModel)
+        [HttpPut(APIRoutes.PlayFieldFeedback.UploadVideo, Name = "Upload Video For PlayField Feedback")]
+        public async Task<IActionResult> UploadVideoForPlayFieldFeedback(IFormFile videoFeedback)
         {
             try
             {
-                var result = await _clubService.UpdateClub(updateClubModel);
+                var result = await _playFieldFeedbackService.UploadVideoFeedback(videoFeedback);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Upload video for playfield feedback success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not upload video for playfield feedback",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpDelete(APIRoutes.PlayFieldFeedback.Delete, Name = "Delete PlayField Feedback by PlayFieldId")]
+        public async Task<IActionResult> DeletePlayFieldFeedbackByPlayFieldId([FromRoute] int playfieldFeedbackId)
+        {
+            try
+            {
+                var result = await _playFieldFeedbackService.DeletePlayfieldFeedback(playfieldFeedbackId);
                 if(result)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Update club success",
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Update club failed",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpDelete(APIRoutes.Club.Delete, Name = "Delete Club")]
-        public async Task<IActionResult> DeleteClub([FromRoute] int id)
-        {
-            try
-            {
-                var result = await _clubService.DeleteClub(id);
-                if(result)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Delete club success",
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Delete club failed",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpGet(APIRoutes.Club.GetByID, Name ="Get Club By Id")]
-        public async Task<IActionResult> GetClubById([FromRoute] int clubId)
-        {
-            try
-            {
-                var result = await _clubService.GetClubById(clubId);
-                if(result != null)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Get Club By Id success",
+                        Message = "Delete PlayField Feedback success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -302,14 +306,13 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Can not get club with that id",
+                        Message = "Can not delete PlayField Feedback",
                         IsSuccess = false
                     });
                 }
             }
             catch (Exception ex)
             {
-
                 return BadRequest(new BaseResponse()
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
@@ -319,85 +322,5 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-
-        [HttpPatch(APIRoutes.Club.UploadAvatarClub, Name ="Update Avatar Club")]
-        public async Task<IActionResult> UpdateAvatarClub(IFormFile avartarClub)
-        {
-            if (avartarClub == null || avartarClub.Length == 0)
-                return BadRequest("No file uploaded.");
-            try
-            {
-                var result = await _clubService.UpdateAvatarClub(avartarClub);  
-                if(result != null)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Update avatar club success",
-                        Data = result,
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Can not find club to update club",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpPatch(APIRoutes.Club.UploadCoverImageClub, Name ="Update Cover Image Club")]
-        public async Task<IActionResult> UpdateCoverImageClub(IFormFile coverImageClub)
-        {
-            if (coverImageClub == null || coverImageClub.Length == 0)
-                return BadRequest("No file uploaded.");
-            try
-            {
-                var result = await _clubService.UpdateCoverImageClub(coverImageClub);   
-                if (result != null) 
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Update Cover Image Club",
-                        Data = result,
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Can not find club to update cover image",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
     }
 }

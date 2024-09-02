@@ -1,36 +1,267 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
 using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.Repository.Utils;
-using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
+using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.SystemFeedbackModels;
 using FSU.SPORTIDY.Service.Interfaces;
+using FSU.SPORTIDY.Service.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
-    [Route("api/club")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class ClubController : ControllerBase
+    public class SystemFeedbackController : ControllerBase
     {
-        public IClubService _clubService;
+        public ISystemFeedbackService _systemFeedbackService;
 
-        public ClubController(IClubService clubService)
+        public SystemFeedbackController(ISystemFeedbackService systemFeedbackService)
         {
-            _clubService = clubService;
+            _systemFeedbackService = systemFeedbackService;
         }
 
-        [HttpGet(APIRoutes.Club.GetAll, Name ="Get All Club")]
-        public async Task<IActionResult> GetAllClub(PaginationParameter paginationParameter)
+        [HttpGet(APIRoutes.SystemFeedback.GetAll, Name ="Get All System Feedback")]
+        public async Task<IActionResult> GetAllSystemFeedback(PaginationParameter paginationParameter)
         {
             try
             {
-                var result = await _clubService.GetAllClub(paginationParameter);
+                var result = await _systemFeedbackService.GetAllSystemFeedback(paginationParameter);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get All System Feedback Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Get All System Feedback",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpGet(APIRoutes.SystemFeedback.GetAllNoPaging, Name = "Get All System Feedback With No Paging")]
+        public async Task<IActionResult> GetAllSystemFeedbackWithNoPaging()
+        {
+            try
+            {
+                var result = await _systemFeedbackService.GetAllSystemFeedbackWithNoPaging();
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get All System Feedback Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Get All System Feedback With No Paging",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpGet(APIRoutes.SystemFeedback.GetByID, Name = "Get System Feedback By Id")]
+        public async Task<IActionResult> GetSystemFeedbackById([FromRoute] int systemFeedbackId)
+        {
+            try
+            {
+                var result = await _systemFeedbackService.GetSystemFeedbackById(systemFeedbackId);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get System Feedback By Id Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Find Any System Feedback With That Id",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpGet(APIRoutes.SystemFeedback.GetByUserId, Name = "Get System Feedback By User Id")]
+        public async Task<IActionResult> GetSystemFeedbackByUserId([FromRoute] int userId)
+        {
+            try
+            {
+                var result = await _systemFeedbackService.GetSystemFeedbackByUserId(userId);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get System Feedback By User Id Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Find Any System Feedback With That User Id",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpGet(APIRoutes.SystemFeedback.Dashboard, Name = "Get System Feedback Dashboard")]
+        public async Task<IActionResult> GetSystemFeedbackDashboard()
+        {
+            try
+            {
+                var result = await _systemFeedbackService.GetSystemFeedbackDashBoard();
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get System Feedback Dashboard Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Get System Feedback Dashboard",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpPost(APIRoutes.SystemFeedback.Create, Name = "Create System Feedback")]
+        public async Task<IActionResult> CreateSystemFeedback([FromBody] CreateSystemFeedbackModel model)
+        {
+            try
+            {
+                var result = await _systemFeedbackService.CreateFeedback(model);
                 if(result != null)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Get All Club success",
+                        Message = "Create System Feedback Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Create System Feedback",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpPut(APIRoutes.SystemFeedback.UploadImage, Name = "Upload Image For System Feedback")]
+        public async Task<IActionResult> UploadImageForPSystemFeedback(IFormFile imageFeedback)
+        {
+            try
+            {
+                var result = await _systemFeedbackService.UploadImageSystemFeedback(imageFeedback);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Upload Image For System Feedback Success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -40,7 +271,7 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Not found any club",
+                        Message = "Can Not Upload Image For System Feedback",
                         IsSuccess = false
                     });
                 }
@@ -57,18 +288,18 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpGet(APIRoutes.Club.GetClubJoinedByUserId, Name ="Get Club Joined By UserId")]
-        public async Task<IActionResult> GetClubJoinedByUserId([FromRoute] int userId)
+        [HttpPut(APIRoutes.SystemFeedback.UploadVideo, Name = "Upload Video For System Feedback")]
+        public async Task<IActionResult> UploadVideoForSystemFeedback(IFormFile videoFeedback)
         {
             try
             {
-                var result = await _clubService.GetClubJoinedByUserId(userId);
-                if(result != null)
+                var result = await _systemFeedbackService.UploadVideoSystenFeedback(videoFeedback);
+                if (result != null)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Get clubs of user success",
+                        Message = "Upload Video For System Feedback Success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -78,13 +309,14 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "User does not have any club",
+                        Message = "Can Not Upload Video For System Feedback",
                         IsSuccess = false
                     });
                 }
             }
             catch (Exception ex)
             {
+
                 return BadRequest(new BaseResponse()
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
@@ -94,18 +326,56 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpGet(APIRoutes.Club.GetAllMeetingsOfClub, Name ="Get All Meetings Of Club")]
-        public async Task<IActionResult> GetAllMettingOfClub([FromRoute] int clubId)
+        [HttpPut(APIRoutes.SystemFeedback.Update, Name = "Update System Feedback")]
+        public async Task<IActionResult> UpdateSystemFeedback([FromBody] UpdateSystemFeedbackModel model)
         {
             try
             {
-                var result = await _clubService.GetMeetingsByClubId(clubId);
-                if(result != null)
+                var result = await _systemFeedbackService.UpdateSystemFeedback(model);
+                if (result)
                 {
                     return Ok(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status200OK,
-                        Message = "Get all meeting of club success",
+                        Message = "Update System Feedback Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Can Not Update System Feedback",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpDelete(APIRoutes.SystemFeedback.Delete, Name = "Delete System Feedback By SystemFeedbackId")]
+        public async Task<IActionResult> DeleteSystemFeedbackBySystemFeedbackId([FromRoute] int systemFeedbackId)
+        {
+            try
+            {
+                var result = await _systemFeedbackService.DeleteSystemFeedback(systemFeedbackId);
+                if (result)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Delete System Feedback Success",
                         Data = result,
                         IsSuccess = true
                     });
@@ -115,282 +385,13 @@ namespace FSU.SPORTIDY.API.Controllers
                     return NotFound(new BaseResponse()
                     {
                         StatusCode = StatusCodes.Status404NotFound,
-                        Message = "This club does not have any meeting",
+                        Message = "Can Not Delete System Feedback",
                         IsSuccess = false
                     });
                 }
             }
             catch (Exception ex)
             {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpPost(APIRoutes.Club.Add, Name ="Create A Club")]
-        public async Task<IActionResult> CreateClub([FromBody] CreateClubModel createClubModel, int currentUserId)
-        {
-            try
-            {
-                var result = await _clubService.CreateClub(createClubModel, currentUserId);
-                if(result != null)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Create a club success",
-                        Data = result,
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return BadRequest(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Create a club failed",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpPost(APIRoutes.Club.JoinedClub, Name ="Joinned Club")]
-        public async Task<IActionResult> JoinnedClub(int userId, int clubId)
-        {
-            try
-            {
-                var result = await _clubService.JoinedClub(userId, clubId);
-                if(result)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Joinned club success",
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Joinned club failed",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpPut(APIRoutes.Club.Update, Name ="Update Club")]
-        public async Task<IActionResult> UpdateClub([FromBody] UpdateClubModel updateClubModel)
-        {
-            try
-            {
-                var result = await _clubService.UpdateClub(updateClubModel);
-                if(result)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Update club success",
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Update club failed",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpDelete(APIRoutes.Club.Delete, Name = "Delete Club")]
-        public async Task<IActionResult> DeleteClub([FromRoute] int id)
-        {
-            try
-            {
-                var result = await _clubService.DeleteClub(id);
-                if(result)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Delete club success",
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Delete club failed",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpGet(APIRoutes.Club.GetByID, Name ="Get Club By Id")]
-        public async Task<IActionResult> GetClubById([FromRoute] int clubId)
-        {
-            try
-            {
-                var result = await _clubService.GetClubById(clubId);
-                if(result != null)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Get Club By Id success",
-                        Data = result,
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Can not get club with that id",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-
-        [HttpPatch(APIRoutes.Club.UploadAvatarClub, Name ="Update Avatar Club")]
-        public async Task<IActionResult> UpdateAvatarClub(IFormFile avartarClub)
-        {
-            if (avartarClub == null || avartarClub.Length == 0)
-                return BadRequest("No file uploaded.");
-            try
-            {
-                var result = await _clubService.UpdateAvatarClub(avartarClub);  
-                if(result != null)
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Update avatar club success",
-                        Data = result,
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Can not find club to update club",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(new BaseResponse()
-                {
-                    StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
-                    IsSuccess = false
-                });
-            }
-        }
-
-        [HttpPatch(APIRoutes.Club.UploadCoverImageClub, Name ="Update Cover Image Club")]
-        public async Task<IActionResult> UpdateCoverImageClub(IFormFile coverImageClub)
-        {
-            if (coverImageClub == null || coverImageClub.Length == 0)
-                return BadRequest("No file uploaded.");
-            try
-            {
-                var result = await _clubService.UpdateCoverImageClub(coverImageClub);   
-                if (result != null) 
-                {
-                    return Ok(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status200OK,
-                        Message = "Update Cover Image Club",
-                        Data = result,
-                        IsSuccess = true
-                    });
-                }
-                else
-                {
-                    return NotFound(new BaseResponse()
-                    {
-                        StatusCode = StatusCodes.Status404NotFound,
-                        Message = "Can not find club to update cover image",
-                        IsSuccess = false
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-
                 return BadRequest(new BaseResponse()
                 {
                     StatusCode = StatusCodes.Status400BadRequest,

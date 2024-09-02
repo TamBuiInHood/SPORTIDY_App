@@ -7,11 +7,11 @@ public partial class Booking
 {
     public int BookingId { get; set; }
 
-    public int? BookingCode { get; set; }
+    public string? BookingCode { get; set; }
 
     public DateTime? BookingDate { get; set; }
 
-    public int? Price { get; set; }
+    public double? Price { get; set; }
 
     public DateTime? DateStart { get; set; }
 
@@ -19,9 +19,9 @@ public partial class Booking
 
     public int? Status { get; set; }
 
-    public int? PaymentMethod { get; set; }
+    public string? PaymentMethod { get; set; }
 
-    public int? BarCode { get; set; }
+    public string? BarCode { get; set; }
 
     public int PlayFieldId { get; set; }
 

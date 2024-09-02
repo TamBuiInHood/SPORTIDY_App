@@ -286,34 +286,15 @@ namespace FSU.SPORTIDY.Service.Services
             return _mapper?.Map<ClubModel?>(entity)!;
         }
 
-        public async Task<string> UpdateAvatarClub(IFormFile avartarClub, int clubId)
+        public async Task<string> UpdateAvatarClub(IFormFile avartarClub)
         {
             try
             {
-                var existClub = await _unitOfWork.ClubRepository.GetByID(clubId);
-                if(existClub != null)
-                {
                     string fileName = Path.GetFileName(avartarClub.FileName);
                     var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                     await firebaseStorage.Child("club/avatar").Child(fileName).PutAsync(avartarClub.OpenReadStream());
                     var downloadUrl = await firebaseStorage.Child("club/avatar").Child(fileName).GetDownloadUrlAsync();
-                    existClub.AvartarClub = downloadUrl;
-                     _unitOfWork.ClubRepository.Update(existClub);
-                    var result = await _unitOfWork.SaveAsync();
-                    if(result > 0)
-                    {
-                        return downloadUrl;
-                    } 
-                    else
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    throw new Exception("Club does not exist");
-                }
-
+                    return downloadUrl;
             }
             catch (Exception ex)
             {
@@ -321,34 +302,15 @@ namespace FSU.SPORTIDY.Service.Services
             }
         }
 
-        public async Task<string> UpdateCoverImageClub(IFormFile coverImageClub, int clubId)
+        public async Task<string> UpdateCoverImageClub(IFormFile coverImageClub)
         {
             try
             {
-                var existClub = await _unitOfWork.ClubRepository.GetByID(clubId);
-                if (existClub != null)
-                {
                     string fileName = Path.GetFileName(coverImageClub.FileName);
                     var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                     await firebaseStorage.Child("club/cover_image").Child(fileName).PutAsync(coverImageClub.OpenReadStream());
                     var downloadUrl = await firebaseStorage.Child("club/cover_image").Child(fileName).GetDownloadUrlAsync();
-                    existClub.CoverImageClub = downloadUrl;
-                    _unitOfWork.ClubRepository.Update(existClub);
-                    var result = await _unitOfWork.SaveAsync();
-                    if (result > 0)
-                    {
-                        return downloadUrl;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    throw new Exception("Club does not exist");
-                }
-
+                    return downloadUrl;
             }
             catch (Exception ex)
             {
