@@ -13,6 +13,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         FriendShipRepository FriendShipRepository { get; }
         ClubRepository ClubRepository { get; }
         UserClubRepository UserClubRepository { get; }
+        PlayFieldFeedbackRepository PlayFieldFeedbackRepository { get; }
+        SystemFeedbackRepository SystemFeedbackRepository { get; }
         void Save();
         Task<int> SaveAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();

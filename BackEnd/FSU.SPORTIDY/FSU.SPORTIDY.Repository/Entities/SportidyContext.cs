@@ -44,6 +44,7 @@ public partial class SportidyContext : DbContext
 
     public virtual DbSet<UserMeeting> UserMeetings { get; set; }
     public virtual DbSet<UserToken> UserTokens { get; set; }
+    public virtual DbSet<SystemFeedback> SystemFeedbacks { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -265,7 +266,7 @@ public partial class SportidyContext : DbContext
                 .ValueGeneratedOnAdd()
                 .HasColumnName("FeedbackID");
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
-            entity.Property(e => e.Content).IsUnicode(false);
+            entity.Property(e => e.Content).IsUnicode(true);
             entity.Property(e => e.FeedbackCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
@@ -423,6 +424,31 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.ExpiredTimeAccessToken).HasColumnName("ExpAccessToken");
             entity.Property(e => e.ExpiredTimeRefreshToken).HasColumnName("ExpRefreshToken");
             entity.Property(e => e.CreateDate).HasColumnName("CreateDate");
+        });
+
+        modelBuilder.Entity<SystemFeedback>(entity =>
+        {
+            entity.HasKey(e => e.FeedbackId).HasName("PK__SystemFeedback__6A4BEDF64C6D3772");
+
+            entity.ToTable("SystemFeedback");
+
+            entity.Property(e => e.FeedbackId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("FeedbackID");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.Content).IsUnicode(true);
+            entity.Property(e => e.FeedbackCode)
+                .HasMaxLength(36)
+                .IsUnicode(false);
+            entity.Property(e => e.FeedbackDate).HasColumnType("datetime");
+            entity.Property(e => e.ImageUrl).HasColumnName("ImageURL");
+            entity.Property(e => e.IsAnonymous).HasColumnName("IsAnonymous_");
+            entity.Property(e => e.VideoUrl).HasColumnName("VideoURL");
+
+            entity.HasOne(d => d.User).WithMany(p => p.SystemFeedbacks)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__SystemFeedbacj__User__59063A47");
         });
     }
 

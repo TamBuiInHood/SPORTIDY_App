@@ -15,9 +15,9 @@ public partial class PlayFieldFeedback
 
     public DateTime? FeedbackDate { get; set; }
 
-    public int? ImageUrl { get; set; }
+    public string? ImageUrl { get; set; }
 
-    public int? VideoUrl { get; set; }
+    public string? VideoUrl { get; set; }
 
     public bool? IsAnonymous { get; set; }
 

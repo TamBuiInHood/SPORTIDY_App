@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class generate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -222,17 +222,42 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PlayFieldCode = table.Column<string>(type: "varchar(36)", unicode: false, maxLength: 36, nullable: true),
                     PlayFieldName = table.Column<string>(type: "varchar(200)", unicode: false, maxLength: 200, nullable: true),
-                    Price = table.Column<int>(type: "int", nullable: true),
+                    Price = table.Column<double>(type: "float", nullable: true),
                     Address = table.Column<string>(type: "varchar(200)", unicode: false, maxLength: 200, nullable: true),
-                    OpenTime = table.Column<int>(type: "int", nullable: true),
+                    OpenTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserID = table.Column<int>(type: "int", nullable: true),
-                    CloseTime = table.Column<int>(type: "int", nullable: true)
+                    CloseTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__PlayFiel__4E6EFC93249A0D85", x => x.PlayFieldID);
                     table.ForeignKey(
                         name: "FK_PlayField_User",
+                        column: x => x.UserID,
+                        principalTable: "User",
+                        principalColumn: "UserID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemFeedback",
+                columns: table => new
+                {
+                    FeedbackID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FeedbackCode = table.Column<string>(type: "varchar(36)", unicode: false, maxLength: 36, nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Rating = table.Column<int>(type: "int", nullable: true),
+                    FeedbackDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VideoURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsAnonymous_ = table.Column<bool>(type: "bit", nullable: true),
+                    UserID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__SystemFeedback__6A4BEDF64C6D3772", x => x.FeedbackID);
+                    table.ForeignKey(
+                        name: "FK__SystemFeedbacj__User__59063A47",
                         column: x => x.UserID,
                         principalTable: "User",
                         principalColumn: "UserID");
@@ -313,14 +338,14 @@ namespace FSU.SPORTIDY.Repository.Migrations
                 {
                     BookingID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    BookingCode = table.Column<int>(type: "int", nullable: true),
+                    BookingCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BookingDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    Price = table.Column<int>(type: "int", nullable: true),
+                    Price = table.Column<double>(type: "float", nullable: true),
                     DateStart = table.Column<DateTime>(type: "datetime", nullable: true),
                     DateEnd = table.Column<DateTime>(type: "datetime", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: true),
-                    PaymentMethod = table.Column<int>(type: "int", nullable: true),
-                    BarCode = table.Column<int>(type: "int", nullable: true),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BarCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PlayFieldID = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     CustomerID = table.Column<int>(type: "int", nullable: true)
@@ -363,11 +388,11 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     FeedbackID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FeedbackCode = table.Column<string>(type: "varchar(36)", unicode: false, maxLength: 36, nullable: true),
-                    Content = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Rating = table.Column<int>(type: "int", nullable: true),
                     FeedbackDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    ImageURL = table.Column<int>(type: "int", nullable: true),
-                    VideoURL = table.Column<int>(type: "int", nullable: true),
+                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VideoURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsAnonymous_ = table.Column<bool>(type: "bit", nullable: true),
                     BookingID = table.Column<int>(type: "int", nullable: false)
                 },
@@ -422,6 +447,11 @@ namespace FSU.SPORTIDY.Repository.Migrations
                 column: "BookingID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SystemFeedback_UserID",
+                table: "SystemFeedback",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_RoleID",
                 table: "User",
                 column: "RoleID");
@@ -459,6 +489,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlayFieldFeedback");
+
+            migrationBuilder.DropTable(
+                name: "SystemFeedback");
 
             migrationBuilder.DropTable(
                 name: "UserClub");

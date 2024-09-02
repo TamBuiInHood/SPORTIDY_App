@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     [DbContext(typeof(SportidyContext))]
-    [Migration("20240823090409_generate")]
-    partial class generate
+    [Migration("20240831162027_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,11 +34,11 @@ namespace FSU.SPORTIDY.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingId"));
 
-                    b.Property<int?>("BarCode")
-                        .HasColumnType("int");
+                    b.Property<string>("BarCode")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BookingCode")
-                        .HasColumnType("int");
+                    b.Property<string>("BookingCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("BookingDate")
                         .HasColumnType("datetime");
@@ -56,15 +56,15 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int?>("PaymentMethod")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PlayFieldId")
                         .HasColumnType("int")
                         .HasColumnName("PlayFieldID");
 
-                    b.Property<int?>("Price")
-                        .HasColumnType("int");
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int?>("Status")
                         .HasColumnType("int");
@@ -379,11 +379,11 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<int?>("CloseTime")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("CloseTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("OpenTime")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("OpenTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PlayFieldCode")
                         .HasMaxLength(36)
@@ -395,8 +395,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(200)");
 
-                    b.Property<int?>("Price")
-                        .HasColumnType("int");
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int")
@@ -424,8 +424,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnName("BookingID");
 
                     b.Property<string>("Content")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FeedbackCode")
                         .HasMaxLength(36)
@@ -435,8 +435,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     b.Property<DateTime?>("FeedbackDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("ImageUrl")
-                        .HasColumnType("int")
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("ImageURL");
 
                     b.Property<bool?>("IsAnonymous")
@@ -446,8 +446,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     b.Property<int?>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VideoUrl")
-                        .HasColumnType("int")
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("VideoURL");
 
                     b.HasKey("FeedbackId")
@@ -499,6 +499,54 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasName("PK__Sport__7A41AF1C1AA63361");
 
                     b.ToTable("Sport", (string)null);
+                });
+
+            modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.SystemFeedback", b =>
+                {
+                    b.Property<int>("FeedbackId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("FeedbackID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedbackId"));
+
+                    b.Property<string>("Content")
+                        .IsUnicode(true)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeedbackCode")
+                        .HasMaxLength(36)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<DateTime?>("FeedbackDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ImageURL");
+
+                    b.Property<bool?>("IsAnonymous")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsAnonymous_");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("UserID");
+
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("VideoURL");
+
+                    b.HasKey("FeedbackId")
+                        .HasName("PK__SystemFeedback__6A4BEDF64C6D3772");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SystemFeedback", (string)null);
                 });
 
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.User", b =>
@@ -777,6 +825,17 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     b.Navigation("Booking");
                 });
 
+            modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.SystemFeedback", b =>
+                {
+                    b.HasOne("FSU.SPORTIDY.Repository.Entities.User", "User")
+                        .WithMany("SystemFeedbacks")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK__SystemFeedbacj__User__59063A47");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FSU.SPORTIDY.Repository.Entities.User", b =>
                 {
                     b.HasOne("FSU.SPORTIDY.Repository.Entities.Role", "Role")
@@ -879,6 +938,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("PlayFields");
+
+                    b.Navigation("SystemFeedbacks");
 
                     b.Navigation("UserClubs");
 

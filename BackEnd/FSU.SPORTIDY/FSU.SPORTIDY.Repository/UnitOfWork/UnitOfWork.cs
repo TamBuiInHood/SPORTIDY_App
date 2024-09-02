@@ -21,6 +21,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private FriendShipRepository _FriendShipRepo;
         private ClubRepository _ClubRepository;
         private UserClubRepository _UserClubRepository;
+        private PlayFieldFeedbackRepository _PlayFieldFeedbackRepository;
+        private SystemFeedbackRepository _SystemFeedbackRepository;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -31,6 +33,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             _FriendShipRepo = new FriendShipRepository(context);
             _ClubRepository = new ClubRepository(context);
             _UserClubRepository = new UserClubRepository(context);
+            _PlayFieldFeedbackRepository = new PlayFieldFeedbackRepository(context);
+            _SystemFeedbackRepository = new SystemFeedbackRepository(context);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
@@ -164,6 +168,30 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._UserClubRepository = new UserClubRepository(_context);
                 }
                 return _UserClubRepository;
+            }
+        }
+
+        public PlayFieldFeedbackRepository PlayFieldFeedbackRepository
+        {
+            get
+            {
+                if (_PlayFieldFeedbackRepository == null)
+                {
+                    this._PlayFieldFeedbackRepository = new PlayFieldFeedbackRepository(_context);
+                }
+                return _PlayFieldFeedbackRepository;
+            }
+        }
+
+        public SystemFeedbackRepository SystemFeedbackRepository
+        {
+            get
+            {
+                if (_SystemFeedbackRepository == null)
+                {
+                    this._SystemFeedbackRepository = new SystemFeedbackRepository(_context);
+                }
+                return _SystemFeedbackRepository;
             }
         }
     }

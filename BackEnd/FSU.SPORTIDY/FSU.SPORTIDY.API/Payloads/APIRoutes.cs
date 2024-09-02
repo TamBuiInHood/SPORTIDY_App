@@ -89,9 +89,52 @@
 
             public const string Add = Base + "/clubs/{currentUserId}";
 
-            public const string UpdateAvatarClub = Base + "/clubs/update-avatar-club/{clubId}";
+            public const string UploadAvatarClub = Base + "/clubs/upload-avatar-club/";
 
-            public const string UpdateCoverImageClub = Base + "/clubs/update-cover-image-club/{clubId}";
+            public const string UploadCoverImageClub = Base + "/clubs/upload-cover-image-club/";
+        }
+
+        public static class PlayFieldFeedback
+        {
+            public const string GetAll = Base + "/playfield-feedback/";
+
+            public const string GetByID = Base + "/playfield-feedback/{feedbackId}";
+
+            public const string GetByOwnerId = Base + "/playfield-feedback/owner/{ownerId}";
+
+            public const string Delete = Base + "/playfield-feedback/{playfieldFeedbackId}";
+
+            public const string Create = Base + "/playfield-feedback/";
+
+            public const string Update = Base + "/playfield-feedback/";
+
+            public const string UploadImage = Base + "/playfield-feedback/upload-image/";
+
+            public const string UploadVideo = Base + "/playfield-feedback/upload-video/";
+
+        }
+
+        public static class SystemFeedback
+        {
+            public const string GetAll = Base + "/system-feedback/";
+            public const string GetAllNoPaging = Base + "/system-feedback/get-all-no-paging";
+
+            public const string GetByID = Base + "/system-feedback/{systemFeedbackId}";
+
+            public const string GetByUserId = Base + "/system-feedback/user/{userId}";
+
+            public const string Dashboard = Base + "/system-feedback/dashboard";
+
+            public const string Delete = Base + "/system-feedback/{systemFeedbackId}";
+
+            public const string Create = Base + "/system-feedback/";
+
+            public const string Update = Base + "/system-feedback/";
+
+            public const string UploadImage = Base + "/system-feedback/upload-image/";
+
+            public const string UploadVideo = Base + "/system-feedback/upload-video/";
+
         }
 
     }

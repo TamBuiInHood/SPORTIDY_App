@@ -53,4 +53,5 @@ public partial class User
     public virtual ICollection<UserMeeting> UserMeetings { get; set; } = new List<UserMeeting>();
 
     public virtual ICollection<Sport> Sports { get; set; } = new List<Sport>();
+    public virtual ICollection<SystemFeedback> SystemFeedbacks { get; set; } = new List<SystemFeedback>();
 }
