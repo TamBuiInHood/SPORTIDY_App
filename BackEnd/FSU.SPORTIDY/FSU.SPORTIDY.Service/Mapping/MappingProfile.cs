@@ -3,6 +3,7 @@ using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldFeedbackModels;
+using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
 using FSU.SPORTIDY.Service.BusinessModel.SportBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.SystemFeedbackModels;
 using FSU.SPORTIDY.Service.BusinessModel.UserModels;
@@ -54,9 +55,9 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ForMember(x => x.Email, opt => opt.MapFrom(x => x.User.Email))
                 .ReverseMap();
 
-        CreateMap<Club, ClubModel>()
-                .ForMember(dest => dest.ListMember, opt => opt.MapFrom(src => src.UserClubs.Select(cm => cm.User)))
-                .ReverseMap();
+            CreateMap<Club, ClubModel>()
+                    .ForMember(dest => dest.ListMember, opt => opt.MapFrom(src => src.UserClubs.Select(cm => cm.User)))
+                    .ReverseMap();
 
             CreateMap<UserClub, ClubModel>()
                  .ForMember(x => x.ClubId, opt => opt.MapFrom(x => x.ClubId))
@@ -91,6 +92,11 @@ namespace FSU.SPORTIDY.Service.Mapping
                     .ForMember(x => x.UserFullName, opt => opt.MapFrom(x => x.User.FullName))
                   .ForMember(x => x.Avatar, opt => opt.MapFrom(x => x.User.Avartar))
              .ReverseMap();
+            CreateMap<PlayField, PlayFieldModel>()
+                .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
+                .ForMember(dest => dest.ImageFields, opt => opt.MapFrom(src => src.ImageFields))
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ReverseMap();
         }
     }
 }

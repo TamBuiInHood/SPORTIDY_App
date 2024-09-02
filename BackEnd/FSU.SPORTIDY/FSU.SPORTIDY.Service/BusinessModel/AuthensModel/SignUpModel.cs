@@ -1,4 +1,4 @@
-﻿using FSU.SPORTIDY.Service.Utils.Enums;
+﻿using FSU.SPORTIDY.Service.Utils.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

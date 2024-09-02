@@ -53,7 +53,6 @@ namespace FSU.SPORTIDY.Service.Services
             pagin.TotalRecord = await _unitOfWork.MeetingRepository.Count();
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize!.Value);
             return pagin;
-
         }
 
         public async Task<IEnumerable<SportDTO>> GetAllSportNotPagin()

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FSU.SPORTIDY.Repository.Entities;
 
@@ -15,11 +17,15 @@ public partial class PlayField
 
     public string? Address { get; set; }
 
-    public DateTime? OpenTime { get; set; }
+    public TimeOnly? OpenTime { get; set; }
 
     public int? UserId { get; set; }
 
-    public DateTime? CloseTime { get; set; }
+    public TimeOnly? CloseTime { get; set; }
+
+    public string? AvatarImage { get; set; }
+
+    public int Status { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 

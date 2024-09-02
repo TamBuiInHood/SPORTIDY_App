@@ -2,7 +2,7 @@
 {
     public static class APIRoutes
     {
-        public const string Base = "/api";
+        public const string Base = "/sportidy";
 
         public static class Sportidy
         {
@@ -50,6 +50,7 @@
 
             public const string GetAllNotPaging = Base + "/Sports/get-all-not-paging";
         }
+
         public static class User
         {
             public const string GetAll = Base + "/users/";
@@ -137,5 +138,28 @@
 
         }
 
+            public const string UpdateCoverImageClub = Base + "/clubs/update-cover-image-club/{clubId}";
+        }
+
+        public static class Playfields
+        {
+            public const string GetAll = Base + "/Playfields/";
+
+            public const string GetByID = Base + "/Playfields/{playfield-id}";
+
+            public const string GetByUserID = Base + "/Playfields/{user-id}";
+
+            public const string Update = Base + "/Playfields/";
+
+            public const string UpdateAvatar = Base + "/Playfields/update-avatar";
+
+            public const string UpdateStatus = Base + "/Playfields/update-status";
+
+            public const string Delete = Base + "/Playfields/";
+
+            public const string Add = Base + "/Playfields/";
+
+            public const string GetAllNotPaging = Base + "/Playfields/get-all-not-paging";
+        }
     }
 }
