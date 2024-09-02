@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -224,9 +224,11 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     PlayFieldName = table.Column<string>(type: "varchar(200)", unicode: false, maxLength: 200, nullable: true),
                     Price = table.Column<double>(type: "float", nullable: true),
                     Address = table.Column<string>(type: "varchar(200)", unicode: false, maxLength: 200, nullable: true),
-                    OpenTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    OpenTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     UserID = table.Column<int>(type: "int", nullable: true),
-                    CloseTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CloseTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    AvatarImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -367,8 +369,8 @@ namespace FSU.SPORTIDY.Repository.Migrations
                     ImageID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ImageURL = table.Column<string>(type: "varchar(300)", unicode: false, maxLength: 300, nullable: true),
-                    VideoURL = table.Column<int>(type: "int", nullable: true),
-                    IsSportlight = table.Column<bool>(type: "bit", nullable: true),
+                    VideoURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageIndex = table.Column<int>(type: "int", nullable: true),
                     PlayFieldID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

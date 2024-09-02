@@ -138,9 +138,6 @@
 
         }
 
-            public const string UpdateCoverImageClub = Base + "/clubs/update-cover-image-club/{clubId}";
-        }
-
         public static class Playfields
         {
             public const string GetAll = Base + "/Playfields/";
