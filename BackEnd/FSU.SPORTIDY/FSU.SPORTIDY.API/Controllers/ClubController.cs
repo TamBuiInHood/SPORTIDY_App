@@ -1,5 +1,6 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
 using FSU.SPORTIDY.API.Payloads;
+using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.Interfaces;

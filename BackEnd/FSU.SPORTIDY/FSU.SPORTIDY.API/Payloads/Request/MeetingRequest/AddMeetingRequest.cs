@@ -16,7 +16,6 @@ namespace FSU.SPORTIDY.API.Payloads.Request.MeetingRequest
         public DateTime? EndDate { get; set; }
         [Required]
         public int? TotalMember { get; set; }
-        [Required]
         public int? ClubId { get; set; }
         public string? Note { get; set; }
         [Required]

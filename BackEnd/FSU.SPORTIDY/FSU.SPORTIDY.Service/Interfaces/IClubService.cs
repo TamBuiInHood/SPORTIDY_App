@@ -1,15 +1,8 @@
-﻿using FSU.SPORTIDY.Repository.Entities;
-using FSU.SPORTIDY.Repository.Utils;
+﻿using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
-using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSU.SPORTIDY.Service.Interfaces
 {

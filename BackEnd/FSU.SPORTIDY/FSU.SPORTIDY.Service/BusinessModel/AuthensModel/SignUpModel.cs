@@ -1,4 +1,4 @@
-﻿using FSU.SPORTIDY.Service.Utils.Common.Enums;
+﻿using FSU.SPORTIDY.Common.Role;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,6 +24,6 @@ namespace FSU.SPORTIDY.Service.BusinessModel.AuthensModel
         public string ConfirmPassword { get; set; } = "";
         public string Avatar { get; set; } = "";
 
-        public RoleEnums Role { get; set; }
+        public UserRole Role { get; set; }
     }
 }

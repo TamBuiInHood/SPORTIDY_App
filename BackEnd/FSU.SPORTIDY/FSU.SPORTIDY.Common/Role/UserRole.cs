@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FSU.SPORTIDY.Service.Utils.Common.Enums
+namespace FSU.SPORTIDY.Common.Role
 {
-    public enum RoleEnums
+    public enum UserRole
     {
         ADMIN = 1,
         SPORTOWNER = 2,

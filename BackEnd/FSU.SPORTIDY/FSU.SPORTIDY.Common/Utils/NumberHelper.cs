@@ -1,6 +1,6 @@
-﻿namespace FSU.SPORTIDY.Repository.Utils
+﻿namespace FSU.SPORTIDY.Common.Utils
 {
-    public class NumberTypeHelper
+    public class NumberHelper
     {
         public static bool IsValidInteger(int value)
         {
@@ -9,6 +9,12 @@
         public static bool IsValidDecimal(decimal value)
         {
             return value >= decimal.MinValue && value <= decimal.MaxValue;
+        }
+        public static int GenerateSixDigitNumber()
+        {
+            Random random = new Random();
+            int number = random.Next(100000, 1000000);
+            return number;
         }
 
     }

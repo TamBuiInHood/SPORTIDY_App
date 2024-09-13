@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FSU.SPORTIDY.Service.Utils.Common.Enums
+namespace FSU.SPORTIDY.Common.Status
 {
     public enum PlayFieldStatus
     {

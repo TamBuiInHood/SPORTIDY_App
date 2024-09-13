@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FSU.SPORTIDY.Service.Utils
+namespace FSU.SPORTIDY.Common.Utils
 {
     public class PaginHelper
     {

@@ -1,14 +1,10 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
-using FSU.SPORTIDY.API.Payloads.Request.MeetingRequest;
 using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.Service.Interfaces;
-using FSU.SPORTIDY.Service.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FSU.SPORTIDY.API.Payloads.Request.SportRequest;
 using FSU.SPORTIDY.Service.BusinessModel.SportBsModels;
-using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
-using FSU.SPORTIDY.API.Common.Constants;
+using FSU.SPORTIDY.Common.Status;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
@@ -25,12 +21,12 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost(APIRoutes.Sport.Add, Name = "AddSportAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddSportRequest reqObj)
+        public async Task<IActionResult> AddAsync([FromForm] AddSportRequest reqObj)
         {
             try
             {
                 var dto = new SportDTO();
-                dto.SportImage = reqObj.SportImage;
+                dto.SportImage = reqObj.SportImage.FileName;
                 dto.SportName = reqObj.SportName;
                 var sportInsert = await _sportService.Insert(dto);
                 if (sportInsert == null)
@@ -104,16 +100,16 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut(APIRoutes.Sport.Update, Name = "UpdateSportAsync")]
-        public async Task<IActionResult> UpdateUserAsync(int sportId, [FromBody] AddSportRequest reqObj)
+        public async Task<IActionResult> UpdateUserAsync([FromQuery(Name = "sport-id")]int sportId, [FromForm] AddSportRequest reqObj)
         {
             try
             {
                 var dto = new SportDTO();
                 dto.SportId = sportId;
                 dto.SportName = reqObj.SportName;
-                dto.SportImage = reqObj.SportImage;
+                dto.SportImage = reqObj.SportImage.FileName;
                 var result = await _sportService.Update(dto);
-                if (result != null)
+                if (result == null)
                 {
                     return NotFound(new BaseResponse
                     {
@@ -146,8 +142,8 @@ namespace FSU.SPORTIDY.API.Controllers
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Sport.GetAll, Name = "GetSportAsync")]
         public async Task<IActionResult> GetAllAsync([FromQuery(Name = "search-key")] string? searchKey
-           , [FromQuery(Name = "page-number")] int pageNumber = Page.DefaultPageIndex
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DefaultPageSize)
+           , [FromQuery(Name = "page-number")] int pageNumber = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
@@ -175,7 +171,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Sport.GetByID, Name = "GetSportByID")]
-        public async Task<IActionResult> GetAsync([FromQuery(Name = "sport-id")] int sportId)
+        public async Task<IActionResult> GetAsync([FromRoute(Name = "sport-id")] int sportId)
         {
             try
             {

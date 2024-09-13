@@ -1,24 +1,14 @@
 ﻿using AutoMapper;
+using FSU.SPORTIDY.Common.Status;
+using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.UnitOfWork;
-using FSU.SPORTIDY.Repository.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.ImageFieldBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
-using FSU.SPORTIDY.Service.BusinessModel.SportBsModels;
 using FSU.SPORTIDY.Service.Interfaces;
-using FSU.SPORTIDY.Service.Utils;
-using FSU.SPORTIDY.Service.Utils.Common.Enums;
-using MailKit.Search;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -67,10 +57,11 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<PageEntity<PlayFieldModel>> GetAllPlayField(string? searchKey, int? pageSize, int? pageIndex)
         {
-            Expression<Func<PlayField, bool>> filter = !searchKey.IsNullOrEmpty() ? x =>
-            (x.PlayFieldName!.Contains(searchKey!, StringComparison.OrdinalIgnoreCase)
-            || x.Address!.Contains(searchKey, StringComparison.OrdinalIgnoreCase))
-            && x.Status != (int)PlayFieldStatus.Deleted : x => x.Status != (int)PlayFieldStatus.Deleted;
+            Expression<Func<PlayField, bool>> filter = !string.IsNullOrEmpty(searchKey)
+    ? x => (x.PlayFieldName!.ToLower().Contains(searchKey.ToLower())
+            || x.Address!.ToLower().Contains(searchKey.ToLower()))
+            && x.Status != (int)PlayFieldStatus.Deleted
+    : x => x.Status != (int)PlayFieldStatus.Deleted;
 
             Func<IQueryable<PlayField>, IOrderedQueryable<PlayField>> orderBy = q => q.OrderBy(x => x.PlayFieldName);
 

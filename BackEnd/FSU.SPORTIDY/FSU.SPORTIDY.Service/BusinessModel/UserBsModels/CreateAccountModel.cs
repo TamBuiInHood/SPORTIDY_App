@@ -1,4 +1,4 @@
-﻿using FSU.SPORTIDY.Service.Utils.Common.Enums;
+﻿using FSU.SPORTIDY.Common.Role;
 using System.ComponentModel.DataAnnotations;
 
 namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
@@ -24,6 +24,6 @@ namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
 
         public string? AvatarUrl { get; set; }
 
-        public RoleEnums Role { get; set; }
+        public UserRole Role { get; set; }
     }
 }

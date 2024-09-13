@@ -40,7 +40,7 @@
         {
             public const string GetAll = Base + "/Sports/";
 
-            public const string GetByID = Base + "/Sports/{meeting-id}";
+            public const string GetByID = Base + "/Sports/{sport-id}";
 
             public const string Update = Base + "/Sports/";
 

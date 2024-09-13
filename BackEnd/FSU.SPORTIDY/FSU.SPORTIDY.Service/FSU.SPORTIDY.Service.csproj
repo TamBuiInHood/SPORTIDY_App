@@ -13,11 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FSU.SPORTIDY.Common\FSU.SPORTIDY.Common.csproj" />
     <ProjectReference Include="..\FSU.SPORTIDY.Repository\FSU.SPORTIDY.Repository.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utils\Common\Constants\" />
   </ItemGroup>
 
   <ItemGroup>
