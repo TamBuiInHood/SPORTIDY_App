@@ -458,7 +458,7 @@ namespace FSU.SPORTIDY.Service.Services
                             UserCode = "SPD" + payload.Email + NumberHelper.GenerateSixDigitNumber(),
                             IsDeleted = 0,
                             CreateDate = DateOnly.FromDateTime(DateTime.Now),
-                            RoleId = (int)UserRole.CUSTOMER
+                            RoleId = (int)UserRoleEnum.PLAYER
                         };
 
                         var checkUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(newUser.Email);
@@ -467,12 +467,12 @@ namespace FSU.SPORTIDY.Service.Services
                             throw new Exception("Accoust is existed");
                         }
                         newUser.Password = PasswordHelper.HashPassword(Guid.NewGuid().ToString());
-                        var role = await _unitOfWork._RoleRepo.GetRoleByName(UserRole.CUSTOMER.ToString());
+                        var role = await _unitOfWork._RoleRepo.GetRoleByName(UserRoleEnum.PLAYER.ToString());
                         if (role == null)
                         {
                             Role newRole = new Role
                             {
-                                RoleName = UserRole.CUSTOMER.ToString(),
+                                RoleName = UserRoleEnum.PLAYER.ToString(),
                             };
                             await _unitOfWork._RoleRepo.AddRoleAsync(newRole);
                             role = newRole;

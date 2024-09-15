@@ -21,6 +21,9 @@ namespace FSU.SPORTIDY.Service.BusinessModel.FriendShipBSModels
         public int UserId1 { get; set; }
 
         public int UserId2 { get; set; }
+
+        public int RequestBy {  get; set; }
+
         public virtual UserModel UserId1Navigation { get; set; } = null!;
 
         public virtual UserModel UserId2Navigation { get; set; } = null!;

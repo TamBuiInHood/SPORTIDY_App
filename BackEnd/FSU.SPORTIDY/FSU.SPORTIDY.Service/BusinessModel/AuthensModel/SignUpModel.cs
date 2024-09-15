@@ -24,6 +24,6 @@ namespace FSU.SPORTIDY.Service.BusinessModel.AuthensModel
         public string ConfirmPassword { get; set; } = "";
         public string Avatar { get; set; } = "";
 
-        public UserRole Role { get; set; }
+        public UserRoleEnum Role { get; set; }
     }
 }

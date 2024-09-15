@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FSU.SPORTIDY.Common.Role
+namespace FSU.SPORTIDY.Common.Status
 {
-    public enum UserRole
+    public enum FriendStatus
     {
-        ADMIN = 1,
-        SPORTOWNER = 2,
-        CUSTOMER = 3,
+        FRIEND = 1,
+        UNFRIEND = 2,
+        BLOCK = 3
     }
 }

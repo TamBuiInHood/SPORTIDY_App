@@ -24,6 +24,6 @@ namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
 
         public string? AvatarUrl { get; set; }
 
-        public UserRole Role { get; set; }
+        public UserRoleEnum Role { get; set; }
     }
 }

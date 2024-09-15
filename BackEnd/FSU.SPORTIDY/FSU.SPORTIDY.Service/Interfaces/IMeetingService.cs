@@ -9,16 +9,12 @@ namespace FSU.SPORTIDY.Service.Interfaces
 
         public Task<PageEntity<MeetingModel>> Get(int CurrentIDLogin, string searchKey, int? PageSize, int? PageIndex);
         
-
         public Task<IEnumerable<MeetingModel>> GetAllMeetingByUserID(int userID);
        
-
         public Task<MeetingModel?> GetByID(int meetingID);
         
-
         public Task<MeetingModel?> Insert(MeetingModel EntityInsert, List<int> invitedFriend, int currentLoginID);
        
-
         public Task<MeetingModel> Update(MeetingModel EntityUpdate);
     }
 }
