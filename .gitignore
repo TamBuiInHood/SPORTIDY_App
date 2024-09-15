@@ -17,7 +17,7 @@
 mono_crash.*
 
 # Ensure launchSettings.json is not ignored
-!**/launchSettings.json
+
 
 # Build results
 [Dd]ebug/
