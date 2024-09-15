@@ -1,15 +1,12 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
 using FSU.SPORTIDY.API.Payloads;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
 using FSU.SPORTIDY.Service.Interfaces;
-using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.ImageFieldBsModels;
 using FSU.SPORTIDY.API.Validations;
-using FSU.SPORTIDY.Service.Services;
-using FSU.SPORTIDY.API.Common.Constants;
+using FSU.SPORTIDY.Common.Status;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
@@ -249,8 +246,8 @@ namespace FSU.SPORTIDY.API.Controllers
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Playfields.GetAll, Name = "GetPlayfieldAsync")]
         public async Task<IActionResult> GetPlayfieldAsync([FromQuery(Name = "search-key")] string? searchKey
-           , [FromQuery(Name = "page-number")] int pageNumber = Page.DefaultPageIndex
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DefaultPageSize)
+           , [FromQuery(Name = "page-number")] int pageNumber = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
@@ -307,8 +304,8 @@ namespace FSU.SPORTIDY.API.Controllers
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Playfields.GetByUserID, Name = "GetPlayfieldByUserIdAsync")]
         public async Task<IActionResult> GetByUserIdAsync([FromRoute(Name = "user-id")] int userId
-           , [FromQuery(Name = "page-index")] int pageIndex = Page.DefaultPageIndex
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DefaultPageSize)
+           , [FromQuery(Name = "page-index")] int pageIndex = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {

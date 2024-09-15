@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
+using FSU.SPORTIDY.Service.BusinessModel.FriendShipBSModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldFeedbackModels;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
@@ -97,6 +98,10 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
                 .ForMember(dest => dest.ImageFields, opt => opt.MapFrom(src => src.ImageFields))
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ReverseMap();
+            CreateMap<Friendship, FriendShipModel>()
+                .ForMember(dest => dest.UserId1Navigation, opt => opt.MapFrom(src => src.UserId1Navigation))
+                .ForMember(dest => dest.UserId1Navigation, opt => opt.MapFrom(src => src.UserId1Navigation))
                 .ReverseMap();
         }
     }

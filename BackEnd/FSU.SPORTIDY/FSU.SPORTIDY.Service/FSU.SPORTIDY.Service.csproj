@@ -13,17 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FSU.SPORTIDY.Common\FSU.SPORTIDY.Common.csproj" />
     <ProjectReference Include="..\FSU.SPORTIDY.Repository\FSU.SPORTIDY.Repository.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utils\Common\Constants\" />
   </ItemGroup>
 
   <ItemGroup>
       <PackageReference Include="AutoMapper" Version="13.0.1" />
 	  <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 	  <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
+	  <PackageReference Include="payOS" Version="1.0.6" />
   </ItemGroup>
 
 </Project>

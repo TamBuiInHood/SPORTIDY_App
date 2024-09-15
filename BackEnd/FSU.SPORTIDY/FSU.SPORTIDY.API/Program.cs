@@ -19,6 +19,8 @@ using FSU.SPORTIDY.Service.Utils.Mail;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder.Extensions;
+using FSU.SPORTIDY.Service.Services.PaymentServices;
+using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +73,9 @@ var mapper = new MapperConfiguration(mc =>
     mc.AddProfile<MappingProfile>();
 });
 
+// config payment PayOS
+builder.Services.Configure<PayOSKey>(builder.Configuration.GetSection("PayOS"));
+builder.Services.AddScoped<PayOSKey>();
 builder.Services.AddSingleton(mapper.CreateMapper());
 
 // Register repositories
@@ -83,11 +88,11 @@ builder.Services.AddScoped<IClubRepository, ClubRepository>();
 builder.Services.AddScoped<IPlayFieldFeedbackRepository, PlayFieldFeedbackRepository>();
 builder.Services.AddScoped<ISystemFeedbackRepository, SystemFeedbackRepository>();
 builder.Services.AddScoped<IPlayFieldRepository, PlayFieldRepository>();
+builder.Services.AddScoped<IFriendShipRepository, FriendShipRepository>();
 
 
 
 // Register servicies
-//builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
@@ -96,6 +101,9 @@ builder.Services.AddScoped<IClubService, ClubService>();
 builder.Services.AddScoped<IPlayFieldFeedbackService, PlayFieldFeedbackService>();
 builder.Services.AddScoped<ISystemFeedbackService, SystemFeedbackService>();
 builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
+builder.Services.AddScoped<IFriendShipService, FriendShipService>();
+
+builder.Services.AddScoped<IPayOSService, PayOSService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));

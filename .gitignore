@@ -17,7 +17,7 @@
 mono_crash.*
 
 # Ensure launchSettings.json is not ignored
-!**/launchSettings.json
+
 
 # Build results
 [Dd]ebug/
@@ -35,7 +35,6 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
-[Pp]roperties/
 
 
 # Visual Studio 2015/2017 cache/options directory

@@ -1,19 +1,12 @@
 ﻿using AutoMapper;
-using FSU.SPORTIDY.Repository.Common.Enums;
+using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.UnitOfWork;
-using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.BusinessModel.SportBsModels;
 using FSU.SPORTIDY.Service.Interfaces;
-using FSU.SPORTIDY.Service.Utils;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -42,7 +35,7 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<PageEntity<SportDTO>> Get(string searchKey, int? PageSize, int? PageIndex)
         {
-            Expression<Func<Sport, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.SportName!.Contains(searchKey, StringComparison.OrdinalIgnoreCase) : null!;
+            Expression<Func<Sport, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.SportName!.ToLower().Contains(searchKey.ToLower()) : null!;
 
             Func<IQueryable<Sport>, IOrderedQueryable<Sport>> orderBy = q => q.OrderBy(x => x.SportName);
 
