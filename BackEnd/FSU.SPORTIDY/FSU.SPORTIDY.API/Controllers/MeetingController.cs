@@ -1,11 +1,9 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
-using FSU.SPORTIDY.API.Common.Constants;
 using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.API.Payloads.Request.MeetingRequest;
+using FSU.SPORTIDY.Common.Status;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FSU.SPORTIDY.API.Controllers
@@ -23,11 +21,11 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost(APIRoutes.Meeting.Add, Name = "AddMeetingAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddMeetingRequest reqObj)
+        public async Task<IActionResult> AddAsync([FromForm] AddMeetingRequest reqObj)
         {
             try
             {
-                var dto = new Service.BusinessModel.MeetingModels.MeetingModel();
+                var dto = new MeetingModel();
                 dto.MeetingName = reqObj.MeetingName;
                 dto.Address = reqObj.Address;
                 dto.MeetingImage = reqObj.MeetingImage;
@@ -111,7 +109,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut(APIRoutes.Meeting.Update, Name = "UpdateMeetingAsync")]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UpdateMeetingRequest reqObj)
+        public async Task<IActionResult> UpdateUserAsync(int id, [FromForm] UpdateMeetingRequest reqObj)
         {
             try
             {
@@ -160,8 +158,8 @@ namespace FSU.SPORTIDY.API.Controllers
         [HttpGet(APIRoutes.Meeting.GetAll, Name = "GetMeetingAsync")]
         public async Task<IActionResult> GetAllAsync([FromQuery(Name = "curr-id-login")] int currIdLoginID
            , [FromQuery(Name = "search-key")] string? searchKey
-           , [FromQuery(Name = "page-number")] int pageNumber = Page.DefaultPageIndex
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DefaultPageSize)
+           , [FromQuery(Name = "page-number")] int pageNumber = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
@@ -189,11 +187,11 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Meeting.GetByID, Name = "GetMeetingByID")]
-        public async Task<IActionResult> GetAsync([FromQuery] int Id)
+        public async Task<IActionResult> GetAsync([FromRoute(Name = "meeting-id")] int meetingId)
         {
             try
             {
-                var user = await _meetingSerivce.GetByID(Id);
+                var user = await _meetingSerivce.GetByID(meetingId);
 
                 if (user == null)
                 {

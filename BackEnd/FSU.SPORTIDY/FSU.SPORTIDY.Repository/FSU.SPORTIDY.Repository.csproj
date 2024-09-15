@@ -26,6 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Enums\" />
+    <ProjectReference Include="..\FSU.SPORTIDY.Common\FSU.SPORTIDY.Common.csproj" />
   </ItemGroup>
 </Project>

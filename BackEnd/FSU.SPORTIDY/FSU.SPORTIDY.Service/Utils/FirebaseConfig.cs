@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaByBoi.Domain.Utils
+namespace FSU.SPORTIDY.Service.Utils
 {
     public class FirebaseConfig
     {

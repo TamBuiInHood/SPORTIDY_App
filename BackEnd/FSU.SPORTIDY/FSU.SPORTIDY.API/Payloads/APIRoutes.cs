@@ -9,6 +9,12 @@
             public const string GetAll = Base + "/weatherforecast/";
         }
 
+        public static class Payment
+        {
+            public const string createPaymentLink = Base + "/payment/create-payment-link";
+            public const string getPaymentInformation = Base + "/payment/get-payment-information";
+        }
+
         public static class Authentication
         {
             public const string Login = Base + "/authentication/login";
@@ -40,7 +46,7 @@
         {
             public const string GetAll = Base + "/Sports/";
 
-            public const string GetByID = Base + "/Sports/{meeting-id}";
+            public const string GetByID = Base + "/Sports/{sport-id}";
 
             public const string Update = Base + "/Sports/";
 
@@ -118,6 +124,7 @@
         public static class SystemFeedback
         {
             public const string GetAll = Base + "/system-feedback/";
+
             public const string GetAllNoPaging = Base + "/system-feedback/get-all-no-paging";
 
             public const string GetByID = Base + "/system-feedback/{systemFeedbackId}";
@@ -157,6 +164,23 @@
             public const string Add = Base + "/Playfields/";
 
             public const string GetAllNotPaging = Base + "/Playfields/get-all-not-paging";
+        }
+
+        public static class Friendship
+        {
+            public const string GetAll = Base + "/friendships/";
+
+            public const string GetByID = Base + "/friendships/{friendship-id}";
+
+            public const string GetBy2UserId = Base + "/friendships/{user-id-1}/{user-id-2}";
+
+            public const string Update = Base + "/friendships/";
+
+            public const string Delete = Base + "/friendships/";
+
+            public const string Add = Base + "/friendships/";
+
+            public const string GetAllNotPaging = Base + "/friendships/get-all-not-paging";
         }
     }
 }

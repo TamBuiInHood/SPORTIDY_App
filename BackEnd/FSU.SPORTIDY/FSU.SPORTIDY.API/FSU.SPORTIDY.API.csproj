@@ -21,7 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FSU.SPORTIDY.Common\FSU.SPORTIDY.Common.csproj" />
     <ProjectReference Include="..\FSU.SPORTIDY.Service\FSU.SPORTIDY.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
 
 </Project>

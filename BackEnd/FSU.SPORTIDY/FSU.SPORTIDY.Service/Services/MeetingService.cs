@@ -1,19 +1,14 @@
 ﻿using AutoMapper;
-using FSU.SPORTIDY.Repository.Common.Enums;
+using FSU.SPORTIDY.Common.Role;
+using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.UnitOfWork;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.Interfaces;
-using FSU.SPORTIDY.Service.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -56,7 +51,7 @@ namespace FSU.SPORTIDY.Service.Services
                 .Get(filter: filter, orderBy: orderBy, includeProperties: includeProperties, pageIndex: PageIndex, pageSize: PageSize);
             var pagin = new PageEntity<MeetingModel>();
             pagin.List = _mapper.Map<IEnumerable<MeetingModel>>(entities).ToList();
-            Expression<Func<Meeting, bool>> countMeeting = x => x.Status != (int)MeetingStatus.Deleted && x.Status != (int)MeetingStatus.Finished;
+            Expression<Func<Meeting, bool>> countMeeting = x => x.Status != (int)MeetingStatus.DELETED && x.Status != (int)MeetingStatus.FINISHED;
             pagin.TotalRecord = await _unitOfWork.MeetingRepository.Count(countMeeting);
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize!.Value);
             return pagin;
@@ -81,7 +76,7 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<MeetingModel?> GetByID(int meetingID)
         {
-            Expression<Func<Meeting, bool>> condition = x => x.MeetingId == meetingID && (x.Status != (int)MeetingStatus.Deleted);
+            Expression<Func<Meeting, bool>> condition = x => x.MeetingId == meetingID && (x.Status != (int)MeetingStatus.DELETED);
             var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition);
             return _mapper?.Map<MeetingModel?>(entity)!;
 
@@ -96,13 +91,13 @@ namespace FSU.SPORTIDY.Service.Services
                 {
                     UserId = player,
                     ClubId = EntityInsert.ClubId,
-                    RoleInMeeting = MeetingRole.IsInvited,
+                    RoleInMeeting = MeetingRole.IS_INVITED,
                 });
             }
             var meeting = new Meeting();
             meeting.MeetingCode = Guid.NewGuid().ToString();
             meeting.Address = EntityInsert.Address;
-            meeting.Status = (int)MeetingStatus.Waiting;
+            meeting.Status = (int)MeetingStatus.WAITING;
             meeting.Host = currentLoginID;
 
             meeting.StartDate = EntityInsert.StartDate;

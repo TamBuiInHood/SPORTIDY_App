@@ -1,26 +1,16 @@
 ﻿using AutoMapper;
-using BaByBoi.Domain.Utils;
 using Firebase.Storage;
-using FSU.SPORTIDY.Repository.Common.Enums;
+using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
-using FSU.SPORTIDY.Repository.Interfaces;
 using FSU.SPORTIDY.Repository.UnitOfWork;
-using FSU.SPORTIDY.Repository.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
-using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
-using MailKit.Search;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FSU.SPORTIDY.Service.Services
 {

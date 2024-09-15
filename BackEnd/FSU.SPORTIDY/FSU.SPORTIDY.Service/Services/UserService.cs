@@ -1,41 +1,23 @@
-﻿using AutoMapper.Internal;
-using Azure.Core;
-using FirebaseAdmin.Auth;
+﻿using FirebaseAdmin.Auth;
 using FSU.SPORTIDY.Repository.Entities;
-using FSU.SPORTIDY.Repository.Interfaces;
-using FSU.SPORTIDY.Repository.Repositories;
 using FSU.SPORTIDY.Repository.UnitOfWork;
-using FSU.SPORTIDY.Repository.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.AuthensModel;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
 using FSU.SPORTIDY.Service.Utils.Mail;
-using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-using Microsoft.AspNetCore.Http.HttpResults;
 using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using BaByBoi.Domain.Utils;
 using Firebase.Storage;
-using FSU.SPORTIDY.Service.Utils.Common.Enums;
+using FSU.SPORTIDY.Common.Utils;
+using FSU.SPORTIDY.Common.Role;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -476,7 +458,7 @@ namespace FSU.SPORTIDY.Service.Services
                             UserCode = "SPD" + payload.Email + NumberHelper.GenerateSixDigitNumber(),
                             IsDeleted = 0,
                             CreateDate = DateOnly.FromDateTime(DateTime.Now),
-                            RoleId = (int)RoleEnums.CUSTOMER
+                            RoleId = (int)UserRoleEnum.PLAYER
                         };
 
                         var checkUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(newUser.Email);
@@ -485,12 +467,12 @@ namespace FSU.SPORTIDY.Service.Services
                             throw new Exception("Accoust is existed");
                         }
                         newUser.Password = PasswordHelper.HashPassword(Guid.NewGuid().ToString());
-                        var role = await _unitOfWork._RoleRepo.GetRoleByName(RoleEnums.CUSTOMER.ToString());
+                        var role = await _unitOfWork._RoleRepo.GetRoleByName(UserRoleEnum.PLAYER.ToString());
                         if (role == null)
                         {
                             Role newRole = new Role
                             {
-                                RoleName = RoleEnums.CUSTOMER.ToString(),
+                                RoleName = UserRoleEnum.PLAYER.ToString(),
                             };
                             await _unitOfWork._RoleRepo.AddRoleAsync(newRole);
                             role = newRole;
