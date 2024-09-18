@@ -42,18 +42,27 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<PageEntity<MeetingModel>> Get(int CurrentIDLogin, string searchKey, int? PageSize, int? PageIndex)
         {
-            Expression<Func<Meeting, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.MeetingName!.Contains(searchKey, StringComparison.OrdinalIgnoreCase) : null!;
+            Expression<Func<Meeting, bool>> filter = !searchKey.IsNullOrEmpty()
+                                                   ? x => x.MeetingName!.Contains(searchKey, StringComparison.OrdinalIgnoreCase)
+                                                   : null!;
+            var includeProperties = "CommentInMeetings,UserMeetings";
+            // Fetch data from the database first
+            var meetings = await _unitOfWork.MeetingRepository
+                .Get(filter: filter, includeProperties: includeProperties, pageIndex: PageIndex, pageSize: PageSize);
 
-            Func<IQueryable<Meeting>, IOrderedQueryable<Meeting>> orderBy = q => q.OrderByDescending(x => (x.StartDate!.Value.Date - DateTime.Now.Date).TotalHours);
-            string includeProperties = "CommentInMeetings,UserMeetings";
+            // Switch to client-side evaluation
+            var orderedMeetings = meetings.AsEnumerable()
+                .OrderByDescending(x => (x.StartDate!.Value.Date - DateTime.Now.Date).TotalHours);
 
-            var entities = await _unitOfWork.MeetingRepository
-                .Get(filter: filter, orderBy: orderBy, includeProperties: includeProperties, pageIndex: PageIndex, pageSize: PageSize);
-            var pagin = new PageEntity<MeetingModel>();
-            pagin.List = _mapper.Map<IEnumerable<MeetingModel>>(entities).ToList();
+            var pagin = new PageEntity<MeetingModel>
+            {
+                List = _mapper.Map<IEnumerable<MeetingModel>>(orderedMeetings).ToList()
+            };
+
             Expression<Func<Meeting, bool>> countMeeting = x => x.Status != (int)MeetingStatus.DELETED && x.Status != (int)MeetingStatus.FINISHED;
             pagin.TotalRecord = await _unitOfWork.MeetingRepository.Count(countMeeting);
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize!.Value);
+
             return pagin;
 
         }

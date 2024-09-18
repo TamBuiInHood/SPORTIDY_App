@@ -216,13 +216,11 @@ public partial class SportidyContext : DbContext
                 .HasColumnName("NotificationID");
             entity.Property(e => e.InviteDate).HasColumnType("datetime");
             entity.Property(e => e.Message)
-                .HasMaxLength(1)
                 .IsUnicode(false);
             entity.Property(e => e.NotificationCode)
                 .HasMaxLength(36)
                 .IsUnicode(false);
             entity.Property(e => e.Tiltle)
-                .HasMaxLength(1)
                 .IsUnicode(false);
             entity.Property(e => e.UserId).HasColumnName("UserID");
 
