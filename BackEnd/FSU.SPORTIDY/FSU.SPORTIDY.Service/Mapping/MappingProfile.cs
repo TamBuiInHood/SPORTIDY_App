@@ -54,10 +54,11 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ForMember(x => x.Status, opt => opt.MapFrom(x => x.User.Status))
                 .ForMember(x => x.Phone, opt => opt.MapFrom(x => x.User.Phone))
                 .ForMember(x => x.Email, opt => opt.MapFrom(x => x.User.Email))
+                .ForMember(x => x.IsLeader, opt => opt.MapFrom(x => x.IsLeader))
                 .ReverseMap();
 
             CreateMap<Club, ClubModel>()
-                    .ForMember(dest => dest.ListMember, opt => opt.MapFrom(src => src.UserClubs.Select(cm => cm.User)))
+                    .ForMember(dest => dest.ListMember, opt => opt.MapFrom(src => src.UserClubs))
                     .ReverseMap();
 
             CreateMap<UserClub, ClubModel>()
@@ -73,7 +74,7 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ForMember(x => x.TotalMember, opt => opt.MapFrom(x => x.Club.TotalMember))
                 .ForMember(x => x.AvartarClub, opt => opt.MapFrom(x => x.Club.AvartarClub))
                 .ForMember(x => x.CoverImageClub, opt => opt.MapFrom(x => x.Club.CoverImageClub))
-                 .ForMember(x => x.ListMember, opt => opt.MapFrom(x => x.Club.UserClubs.Select(uc => uc.User)))
+                 .ForMember(x => x.ListMember, opt => opt.MapFrom(x => x.Club.UserClubs))
                 .ReverseMap();
 
             CreateMap<PlayFieldFeedback, CreatePlayFieldFeedbackModel>()

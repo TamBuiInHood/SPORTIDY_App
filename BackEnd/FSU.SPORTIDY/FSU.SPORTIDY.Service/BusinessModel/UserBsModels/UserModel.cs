@@ -37,5 +37,6 @@ namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
         public int? IsDeleted { get; set; }
 
         public string? Phone { get; set; }
+        public bool? IsLeader { get; set; }
     }
 }
