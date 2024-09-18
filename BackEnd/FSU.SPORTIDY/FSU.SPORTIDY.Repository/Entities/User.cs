@@ -37,6 +37,8 @@ public partial class User
     public int? IsDeleted { get; set; }
 
     public string? Phone { get; set; }
+    public string? BankCode { get; set; }
+    public string? BankName { get; set; }
 
     public virtual ICollection<Friendship> FriendshipUserId1Navigations { get; set; } = new List<Friendship>();
 

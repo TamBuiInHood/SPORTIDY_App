@@ -450,6 +450,27 @@ public partial class SportidyContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__SystemFeedbacj__User__59063A47");
         });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__7A41AF1C1AA63361");
+
+            entity.ToTable("Payment");
+
+            entity.Property(e => e.PaymentId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("PaymentId");
+
+            entity.Property(e => e.DateOfTransaction).HasColumnType("datetime");
+            entity.Property(e => e.Amount).HasColumnName("Amount");
+            entity.Property(e => e.OrderCode).HasColumnName("OrderCode");
+            entity.Property(e => e.Status).HasColumnName("Status");
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.BookingId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Payment__Booking__59063A47");
+        });
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
