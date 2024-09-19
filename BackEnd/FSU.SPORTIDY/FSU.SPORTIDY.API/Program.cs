@@ -89,6 +89,8 @@ builder.Services.AddScoped<IPlayFieldFeedbackRepository, PlayFieldFeedbackReposi
 builder.Services.AddScoped<ISystemFeedbackRepository, SystemFeedbackRepository>();
 builder.Services.AddScoped<IPlayFieldRepository, PlayFieldRepository>();
 builder.Services.AddScoped<IFriendShipRepository, FriendShipRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 
 
@@ -102,6 +104,7 @@ builder.Services.AddScoped<IPlayFieldFeedbackService, PlayFieldFeedbackService>(
 builder.Services.AddScoped<ISystemFeedbackService, SystemFeedbackService>();
 builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
 builder.Services.AddScoped<IFriendShipService, FriendShipService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 

@@ -182,5 +182,22 @@
 
             public const string GetAllNotPaging = Base + "/friendships/get-all-not-paging";
         }
+
+        public static class Booking
+        {
+            public const string GetAll = Base + "/bookings/";
+
+            public const string GetByID = Base + "/bookings/{booking-id}";
+
+            public const string GetByUserID = Base + "/bookings/get-by-user-id";
+
+            public const string Update = Base + "/bookings/";
+
+            public const string UpdateStatus = Base + "/bookings/update-status";
+
+            public const string Delete = Base + "/bookings/{booking-id}";
+
+            public const string Add = Base + "/bookings/";
+        }
     }
 }

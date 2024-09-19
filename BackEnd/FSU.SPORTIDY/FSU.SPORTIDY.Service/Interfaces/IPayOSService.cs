@@ -9,7 +9,7 @@ namespace FSU.SPORTIDY.Service.Interfaces
 {
     public interface IPayOSService
     {
-        public Task<CreatePaymentResult> createPaymentLink(long orderCode);
+        public Task<CreatePaymentResult> createPaymentLink(long orderCode, decimal amount, string returnUrl, string cancelUrl, string description, string buyerName, string buyerPhone, string fieldName, int hour);
         public Task<PaymentLinkInformation> getPaymentLinkInformation(int orderId);
 
     }
