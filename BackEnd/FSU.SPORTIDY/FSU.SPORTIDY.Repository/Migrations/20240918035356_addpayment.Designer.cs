@@ -4,6 +4,7 @@ using FSU.SPORTIDY.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FSU.SPORTIDY.Repository.Migrations
 {
     [DbContext(typeof(SportidyContext))]
-    partial class SportidyContextModelSnapshot : ModelSnapshot
+    [Migration("20240918035356_addpayment")]
+    partial class addpayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -336,8 +339,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Message")
+                        .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(1)");
 
                     b.Property<string>("NotificationCode")
                         .HasMaxLength(36)
@@ -348,8 +352,9 @@ namespace FSU.SPORTIDY.Repository.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Tiltle")
+                        .HasMaxLength(1)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(1)");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int")
