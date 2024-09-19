@@ -90,6 +90,7 @@ builder.Services.AddScoped<ISystemFeedbackRepository, SystemFeedbackRepository>(
 builder.Services.AddScoped<IPlayFieldRepository, PlayFieldRepository>();
 builder.Services.AddScoped<IFriendShipRepository, FriendShipRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 
 

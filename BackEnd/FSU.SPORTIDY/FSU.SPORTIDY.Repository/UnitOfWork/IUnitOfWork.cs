@@ -19,6 +19,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         PlayFieldRepository PlayFieldRepository { get; }
         GenericRepository<Sport> SportRepository { get; }
         BookingRepository BookingRepository { get; }
+        PaymentRepository PaymentRepository { get; }
         void Save();
         Task<int> SaveAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();

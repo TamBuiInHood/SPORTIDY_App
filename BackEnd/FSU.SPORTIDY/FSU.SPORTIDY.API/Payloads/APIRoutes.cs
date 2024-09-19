@@ -189,7 +189,7 @@
 
             public const string GetByID = Base + "/bookings/{booking-id}";
 
-            public const string GetByUserID = Base + "/bookings/{user-id}";
+            public const string GetByUserID = Base + "/bookings/get-by-user-id";
 
             public const string Update = Base + "/bookings/";
 

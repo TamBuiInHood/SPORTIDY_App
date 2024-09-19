@@ -104,7 +104,7 @@ namespace FSU.SPORTIDY.Service.Services
             try
             {
                 Expression<Func<Booking, bool>> filter = x => x.BookingId == bookingId;
-                string includeProperties = "PlayField";
+                string includeProperties = "PlayField,Payments";
                 var booking = await _unitOfWork.BookingRepository.GetByCondition(filter, includeProperties);
                 return _mapper.Map<BookingModel>(booking);
             }
@@ -165,9 +165,9 @@ namespace FSU.SPORTIDY.Service.Services
             try
             {
                 var booking = new Booking();
-                if (entityInsert.DateStart >= DateTime.Now ||
-                    entityInsert.DateEnd < booking.DateStart ||
-                    entityInsert.BookingDate <= DateTime.Now)
+                if (entityInsert.DateStart <= DateTime.Now ||
+                    entityInsert.DateEnd < booking.DateStart
+                    )
                 {
                     throw new Exception("Check your booking about booking date, time starting and time endding");
                 }
@@ -180,10 +180,18 @@ namespace FSU.SPORTIDY.Service.Services
                     await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).PutAsync(barCode.OpenReadStream());
                     booking.BarCode = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
                 }
-
+                booking.BookingCode = entityInsert.BookingCode;
                 booking.PaymentMethod = entityInsert.PaymentMethod ?? "VietQR";
                 booking.BookingDate = DateTime.Now;
                 booking.Status = BookingStatusID.BOOKING_PENDING_ID;
+                var payment = new Payment
+                {
+                    OrderCode = booking.BookingCode,
+                    Amount = booking.Price,
+                    DateOfTransaction = DateTime.Now,
+                    Status = booking.Status,
+                };
+                booking.Payments.Add(payment);
 
                 //booking.BookingCode = entityInsert.BookingCode;
                 //booking.Price = entityInsert.Price;
@@ -254,6 +262,7 @@ namespace FSU.SPORTIDY.Service.Services
                 return null;
             }
             booking.Status = status;
+            var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
             return _mapper.Map<BookingModel>(booking);
         }
     }

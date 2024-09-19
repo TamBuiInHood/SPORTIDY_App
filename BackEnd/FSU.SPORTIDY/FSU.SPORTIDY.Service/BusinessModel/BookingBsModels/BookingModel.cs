@@ -1,4 +1,5 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldFeedBackBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
 using System;
@@ -38,5 +39,8 @@ namespace FSU.SPORTIDY.Service.BusinessModel.BookingBsModels
         public virtual PlayFieldModel PlayField { get; set; } = null!;
 
         public virtual ICollection<PlayFieldFeedbackModel> PlayFieldFeedbacks { get; set; } = new List<PlayFieldFeedbackModel>();
+
+        public virtual ICollection<PaymentModel> Payments { get; set; } = new List<PaymentModel>();
+
     }
 }
