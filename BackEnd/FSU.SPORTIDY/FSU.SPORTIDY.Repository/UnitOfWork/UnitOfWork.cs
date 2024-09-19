@@ -24,6 +24,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private PlayFieldFeedbackRepository _PlayFieldFeedbackRepository;
         private SystemFeedbackRepository _SystemFeedbackRepository;
         private PlayFieldRepository _PlayFieldRepository;
+        private BookingRepository _BookingRepository;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -205,6 +206,18 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._PlayFieldRepository = new PlayFieldRepository(_context);
                 }
                 return _PlayFieldRepository ;
+            }
+        }
+
+        public BookingRepository BookingRepository
+        {
+            get
+            {
+                if(_BookingRepository == null)
+                {
+                    this._BookingRepository = new BookingRepository(_context);
+                }
+                return _BookingRepository;
             }
         }
     }

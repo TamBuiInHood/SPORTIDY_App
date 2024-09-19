@@ -16,24 +16,32 @@ namespace FSU.SPORTIDY.Service.Services.PaymentServices
     public class PayOSService : IPayOSService
     {
         private readonly IConfiguration _config;
-        private readonly PayOSKey payOSKey;
+        private readonly PayOSKey _payOSKey;
 
         public PayOSService(IConfiguration config, IOptions<PayOSKey> payOSKey)
         {
             _config = config;
-            this.payOSKey = payOSKey.Value;
+            this._payOSKey = payOSKey.Value;
         }
 
-        public async Task<CreatePaymentResult> createPaymentLink(long orderCode)
+        public async Task<CreatePaymentResult> createPaymentLink(long orderCode, decimal amount, string returnUrl, string cancelUrl, string description, string buyerName, string buyerPhone, string fieldName, int hour)
         {
-
-            PayOS payOS = new PayOS( apiKey:payOSKey.apiKey, checksumKey: payOSKey.checksumKey,clientId: payOSKey.clientId);
-            ItemData item = new ItemData("Mì tôm hảo hảo ly", 1, 1000);
+            var domain = _payOSKey.domain;
+            PayOS payOS = new PayOS(apiKey: _payOSKey.apiKey, checksumKey: _payOSKey.checksumKey, clientId: _payOSKey.clientId);
+            ItemData item = new ItemData(fieldName, hour,(int) amount);
             List<ItemData> items = new List<ItemData>();
             items.Add(item);
 
-            PaymentData paymentData = new PaymentData(orderCode, 1000, "Thanh toan don hang",
-                 items, "https://localhost:3002", "https://localhost:3002");
+            PaymentData paymentData = new PaymentData(
+                orderCode: orderCode,
+                amount: (int)amount,
+                description: description,
+                items: items,
+                buyerName: buyerName,
+                buyerPhone: buyerPhone,
+                cancelUrl: $"{domain}/{cancelUrl}",
+                returnUrl: $"{domain}/{returnUrl}"
+                );
 
             CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
             return createPayment;
@@ -41,7 +49,7 @@ namespace FSU.SPORTIDY.Service.Services.PaymentServices
 
         public async Task<PaymentLinkInformation> getPaymentLinkInformation(int orderId)
         {
-            PayOS payOS = new PayOS(apiKey: payOSKey.apiKey, checksumKey: payOSKey.checksumKey, clientId: payOSKey.clientId);
+            PayOS payOS = new PayOS(apiKey: _payOSKey.apiKey, checksumKey: _payOSKey.checksumKey, clientId: _payOSKey.clientId);
 
             PaymentLinkInformation paymentLinkInformation = await payOS.getPaymentLinkInformation((long) orderId);
             return paymentLinkInformation;

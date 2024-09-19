@@ -13,11 +13,11 @@ namespace FSU.SPORTIDY.Service.BusinessModel.BookingBsModels
     {
         public int BookingId { get; set; }
 
-        public int? BookingCode { get; set; }
+        public string? BookingCode { get; set; }
 
         public DateTime? BookingDate { get; set; }
 
-        public int? Price { get; set; }
+        public double? Price { get; set; }
 
         public DateTime? DateStart { get; set; }
 
@@ -25,9 +25,9 @@ namespace FSU.SPORTIDY.Service.BusinessModel.BookingBsModels
 
         public int? Status { get; set; }
 
-        public int? PaymentMethod { get; set; }
+        public string? PaymentMethod { get; set; }
 
-        public int? BarCode { get; set; }
+        public string? BarCode { get; set; }
 
         public int PlayFieldId { get; set; }
 
