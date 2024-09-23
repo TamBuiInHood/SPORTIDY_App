@@ -1,0 +1,6 @@
+Cách để chạy source FE
+1. download EXPO go về điện thoại
+2. mở folder FE
+3. npm i
+4. npm run start
+5. quét mã QR 
