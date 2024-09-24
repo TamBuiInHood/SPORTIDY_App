@@ -107,7 +107,7 @@ builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
 builder.Services.AddScoped<IFriendShipService, FriendShipService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<ICommentInMeetingService, CommentInMeetingService>();
-builder.Services.AddScoped< WebSocketService>();
+builder.Services.AddScoped<WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 

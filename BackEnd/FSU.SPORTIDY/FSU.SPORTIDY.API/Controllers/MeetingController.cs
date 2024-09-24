@@ -28,7 +28,6 @@ namespace FSU.SPORTIDY.API.Controllers
                 var dto = new MeetingModel();
                 dto.MeetingName = reqObj.MeetingName;
                 dto.Address = reqObj.Address;
-                dto.MeetingImage = reqObj.MeetingImage;
                 dto.StartDate = reqObj.StartDate;
                 dto.EndDate = reqObj.EndDate;
                 dto.CancelBefore = reqObj.CancelBefore;
@@ -37,7 +36,7 @@ namespace FSU.SPORTIDY.API.Controllers
                 dto.ClubId = reqObj.ClubId;
                 dto.IsPublic = reqObj.IsPublic;
                 dto.TotalMember = reqObj.TotalMember;
-                var MeetingAdd = await _meetingSerivce.Insert(dto,reqObj.InvitedFriend,reqObj.currentIDLogin);
+                var MeetingAdd = await _meetingSerivce.Insert(dto,reqObj.currentIDLogin, reqObj.MeetingImage);
                 if (MeetingAdd == null)
                 {
                     return NotFound(new BaseResponse

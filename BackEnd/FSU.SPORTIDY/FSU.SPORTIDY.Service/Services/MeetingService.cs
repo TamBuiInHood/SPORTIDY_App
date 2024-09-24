@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Firebase.Storage;
+using FSU.SPORTIDY.Common.FirebaseRootFolder;
 using FSU.SPORTIDY.Common.Role;
 using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
@@ -6,6 +8,8 @@ using FSU.SPORTIDY.Repository.UnitOfWork;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.Interfaces;
+using FSU.SPORTIDY.Service.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
@@ -91,18 +95,19 @@ namespace FSU.SPORTIDY.Service.Services
 
         }
 
-        public async Task<MeetingModel?> Insert(MeetingModel EntityInsert, List<int> invitedFriend, int currentLoginID)
+        public async Task<MeetingModel?> Insert(MeetingModel EntityInsert,  int currentLoginID, IFormFile? Image)
         {
-            var userMeeting = new List<UserMeeting>();
-            foreach (var player in invitedFriend)
-            {
-                userMeeting.Add(new UserMeeting
-                {
-                    UserId = player,
-                    ClubId = EntityInsert.ClubId,
-                    RoleInMeeting = MeetingRole.IS_INVITED,
-                });
-            }
+            //var userMeeting = new List<UserMeeting>();
+            //foreach (var player in invitedFriend)
+            //{
+            //    userMeeting.Add(new UserMeeting
+            //    {
+            //        UserId = player,
+            //        ClubId = EntityInsert.ClubId,
+            //        RoleInMeeting = MeetingRole.IS_INVITED,
+            //    });
+            //}
+            
             var meeting = new Meeting();
             meeting.MeetingCode = Guid.NewGuid().ToString();
             meeting.Address = EntityInsert.Address;
@@ -117,11 +122,20 @@ namespace FSU.SPORTIDY.Service.Services
             meeting.CancelBefore = EntityInsert.CancelBefore;
             meeting.Note = EntityInsert.Note;
             meeting.IsPublic = EntityInsert.IsPublic;
-            meeting.MeetingImage = EntityInsert.MeetingImage;
-            meeting.UserMeetings = userMeeting;
+            //meeting.MeetingImage = EntityInsert.MeetingImage;
+            //meeting.UserMeetings = userMeeting;
             meeting.TotalMember = EntityInsert.TotalMember;
             meeting.SportId = EntityInsert.SportId;
             meeting.CancelBefore = EntityInsert.CancelBefore;
+
+            // push hinh len firebase
+            if (Image != null)
+            {
+                string fileName = Path.GetFileName(meeting.MeetingCode);
+                var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                await firebaseStorage.Child(FirebaseRoot.MEETING).Child(fileName).PutAsync(Image.OpenReadStream());
+                meeting.MeetingImage = await firebaseStorage.Child(FirebaseRoot.MEETING).Child(fileName).GetDownloadUrlAsync();
+            }
 
             await _unitOfWork.MeetingRepository.Insert(meeting);
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
