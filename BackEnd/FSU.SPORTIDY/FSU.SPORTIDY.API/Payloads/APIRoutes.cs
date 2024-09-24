@@ -4,9 +4,9 @@
     {
         public const string Base = "/sportidy";
 
-        public static class Sportidy
+        public static class WebSocket
         {
-            public const string GetAll = Base + "/weatherforecast/";
+            public const string ws = Base + "websocket";
         }
 
         public static class Payment
@@ -199,5 +199,19 @@
 
             public const string Add = Base + "/bookings/";
         }
+
+        public static class Comment
+        {
+            public const string GetAll = Base + "{meeting-id}/comments/";
+
+            public const string GetByID = Base + "/comments/{comment-id}";
+
+            public const string Update = Base + "/comments/";
+
+            public const string Delete = Base + "/comments/{comment-id}";
+
+            public const string Add = Base + "/comments/";
+        }
+
     }
 }

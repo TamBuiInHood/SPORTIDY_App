@@ -16,5 +16,9 @@ namespace FSU.SPORTIDY.Common.FirebaseRootFolder
         public const string CLUB_AVATAR = "club/avatar";
         public const string CLUB_COVERIMAGE = "club/cover_image";
         #endregion
+
+        #region comment
+        public const string COMMENT = "comment";
+        #endregion
     }
 }

@@ -3,6 +3,7 @@ using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.BookingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.FriendShipBSModels;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldFeedbackModels;
@@ -113,6 +114,9 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ReverseMap();
             CreateMap<Payment, PaymentModel>()
                 .ForMember(dest => dest.Booking, opt => opt.MapFrom(src => src.Booking))
+                .ReverseMap();
+            CreateMap<CommentInMeeting, CommentInMeetingModel>()
+                .ForMember(dest => dest.Meeting, opt => opt.MapFrom(src => src.Meeting))
                 .ReverseMap();
         }
     }
