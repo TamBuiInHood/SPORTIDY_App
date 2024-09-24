@@ -26,6 +26,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private PlayFieldRepository _PlayFieldRepository;
         private BookingRepository _BookingRepo;
         private PaymentRepository _PaymentRepo;
+        private CommentInMeetingRepository _CommentRepo;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -230,6 +231,17 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._PaymentRepo= new PaymentRepository(_context);
                 }
                 return _PaymentRepo;
+            }
+        }
+        public CommentInMeetingRepository CommentRepository
+        {
+            get
+            {
+                if (_CommentRepo == null)
+                {
+                    this._CommentRepo = new CommentInMeetingRepository(_context);
+                }
+                return _CommentRepo;
             }
         }
     }
