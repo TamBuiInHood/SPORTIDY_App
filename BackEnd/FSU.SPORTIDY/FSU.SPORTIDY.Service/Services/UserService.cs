@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Firebase.Storage;
 using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Common.Role;
+using Microsoft.AspNetCore.Routing.Tree;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -243,6 +244,7 @@ namespace FSU.SPORTIDY.Service.Services
                 authClaims.Add(new Claim(ClaimTypes.Role, role.RoleName));
                 authClaims.Add(new Claim("UserId", user.UserId.ToString()));
                 authClaims.Add(new Claim("Status", user.Status.ToString()));
+                authClaims.Add(new Claim("DeviceCode", user.DeviceCode));
                 authClaims.Add(new Claim("FullName", user.FullName));
                 authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 
@@ -261,6 +263,7 @@ namespace FSU.SPORTIDY.Service.Services
                 new Claim(ClaimTypes.Role, role.RoleName),
                 new Claim("UserId", user.UserId.ToString()),
                 new Claim("Status", user.Status.ToString()),
+                new Claim("DeviceCode", user.DeviceCode),
                 new Claim("FullName", user.FullName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
@@ -809,6 +812,44 @@ namespace FSU.SPORTIDY.Service.Services
             }
             catch (Exception ex)
             {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<User>> GetAllUsersByRole(string roleName)
+        {
+            try
+            {
+                var result = await _unitOfWork.UserRepository.GetAllUsersByRole(roleName);
+                if(result.Count > 0)
+                {
+                    return result;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<bool> UpdateDeviceCodeByUserId(string deviceCode, int id)
+        {
+            try
+            {
+                var user = await _unitOfWork.UserRepository.GetByID(id);
+                if (user != null)
+                {
+                    user.DeviceCode = deviceCode;
+                    var result = await _unitOfWork.SaveAsync();
+                    return result > 0;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+
                 throw new Exception(ex.Message);
             }
         }

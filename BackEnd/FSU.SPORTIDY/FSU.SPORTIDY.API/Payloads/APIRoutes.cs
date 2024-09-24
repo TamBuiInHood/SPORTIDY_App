@@ -61,6 +61,8 @@
         {
             public const string GetAll = Base + "/users/";
 
+            public const string GetAllByRoleName = Base + "/users/{roleName}";
+
             public const string GetByID = Base + "/users/{id}";
 
             public const string GetByEmail = Base + "/users/by-email/{email}";
@@ -74,6 +76,8 @@
             public const string Delete = Base + "/users/delete-user/{id}";
 
             public const string Add = Base + "/users/";
+
+            public const string UpdateDeviceCode = Base + "/users/device-code/{id}";
         }
 
         public static class Club
@@ -198,6 +202,29 @@
             public const string Delete = Base + "/bookings/{booking-id}";
 
             public const string Add = Base + "/bookings/";
+        }
+
+        public static class Notifcation
+        {
+            public const string GetByEmail = Base + "/notifications/get-by-email/{email}";
+
+            public const string GetByID = Base + "/notifications/get-by-id/{notification-id}";
+
+            public const string GetByCustomerID = Base + "/notifications/get-by-customer-id/{customer-id}";
+
+            public const string Update = Base + "/notifications/update";
+
+            public const string Delete = Base + "/notifications/{notification-id}";
+
+            public const string AddByCustomerId = Base + "/notifications/{customer-id}";
+
+            public const string AddByRole = Base + "/notifications/add-by-role/{role-name}";
+
+            public const string AddByListUserId = Base + "/notifications/list-user-id";
+
+            public const string MarkAllCustomerNotificationIsReadByCustomerId = Base + "/notifications/mark-is-read-customer-id/{customer-id}";
+
+            public const string MarkNotificationIsReadByNotificationId = Base + "/notifications/mark-is-read/{notification-id}";
         }
     }
 }

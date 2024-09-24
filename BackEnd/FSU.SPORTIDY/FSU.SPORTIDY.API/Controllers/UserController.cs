@@ -360,6 +360,82 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        
+        [HttpGet(APIRoutes.User.GetAllByRoleName, Name = "GetAllUserByRoleName")]
+        public async Task<IActionResult> GetAllUserByRoleName([FromRoute] string roleName)
+        {
+            try
+            {
+                var result = await _userService.GetAllUsersByRole(roleName);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get all user by role name successfully",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Not found user with that role",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpPatch(APIRoutes.User.UpdateDeviceCode, Name = "Update Device Code Of User")]
+        public async Task<IActionResult> UpdateDeviceCodeByUserId(string deviceCode, [FromRoute] int id)
+        {
+            try
+            {
+                var result = await _userService.UpdateDeviceCodeByUserId(deviceCode, id);
+                if (result)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Update device code of user success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not find user for update device Code",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+
+            }
+        }
+
     }
 }

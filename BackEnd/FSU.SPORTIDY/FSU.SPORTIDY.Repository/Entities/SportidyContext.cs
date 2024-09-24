@@ -360,6 +360,8 @@ public partial class SportidyContext : DbContext
             entity.Property(e => e.FullName)
                 .HasMaxLength(80)
                 .IsUnicode(false);
+            entity.Property(e => e.DeviceCode)
+                .IsUnicode(false);
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
