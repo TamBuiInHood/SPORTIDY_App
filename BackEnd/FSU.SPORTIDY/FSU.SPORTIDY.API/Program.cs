@@ -92,6 +92,7 @@ builder.Services.AddScoped<IFriendShipRepository, FriendShipRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICommentInMeetingRepository, CommentInMeetingRepository>();
 
 
 
@@ -106,6 +107,8 @@ builder.Services.AddScoped<ISystemFeedbackService, SystemFeedbackService>();
 builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
 builder.Services.AddScoped<IFriendShipService, FriendShipService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<ICommentInMeetingService, CommentInMeetingService>();
+builder.Services.AddScoped< WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -177,9 +180,15 @@ if (app.Environment.IsDevelopment())
 
 // Config Middleware
 //app.UseMiddleware<AccountStatusMiddleware>();
-//app.UseMiddleware<TokenValidationMiddleware>();
-app.UseHttpsRedirection();
+app.UseMiddleware<TokenValidationMiddleware>();
 
+app.UseHttpsRedirection();
+var webSocketOptions = new WebSocketOptions()
+{
+    KeepAliveInterval = TimeSpan.FromMinutes(5),
+};
+
+app.UseWebSockets(webSocketOptions);
 app.UseAuthorization();
 app.UseAuthentication();
 

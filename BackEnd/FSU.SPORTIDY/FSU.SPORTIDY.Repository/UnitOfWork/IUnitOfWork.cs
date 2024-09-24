@@ -21,6 +21,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         BookingRepository BookingRepository { get; }
         PaymentRepository PaymentRepository { get; }
         NotificationRepository NotificationRepository { get; }
+        CommentInMeetingRepository CommentRepository { get; }
+
         void Save();
         Task<int> SaveAsync();
         Task<IDbContextTransaction> BeginTransactionAsync();

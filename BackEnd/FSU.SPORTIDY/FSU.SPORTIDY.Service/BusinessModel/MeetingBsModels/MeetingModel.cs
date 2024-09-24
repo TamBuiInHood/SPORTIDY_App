@@ -1,9 +1,5 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingBsModels;
 
 namespace FSU.SPORTIDY.Service.BusinessModel.MeetingModels
 {
@@ -37,7 +33,7 @@ namespace FSU.SPORTIDY.Service.BusinessModel.MeetingModels
 
         public int? CancelBefore { get; set; }
 
-        public virtual ICollection<CommentInMeeting> CommentInMeetings { get; set; } = new List<CommentInMeeting>();
+        public virtual ICollection<CommentInMeetingModel> CommentInMeetings { get; set; } = new List<CommentInMeetingModel>();
 
         public virtual ICollection<UserMeeting> UserMeetings { get; set; } = new List<UserMeeting>();
     }
