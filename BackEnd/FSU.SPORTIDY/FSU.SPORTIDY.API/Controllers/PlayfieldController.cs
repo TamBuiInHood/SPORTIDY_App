@@ -26,33 +26,35 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost(APIRoutes.Playfields.Add, Name = "AddPlayfieldAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddPlayfiedRequest reqObj)
+        public async Task<IActionResult> AddAsync([FromForm] AddPlayfiedRequest reqObj)
         {
             try
             {
-                // check-day hinh len server trc roi moi Add playfield sau 
-                // nen tat ten hinh theo code - code nen dc lay tu playfield + Code de lan sau update vao tam hinh do luon
+                if (!ModelState.IsValid)
+                {
+                    // Log the errors
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                }
 
                 var playfieldModel = new PlayFieldModel();
                 playfieldModel.PlayFieldName = reqObj.PlayFieldName;
                 playfieldModel.Address = reqObj.Address;
                 playfieldModel.CloseTime = reqObj.CloseTime;
                 playfieldModel.OpenTime = reqObj.OpenTime;
-                playfieldModel.AvatarImage = reqObj.AvatarImage.FileName;
 
-                var listImage = new List<ImageFieldModel>();
-                foreach (var item in reqObj.ImageFields)
-                {
-                    // day tung tam len server
-                    var Image = new ImageFieldModel();
-                    Image.VideoUrl = item.VideoUrl.FileName;
-                    Image.ImageUrl = item.ImageUrl.FileName;
-                    Image.ImageIndex = item.ImageIndex;
-                    listImage.Add(Image);
-                }
+                var listImage = new List<IFormFile>();
+                reqObj.AddImageField.OrderBy(x => x.ImageIndex);
+                listImage.AddRange(reqObj.AddImageField.Select(x => x.ImageUrl)!);
+                //foreach (var image in reqObj.ImageFields)
+                //{
+                //    var imageAdd = new ImageFieldModel();
+                //    imageAdd.ImageIndex = image.ImageIndex;
+                //    imageAdd.ImageUrl = image.ImageUrl.ToString();
+                //    playfieldModel.ImageFields.Add();
 
+                //}
 
-                var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage);
+                var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage, reqObj.AvatarImage!);
                 if (playfieldInsert == null)
                 {
                     return NotFound(new BaseResponse
@@ -172,18 +174,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var playfieldExist = _playFieldService.GetPlayFieldById(playfieldId);
-                if (playfieldExist == null)
-                {
-                    return BadRequest(new BaseResponse
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Cannot find a playfield",
-                        Data = null,
-                        IsSuccess = false
-                    });
-                }
-                // day file len server thanh cong thi thoi - chi can lay ra code cu de len tam hinh cu khong can luu lau
+                var playfieldExist = _playFieldService.UpdateAvatarImage(avatarImage,playfieldId);
 
                 return Ok(new BaseResponse
                 {

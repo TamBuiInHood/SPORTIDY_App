@@ -17,10 +17,10 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<PlayFieldModel> GetPlayFieldById(int playfieldId);
 
         public Task<bool> DeletePlayField(int PlayfieldId);
-        public Task<PlayFieldModel> CreatePlayField(PlayFieldModel playFieldModel, List<ImageFieldModel> listImage);
+        public Task<PlayFieldModel> CreatePlayField(PlayFieldModel playFieldModel, List<IFormFile> listImage, IFormFile AvartarImage);
         public Task<bool> UpdatePlayField(PlayFieldModel updateplayField);
         public Task<IEnumerable<PlayFieldModel>> GetPlayFieldsByUserId(int userId, int? pageSize, int? pageIndex);
-        public Task<bool> UpdateAvatarImage(String SportLightImage, int PlayFielId);
+        public Task<bool> UpdateAvatarImage(IFormFile avatarImage, int PlayFielId);
 
         public Task<bool> UpdateStatusPlayfield(int playfieldId, int status);
     }

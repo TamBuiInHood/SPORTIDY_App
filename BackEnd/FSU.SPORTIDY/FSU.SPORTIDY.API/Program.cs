@@ -21,6 +21,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder.Extensions;
 using FSU.SPORTIDY.Service.Services.PaymentServices;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
+using FSU.SPORTIDY.API.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Sportidy API", Version = "v1" });
+    option.OperationFilter<FileUploadOperationFilter>();
+
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,

@@ -1,4 +1,5 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
@@ -16,10 +17,11 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
         [Required]
         public TimeOnly? CloseTime { get; set; }
         [Required]
+        [FromForm]
         [FileFormat(".jpg", ".jpeg", ".png")]
         public IFormFile? AvatarImage { get; set; }
-
-        public  List<AddImageFieldRequest> ImageFields { get; set; } = new List<AddImageFieldRequest>();
+        [FromForm]
+        public  List<AddImageFieldRequest> AddImageField { get; set; } = new List<AddImageFieldRequest>();
 
     }
 }

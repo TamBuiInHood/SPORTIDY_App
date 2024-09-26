@@ -24,5 +24,9 @@ namespace FSU.SPORTIDY.Common.FirebaseRootFolder
         #region meeting
         public const string MEETING = "meeting";
         #endregion
+
+        #region Playfied image
+        public const string PLAYFIELD = "playfield";
+        #endregion
     }
 }
