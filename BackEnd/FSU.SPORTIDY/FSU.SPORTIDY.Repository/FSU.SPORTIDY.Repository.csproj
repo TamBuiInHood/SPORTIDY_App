@@ -29,4 +29,8 @@
   <ItemGroup>
     <ProjectReference Include="..\FSU.SPORTIDY.Common\FSU.SPORTIDY.Common.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 </Project>
