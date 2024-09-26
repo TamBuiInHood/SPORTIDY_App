@@ -296,5 +296,46 @@ namespace FSU.SPORTIDY.API.Controllers
                 });
             }
         }
+
+        [HttpGet(APIRoutes.Booking.RevenuePlayField, Name = "Revenue PlayField By Id And Year")]
+        public async Task<IActionResult> GetPlayFieldRevenue([FromRoute(Name = "playField-id")]int playFieldId, 
+                                                                [FromRoute(Name = "year")] int year)
+        {
+            var revenueResponse = await _bookingService.GetPlayFieldRevenueAsync(playFieldId, year);
+
+            if (revenueResponse == null)
+            {
+                return NotFound("PlayField not found");
+            }
+
+            return Ok(revenueResponse);
+        }
+
+        [HttpGet(APIRoutes.Booking.RevenuePlayFieldForAdmin, Name = "Revenue PlayField For Admin")]
+        public async Task<IActionResult> GetPlayFieldRevenue([FromRoute(Name = "year")] int year)
+        {
+            var revenueResponse = await _bookingService.GetAnnualRevenueForAdminAsync(year);
+
+            if (revenueResponse == null)
+            {
+                return NotFound("No bookings found for this year.");
+            }
+
+            return Ok(revenueResponse);
+        }
+
+        [HttpGet(APIRoutes.Booking.StatisticPlayFieldTypePercentage, Name = "Statistic PlayField Type Percentage")]
+        public async Task<IActionResult> GetFieldTypePercentage(int month, int year)
+        {
+            var percentages = await _bookingService.GetFieldTypePercentageAsync(month, year);
+
+            if (percentages == null || !percentages.Any())
+            {
+                return NotFound("No bookings found for this month and year.");
+            }
+
+            return Ok(percentages);
+        }
+
     }
 }

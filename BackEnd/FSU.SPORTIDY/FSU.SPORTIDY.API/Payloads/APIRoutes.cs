@@ -202,6 +202,12 @@
             public const string Delete = Base + "/bookings/{booking-id}";
 
             public const string Add = Base + "/bookings/";
+
+            public const string RevenuePlayField = Base + "/bookings/{playField-id}/{year}";
+
+            public const string RevenuePlayFieldForAdmin = Base + "/bookings/statistic/{year}";
+
+            public const string StatisticPlayFieldTypePercentage = Base + "/bookings/statistic/{month}/{year}";
         }
 
         public static class Notifcation

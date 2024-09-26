@@ -160,6 +160,52 @@ namespace FSU.SPORTIDY.Service.Services
             }
         }
 
+        public async Task<PlayFieldRevenueForAdmin> GetAnnualRevenueForAdminAsync(int year)
+        {
+            var bookings = await _unitOfWork.BookingRepository.GetBookingsByYearAsync(year);
+
+            var monthlyRevenues = Enumerable.Range(1, 12)
+                .Select(month => new MonthlyRevenue
+                {
+                    Month = month,
+                    Revenue = bookings
+                        .Where(b => b.BookingDate.Value.Month == month)
+                        .Sum(b => b.Price)
+                }).ToList();
+
+            var totalRevenue = monthlyRevenues.Sum(m => m.Revenue);
+
+            return new PlayFieldRevenueForAdmin
+            {
+                Year = year,
+                MonthlyRevenues = monthlyRevenues,
+                TotalRevenue = totalRevenue
+            };
+        }
+
+        public async Task<PlayFieldRevenueResponse> GetPlayFieldRevenueAsync(int playFieldId, int year)
+        {
+            var revenues = await _unitOfWork.BookingRepository.GetRevenuesByPlayFieldAndYearAsync(playFieldId, year);
+
+            var monthlyRevenueList = Enumerable.Range(1, 12)
+                .Select(month => new MonthlyRevenue
+                {
+                    Month = month,
+                    Revenue = revenues
+                        .Where(r => (r.BookingDate ?? DateTime.Now).Month == month)
+                        .Sum(r => r.Price)
+                })
+                .ToList();
+
+            var totalRevenue = monthlyRevenueList.Sum(m => m.Revenue);
+
+            return new PlayFieldRevenueResponse
+            {
+                MonthlyRevenues = monthlyRevenueList,
+                TotalRevenue = totalRevenue
+            };
+        }
+
         public async Task<BookingModel> Insert(BookingModel entityInsert, IFormFile barCode)
         {
             try
@@ -264,6 +310,24 @@ namespace FSU.SPORTIDY.Service.Services
             booking.Status = status;
             var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
             return _mapper.Map<BookingModel>(booking);
+        }
+
+        public async Task<List<FieldTypePercentage>> GetFieldTypePercentageAsync(int month, int year)
+        {
+            var bookings = await _unitOfWork.BookingRepository.GetBookingsByMonthAndYearAsync(month, year);
+
+            var totalBookings = bookings.Count;
+
+            var fieldTypePercentages = bookings
+                .GroupBy(b => b.PlayField.Sport.SportName)
+                .Select(g => new FieldTypePercentage
+                {
+                    FieldTypeName = g.Key,
+                    Percentage = (g.Count() * 100.0) / totalBookings
+                })
+                .ToList();
+
+            return fieldTypePercentages;
         }
     }
 }

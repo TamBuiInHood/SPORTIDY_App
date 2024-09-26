@@ -19,5 +19,8 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<PageEntity<BookingModel>> GetAll(string? searchKey, int? PageSize, int? PageIndex);
         Task<BookingModel> GetById(int bookingId);
         Task<BookingModel> UpdateStatus(int bookingId, int status);
+        public Task<PlayFieldRevenueResponse> GetPlayFieldRevenueAsync(int playFieldId, int year);
+        public Task<PlayFieldRevenueForAdmin> GetAnnualRevenueForAdminAsync(int month);
+        public Task<List<FieldTypePercentage>> GetFieldTypePercentageAsync(int month, int year);
     }
 }
