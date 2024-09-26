@@ -252,6 +252,15 @@ public partial class SportidyContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.PlayFields)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_PlayField_User");
+
+            entity.HasOne(c => c.PlayFieldContainer)
+                    .WithMany()
+                    .HasForeignKey(c => c.IsDependency);
+
+            entity.HasOne(d => d.Sport).WithMany(p => p.PlayFields)
+                .HasForeignKey(d => d.SportId)
+                .HasConstraintName("FK_PlayField_Sport");
+
         });
 
         modelBuilder.Entity<PlayFieldFeedback>(entity =>
