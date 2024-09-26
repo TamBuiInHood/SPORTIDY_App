@@ -8,9 +8,9 @@ namespace FSU.SPORTIDY.Common.Status
 {
     public enum PlayFieldStatus
     {
-        Deleted = 0,
-        WaitingAccept = 1,
-        Open = 2,
-        Closing = 3,
+        DELTED = 0,
+        WAITINGACCEPT = 1,
+        OPEN = 2,
+        CLOSE = 3,
     }
 }

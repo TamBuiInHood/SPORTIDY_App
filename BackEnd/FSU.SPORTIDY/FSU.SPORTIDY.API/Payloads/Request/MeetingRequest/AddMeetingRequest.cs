@@ -7,7 +7,7 @@ namespace FSU.SPORTIDY.API.Payloads.Request.MeetingRequest
     {
         [Required]
         public string? MeetingName { get; set; }
-        public string? MeetingImage { get; set; }
+        public IFormFile? MeetingImage { get; set; }
         [Required]
         public string? Address { get; set; }
         [Required]
@@ -24,7 +24,7 @@ namespace FSU.SPORTIDY.API.Payloads.Request.MeetingRequest
         public int? SportId { get; set; }
         [Required]
         public int? CancelBefore { get; set; }
-        public List<int> InvitedFriend { get; set; }
+        //public List<int> InvitedFriend { get; set; }
         [Required]
         public int currentIDLogin { get; set; }
     }

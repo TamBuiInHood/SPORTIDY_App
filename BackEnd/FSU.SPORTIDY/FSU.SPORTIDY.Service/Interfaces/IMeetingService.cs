@@ -1,5 +1,6 @@
 ﻿using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using Microsoft.AspNetCore.Http;
 
 namespace FSU.SPORTIDY.Service.Interfaces
 {
@@ -13,7 +14,7 @@ namespace FSU.SPORTIDY.Service.Interfaces
        
         public Task<MeetingModel?> GetByID(int meetingID);
         
-        public Task<MeetingModel?> Insert(MeetingModel EntityInsert, List<int> invitedFriend, int currentLoginID);
+        public Task<MeetingModel?> Insert(MeetingModel EntityInsert, int currentLoginID, IFormFile? Image);
        
         public Task<MeetingModel> Update(MeetingModel EntityUpdate);
     }

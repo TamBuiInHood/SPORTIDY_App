@@ -11,11 +11,11 @@ namespace FSU.SPORTIDY.Service.Interfaces
 {
     public interface ISportService
     {
-        public Task<PageEntity<SportDTO>> Get(string searchKey, int? PageSize, int? PageIndex);
-        public Task<SportDTO> getById(int id);
+        public Task<PageEntity<SportModel>> Get(string searchKey, int? PageSize, int? PageIndex);
+        public Task<SportModel> getById(int id);
         public Task<bool> Delete(int sportId);
-        public Task<IEnumerable<SportDTO>> GetAllSportNotPagin();
-        public Task<SportDTO?> Insert(SportDTO EntityInsert);
-        public Task<SportDTO> Update(SportDTO EntityUpdate);
+        public Task<IEnumerable<SportModel>> GetAllSportNotPagin();
+        public Task<SportModel?> Insert(SportModel EntityInsert);
+        public Task<SportModel> Update(SportModel EntityUpdate);
     }
 }

@@ -12,6 +12,7 @@ using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace FSU.SPORTIDY.Service.Services
             _websocketService = websocketService;
         }
 
-        public WebSocketService WebsocketService => _websocketService;
+        //public WebSocketService WebsocketService => _websocketService;
 
         public async Task<bool> Delete(int CommentInmeetingId)
         {
@@ -56,7 +57,7 @@ namespace FSU.SPORTIDY.Service.Services
             return mapdto;
         }
 
-        public async Task<PageEntity<CommentInMeetingModel>> GetByMeetingId(int meetingId, int? PageSize = Page.DEFAULT_PAGE_SIZE, int? PageIndex = Page.DEFAULT_PAGE_INDEX)
+        public async Task<PageEntity<CommentInMeetingModel>> GetByMeetingId(int meetingId, int PageSize, int PageIndex)
         {
             Expression<Func<CommentInMeeting, bool>> filter = x => x.MeetingId == meetingId;
             var allComment = await _unitOfWork.CommentRepository.Get(filter, pageSize: PageSize, pageIndex: PageIndex);
@@ -66,7 +67,7 @@ namespace FSU.SPORTIDY.Service.Services
 
             pagin.List = _mapper.Map<IEnumerable<CommentInMeetingModel>>(allComment);
             pagin.TotalRecord = await _unitOfWork.CommentRepository.Count(filter);
-            pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize.Value);
+            pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize);
             return pagin;
         }
 
@@ -83,7 +84,7 @@ namespace FSU.SPORTIDY.Service.Services
                 string fileName = Path.GetFileName(comment.CommentCode);
                 var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                 await firebaseStorage.Child($"{FirebaseRoot.COMMENT}/{meetingId}").Child(comment.CommentCode).PutAsync(Image.OpenReadStream());
-                comment.Image = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
+                comment.Image = await firebaseStorage.Child($"{FirebaseRoot.COMMENT}/{meetingId}").Child(fileName).GetDownloadUrlAsync();
             }
             await _unitOfWork.CommentRepository.Insert(comment);
 
@@ -99,7 +100,7 @@ namespace FSU.SPORTIDY.Service.Services
             return null!;
         }
 
-        public async Task<CommentInMeetingModel> Update(string content, int commentId, IFormFile? Image)
+        public async Task<CommentInMeetingModel> Update(string? content, int commentId, IFormFile? Image)
         {
             Expression<Func<CommentInMeeting, bool>> filter = x => x.CommentId == commentId;
             var comment = await _unitOfWork.CommentRepository.GetByCondition(filter);
@@ -114,8 +115,10 @@ namespace FSU.SPORTIDY.Service.Services
                 var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                 await firebaseStorage.Child($"{FirebaseRoot.COMMENT}/{comment.MeetingId}").Child(comment.CommentCode).PutAsync(Image.OpenReadStream());
             }
-
-            comment.Content = content;
+            if (!content.IsNullOrEmpty())
+            {
+                comment.Content = content;
+            }
 
             _unitOfWork.CommentRepository.Update(comment);
 
