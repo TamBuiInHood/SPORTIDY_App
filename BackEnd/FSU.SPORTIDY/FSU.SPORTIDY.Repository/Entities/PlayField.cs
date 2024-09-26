@@ -37,6 +37,7 @@ public partial class PlayField
 
     public virtual User? User { get; set; }
     public virtual PlayField? PlayFieldContainer { get; set; }
+    public virtual ICollection<PlayField>? ListSubPlayFields { get; set; }
     public virtual Sport? Sport { get; set; }
 
 
