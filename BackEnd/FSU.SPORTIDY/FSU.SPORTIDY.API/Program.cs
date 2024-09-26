@@ -91,6 +91,7 @@ builder.Services.AddScoped<IPlayFieldRepository, PlayFieldRepository>();
 builder.Services.AddScoped<IFriendShipRepository, FriendShipRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICommentInMeetingRepository, CommentInMeetingRepository>();
 
 
@@ -110,6 +111,7 @@ builder.Services.AddScoped<ICommentInMeetingService, CommentInMeetingService>();
 builder.Services.AddScoped< WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));
