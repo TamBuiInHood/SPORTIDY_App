@@ -32,8 +32,13 @@ namespace FSU.SPORTIDY.API.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    // Log the errors
-                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    return BadRequest(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Message = "your information are not correct",
+                        Data = ModelState.Values.SelectMany(v => v.Errors),
+                        IsSuccess = false
+                    });
                 }
 
                 var playfieldModel = new PlayFieldModel();
@@ -54,7 +59,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
                 //}
 
-                var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage, reqObj.AvatarImage!);
+                var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage, reqObj.AvatarImage!, reqObj.subPlayfieds);
                 if (playfieldInsert == null)
                 {
                     return NotFound(new BaseResponse

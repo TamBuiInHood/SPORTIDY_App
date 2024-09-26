@@ -36,7 +36,9 @@ public partial class PlayField
     public virtual ICollection<ImageField> ImageFields { get; set; } = new List<ImageField>();
 
     public virtual User? User { get; set; }
+
     public virtual PlayField? PlayFieldContainer { get; set; }
+
     public virtual Sport? Sport { get; set; }
 
 

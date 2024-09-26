@@ -17,6 +17,8 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
         [Required]
         public TimeOnly? CloseTime { get; set; }
         [Required]
+        public List<string> subPlayfieds = new List<string>();
+        [Required]
         [FromForm]
         [FileFormat(".jpg", ".jpeg", ".png")]
         public IFormFile? AvatarImage { get; set; }

@@ -27,7 +27,7 @@ namespace FSU.SPORTIDY.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<PlayFieldModel> CreatePlayField(PlayFieldModel playFieldModel, List<IFormFile> listImage, IFormFile AvatarImage)
+        public async Task<PlayFieldModel> CreatePlayField(PlayFieldModel playFieldModel, List<IFormFile> listImage, IFormFile AvatarImage, List<string> subPlayfields)
         {
             var playfield = new PlayField();
             _mapper.Map(playFieldModel, playfield);
@@ -63,6 +63,16 @@ namespace FSU.SPORTIDY.Service.Services
             }
 
             await _unitOfWork.PlayFieldRepository.Insert(playfield);
+
+            foreach (var nameSubFieldToAdd in subPlayfields)
+            {
+                var subplayfield = new PlayField();
+                _mapper.Map(playfield, subplayfield);
+                subplayfield.PlayFieldName = nameSubFieldToAdd;
+                subplayfield.IsDependency = playfield.PlayFieldId;
+                await _unitOfWork.PlayFieldRepository.Insert(subplayfield);
+            }
+
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             if (result == true)
             {
