@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FSU.SPORTIDY.Repository.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,8 @@ namespace FSU.SPORTIDY.Repository.Interfaces
 {
     public interface IBookingRepository
     {
+        public Task<List<Booking>> GetRevenuesByPlayFieldAndYearAsync(int playFieldId, int year);
+        public Task<List<Booking>> GetBookingsByYearAsync(int month);
+        public Task<List<Booking>> GetBookingsByMonthAndYearAsync(int month, int year);
     }
 }
