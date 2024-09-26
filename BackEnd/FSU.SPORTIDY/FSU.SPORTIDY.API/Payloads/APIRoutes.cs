@@ -155,7 +155,7 @@
 
             public const string GetByID = Base + "/Playfields/{playfield-id}";
 
-            public const string GetByUserID = Base + "/Playfields/{user-id}";
+            public const string GetByUserID = Base + "/Playfields/get-by-user-id/{user-id}";
 
             public const string Update = Base + "/Playfields/";
 

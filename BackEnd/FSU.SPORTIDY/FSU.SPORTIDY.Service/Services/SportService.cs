@@ -33,7 +33,7 @@ namespace FSU.SPORTIDY.Service.Services
             return result;
         }
 
-        public async Task<PageEntity<SportDTO>> Get(string searchKey, int? PageSize, int? PageIndex)
+        public async Task<PageEntity<SportModel>> Get(string searchKey, int? PageSize, int? PageIndex)
         {
             Expression<Func<Sport, bool>> filter = !searchKey.IsNullOrEmpty() ? x => x.SportName!.ToLower().Contains(searchKey.ToLower()) : null!;
 
@@ -41,14 +41,14 @@ namespace FSU.SPORTIDY.Service.Services
 
             var entities = await _unitOfWork.SportRepository
                 .Get(filter: filter, orderBy: orderBy, pageIndex: PageIndex, pageSize: PageSize);
-            var pagin = new PageEntity<SportDTO>();
-            pagin.List = _mapper.Map<IEnumerable<SportDTO>>(entities).ToList();
+            var pagin = new PageEntity<SportModel>();
+            pagin.List = _mapper.Map<IEnumerable<SportModel>>(entities).ToList();
             pagin.TotalRecord = await _unitOfWork.MeetingRepository.Count();
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize!.Value);
             return pagin;
         }
 
-        public async Task<IEnumerable<SportDTO>> GetAllSportNotPagin()
+        public async Task<IEnumerable<SportModel>> GetAllSportNotPagin()
         {
             Func<IQueryable<Sport>, IOrderedQueryable<Sport>> orderBy = q => q.OrderBy(x => x.SportName);
 
@@ -56,19 +56,19 @@ namespace FSU.SPORTIDY.Service.Services
                 orderBy: orderBy,
                 includeProperties: null);
 
-            var mapDTO = _mapper.Map<IEnumerable<SportDTO>>(sport);
+            var mapDTO = _mapper.Map<IEnumerable<SportModel>>(sport);
             return mapDTO;
         }
 
-        public async Task<SportDTO> getById(int id)
+        public async Task<SportModel> getById(int id)
         {
             Expression<Func<Sport, bool>> filter = x => x.SportId == id;
 
             var entity = await _unitOfWork.SportRepository.GetByCondition(filter);
-            return _mapper?.Map<SportDTO?>(entity)!;
+            return _mapper?.Map<SportModel?>(entity)!;
         }
 
-        public async Task<SportDTO?> Insert(SportDTO EntityInsert)
+        public async Task<SportModel?> Insert(SportModel EntityInsert)
         {
             var sport = new Sport();
             sport.SportCode = Guid.NewGuid().ToString();
@@ -79,13 +79,13 @@ namespace FSU.SPORTIDY.Service.Services
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             if (result == true)
             {
-                var mapdto = _mapper.Map<SportDTO>(sport);
+                var mapdto = _mapper.Map<SportModel>(sport);
                 return mapdto;
             }
             return null!;
         }
 
-        public async Task<SportDTO> Update(SportDTO EntityUpdate)
+        public async Task<SportModel> Update(SportModel EntityUpdate)
         {
             var sport = await _unitOfWork.SportRepository.GetByCondition(x => x.SportId == EntityUpdate.SportId);
             if (sport == null)

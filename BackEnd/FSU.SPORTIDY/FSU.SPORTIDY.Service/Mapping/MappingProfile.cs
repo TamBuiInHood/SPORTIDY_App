@@ -3,6 +3,7 @@ using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.BookingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.FriendShipBSModels;
+using FSU.SPORTIDY.Service.BusinessModel.ImageFieldBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
@@ -35,7 +36,7 @@ namespace FSU.SPORTIDY.Service.Mapping
             CreateMap<User, UserModel>()
                 .ForMember(x => x.RoleName, opt => opt.MapFrom(x => x.Role.RoleName))
                 .ReverseMap();
-            CreateMap<Sport, SportDTO>()
+            CreateMap<Sport, SportModel>()
                 .ForMember(dto => dto.Users, opt => opt.MapFrom(entity => entity.Users))
                 .ReverseMap();
 
@@ -99,8 +100,14 @@ namespace FSU.SPORTIDY.Service.Mapping
              .ReverseMap();
             CreateMap<PlayField, PlayFieldModel>()
                 .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
-                .ForMember(dest => dest.ImageFields, opt => opt.MapFrom(src => src.ImageFields))
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.ImageFields, opt => opt.MapFrom(src => src.ImageFields))  // Nếu ImageFields là collection
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))  // Nếu User là object khác
+                .ForMember(dest => dest.PlayFieldContainer, opt => opt.MapFrom(src => src.PlayFieldContainer))
+                .ForMember(dest => dest.Sport, opt => opt.MapFrom(src => src.Sport))
+                .ForMember(dest => dest.ListSubPlayFields, opt => opt.MapFrom(src => src.ListSubPlayFields))  // Nếu ListSubPlayFields là collection
+                .ReverseMap();
+            CreateMap<ImageField, ImageFieldModel>()
+                .ForMember(dest => dest.PlayField, opt => opt.MapFrom(src => src.PlayField))
                 .ReverseMap();
             CreateMap<Friendship, FriendShipModel>()
                 .ForMember(dest => dest.UserId1Navigation, opt => opt.MapFrom(src => src.UserId1Navigation))

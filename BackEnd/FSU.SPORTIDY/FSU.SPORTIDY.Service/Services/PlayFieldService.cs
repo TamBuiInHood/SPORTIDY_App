@@ -5,7 +5,6 @@ using FSU.SPORTIDY.Common.Status;
 using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.UnitOfWork;
-using FSU.SPORTIDY.Service.BusinessModel.ImageFieldBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels;
 using FSU.SPORTIDY.Service.Interfaces;
@@ -13,7 +12,6 @@ using FSU.SPORTIDY.Service.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -32,7 +30,7 @@ namespace FSU.SPORTIDY.Service.Services
             var playfield = new PlayField();
             _mapper.Map(playFieldModel, playfield);
             playfield.PlayFieldCode = Guid.NewGuid().ToString();
-            playfield.Status = (int)PlayFieldStatus.WaitingAccept;
+            playfield.Status = (int)PlayFieldStatus.WAITINGACCEPT;
 
             // luu hinh anh cua playfield
             // check-day hinh len server trc roi moi Add playfield sau 
@@ -62,16 +60,20 @@ namespace FSU.SPORTIDY.Service.Services
 
             }
 
-            await _unitOfWork.PlayFieldRepository.Insert(playfield);
-
             foreach (var nameSubFieldToAdd in subPlayfields)
             {
                 var subplayfield = new PlayField();
-                _mapper.Map(playfield, subplayfield);
+                _mapper.Map(playFieldModel, subplayfield);
+                subplayfield.PlayFieldCode = Guid.NewGuid().ToString();
+                subplayfield.Status = (int)PlayFieldStatus.WAITINGACCEPT;
+
                 subplayfield.PlayFieldName = nameSubFieldToAdd;
-                subplayfield.IsDependency = playfield.PlayFieldId;
-                await _unitOfWork.PlayFieldRepository.Insert(subplayfield);
+                //subplayfield.IsDependency = playfield.PlayFieldId;
+                playfield.ListSubPlayFields!.Add(subplayfield);
             }
+
+            await _unitOfWork.PlayFieldRepository.Insert(playfield);
+
 
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             if (result == true)
@@ -84,12 +86,30 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<bool> DeletePlayField(int playFieldID)
         {
-            var playfield = _unitOfWork.PlayFieldRepository.GetByID(playFieldID);
-            if (playfield == null)
+            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == playFieldID;
+            string includeProperties = "ListSubPlayFields";
+            var playfieldDelete = await _unitOfWork.PlayFieldRepository.GetByCondition(filter, includeProperties);
+            if (playfieldDelete == null)
             {
                 throw new Exception("This playfield not exist");
             }
-            _unitOfWork.PlayFieldRepository.Delete(playfield);
+            playfieldDelete.Status = (int)PlayFieldStatus.DELTED;
+
+            var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+
+            foreach (var item in playfieldDelete.ImageFields)
+            {
+                var fileNameVideo = item.ImageUrl!.Substring(item.ImageUrl.LastIndexOf('/') + 1);
+                fileNameVideo = fileNameVideo.Split('?')[0]; // Remove the query parameters
+                var encodedFileVideo = Path.GetFileName(fileNameVideo);
+                var fileNameVideoOfficial = Uri.UnescapeDataString(encodedFileVideo);
+
+                // Delete the cover image club from Firebase Storage
+                var fileRefVideo = firebaseStorage.Child(fileNameVideoOfficial);
+                await fileRefVideo.DeleteAsync();
+            }
+            playfieldDelete.ImageFields.Clear();
+            _unitOfWork.PlayFieldRepository.Update(playfieldDelete);
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             return result;
         }
@@ -99,8 +119,8 @@ namespace FSU.SPORTIDY.Service.Services
             Expression<Func<PlayField, bool>> filter = !string.IsNullOrEmpty(searchKey)
     ? x => (x.PlayFieldName!.ToLower().Contains(searchKey.ToLower())
             || x.Address!.ToLower().Contains(searchKey.ToLower()))
-            && x.Status != (int)PlayFieldStatus.Deleted
-    : x => x.Status != (int)PlayFieldStatus.Deleted;
+            && x.Status != (int)PlayFieldStatus.DELTED && x.IsDependency == null
+    : x => x.Status != (int)PlayFieldStatus.DELTED && x.IsDependency == null;
 
             Func<IQueryable<PlayField>, IOrderedQueryable<PlayField>> orderBy = q => q.OrderBy(x => x.PlayFieldName);
 
@@ -114,8 +134,8 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<PlayFieldModel> GetPlayFieldById(int playfiedId)
         {
-            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == playfiedId && x.Status != (int)PlayFieldStatus.Deleted;
-            string includeProperties = "ImageFields,User";
+            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == playfiedId && x.Status != (int)PlayFieldStatus.DELTED;
+            string includeProperties = "User,ImageFields,ListSubPlayFields";
             var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter: filter, includeProperties: includeProperties);
             var dto = _mapper.Map<PlayFieldModel?>(playfield);
             return dto!;
@@ -123,20 +143,21 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<IEnumerable<PlayFieldModel>> GetPlayFieldsByUserId(int userId, int? pageSize, int? pageIndex)
         {
-            Expression<Func<PlayField, bool>> filter = x => x.UserId == userId;
+            Expression<Func<PlayField, bool>> filter = x => x.UserId == userId && x.IsDependency == null && x.Status != (int)PlayFieldStatus.DELTED;
 
             Func<IQueryable<PlayField>, IOrderedQueryable<PlayField>> orderBy = q => q.OrderBy(x => x.PlayFieldName);
 
-            string includeProperties = "ImageFields,User";
+            string includeProperties = "ImageFields,ListSubPlayFields";
             var playfield = await _unitOfWork.PlayFieldRepository.Get(filter: filter, includeProperties: includeProperties, pageSize: pageSize, pageIndex: pageIndex);
-            var dto = _mapper.Map<IEnumerable<PlayFieldModel>?>(playfield);
+            var dto = _mapper.Map<IEnumerable<PlayFieldModel>?>(playfield.ToList());
             return dto!;
         }
 
         public async Task<bool> UpdateAvatarImage(IFormFile avatarImage, int PlayFielId)
         {
-            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == PlayFielId && x.Status != (int)PlayFieldStatus.Deleted && x.Status != (int)PlayFieldStatus.WaitingAccept;
-            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter);
+            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == PlayFielId && x.Status != (int)PlayFieldStatus.DELTED && x.Status != (int)PlayFieldStatus.WAITINGACCEPT && x.IsDependency == null;
+            string includeProperties = "ListSubPlayFields";
+            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter, includeProperties);
             if (avatarImage != null)
             {
                 // update barcode vo url co san
@@ -148,8 +169,9 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<bool> UpdatePlayField(PlayFieldModel updateplayField)
         {
-            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == updateplayField.PlayFieldId && x.Status != (int)PlayFieldStatus.Deleted && x.Status != (int)PlayFieldStatus.WaitingAccept;
-            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter);
+            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == updateplayField.PlayFieldId && x.Status != (int)PlayFieldStatus.DELTED && x.Status != (int)PlayFieldStatus.WAITINGACCEPT && x.IsDependency == null;
+            string includeProperties = "ListSubPlayFields";
+            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter, includeProperties);
             if (playfield == null)
             {
                 throw new Exception("This playfield is not exist");
@@ -161,18 +183,25 @@ namespace FSU.SPORTIDY.Service.Services
             if (!updateplayField.Price.HasValue)
             {
                 playfield.Price = updateplayField.Price;
+                playfield.ListSubPlayFields!.ToList().ForEach(x => x.Price = updateplayField.Price);
             }
             if (!updateplayField.Address.IsNullOrEmpty())
             {
                 playfield.Address = updateplayField.Address;
+                playfield.ListSubPlayFields!.ToList().ForEach(x => x.Address = updateplayField.Address);
+
             }
             if (!updateplayField.OpenTime.HasValue)
             {
                 playfield.OpenTime = updateplayField.OpenTime;
+                playfield.ListSubPlayFields!.ToList().ForEach(x => x.OpenTime = updateplayField.OpenTime);
+
             }
             if (!updateplayField.CloseTime.HasValue)
             {
                 playfield.CloseTime = updateplayField.CloseTime;
+                playfield.ListSubPlayFields!.ToList().ForEach(x => x.CloseTime = updateplayField.CloseTime);
+
             }
 
             _unitOfWork.PlayFieldRepository.Update(playfield);
@@ -182,13 +211,16 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<bool> UpdateStatusPlayfield(int playfieldId, int status)
         {
-            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == playfieldId && x.Status != (int)PlayFieldStatus.Deleted;
-            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter);
+            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == playfieldId && x.Status != (int)PlayFieldStatus.DELTED && x.IsDependency == null;
+            string includeProperties = "ListSubPlayFields";
+
+            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter, includeProperties);
             if (playfield == null)
             {
                 throw new Exception("This playfield is not exist");
             }
             playfield.Status = status;
+            playfield.ListSubPlayFields.ToList().ForEach(x => x.Status = status);
             _unitOfWork.PlayFieldRepository.Update(playfield);
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             return result;

@@ -30,34 +30,28 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(new BaseResponse
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "your information are not correct",
-                        Data = ModelState.Values.SelectMany(v => v.Errors),
-                        IsSuccess = false
-                    });
-                }
+                //if (!ModelState.IsValid)
+                //{
+                //    return BadRequest(new BaseResponse
+                //    {
+                //        StatusCode = StatusCodes.Status400BadRequest,
+                //        Message = "your information are not correct",
+                //        Data = ModelState.Values.SelectMany(v => v.Errors),
+                //        IsSuccess = false
+                //    });
+                //}
 
                 var playfieldModel = new PlayFieldModel();
                 playfieldModel.PlayFieldName = reqObj.PlayFieldName;
                 playfieldModel.Address = reqObj.Address;
-                playfieldModel.CloseTime = reqObj.CloseTime;
-                playfieldModel.OpenTime = reqObj.OpenTime;
+                playfieldModel.CloseTime = TimeOnly.FromDateTime(reqObj.CloseTime!.Value);
+                playfieldModel.OpenTime = TimeOnly.FromDateTime(reqObj.OpenTime!.Value);
+                playfieldModel.SportId = reqObj.sportId;
+                playfieldModel.Price = reqObj.Price;
 
                 var listImage = new List<IFormFile>();
                 reqObj.AddImageField.OrderBy(x => x.ImageIndex);
                 listImage.AddRange(reqObj.AddImageField.Select(x => x.ImageUrl)!);
-                //foreach (var image in reqObj.ImageFields)
-                //{
-                //    var imageAdd = new ImageFieldModel();
-                //    imageAdd.ImageIndex = image.ImageIndex;
-                //    imageAdd.ImageUrl = image.ImageUrl.ToString();
-                //    playfieldModel.ImageFields.Add();
-
-                //}
 
                 var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage, reqObj.AvatarImage!, reqObj.subPlayfieds);
                 if (playfieldInsert == null)
