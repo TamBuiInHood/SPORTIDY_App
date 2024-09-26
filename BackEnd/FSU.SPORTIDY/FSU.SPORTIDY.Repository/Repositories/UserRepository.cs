@@ -24,6 +24,15 @@ namespace FSU.SPORTIDY.Repository.Repositories
             await context.SaveChangesAsync();
         }
 
+        public async Task<List<User>> GetAllUsersByRole(string roleName)
+        {
+            var result = await _context.Users.Include(x => x.Role)
+                                        .Where(x => x.Role.RoleName.ToLower() == roleName.ToLower())
+                                        .ToListAsync();    
+            return result;
+
+        }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
            return await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));  

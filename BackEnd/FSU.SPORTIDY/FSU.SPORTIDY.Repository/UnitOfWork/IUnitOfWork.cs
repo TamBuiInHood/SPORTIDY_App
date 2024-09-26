@@ -20,6 +20,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         GenericRepository<Sport> SportRepository { get; }
         BookingRepository BookingRepository { get; }
         PaymentRepository PaymentRepository { get; }
+        NotificationRepository NotificationRepository { get; }
         CommentInMeetingRepository CommentRepository { get; }
 
         void Save();

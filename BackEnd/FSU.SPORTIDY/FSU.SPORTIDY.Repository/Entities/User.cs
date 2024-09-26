@@ -39,6 +39,7 @@ public partial class User
     public string? Phone { get; set; }
     public string? BankCode { get; set; }
     public string? BankName { get; set; }
+    public string? DeviceCode { get; set; }
 
     public virtual ICollection<Friendship> FriendshipUserId1Navigations { get; set; } = new List<Friendship>();
 
