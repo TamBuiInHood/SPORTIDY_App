@@ -256,5 +256,18 @@
             public const string Add = Base + "/comments/";
         }
 
+        public static class ImageField
+        {
+            public const string GetAll = Base + "{playfield-id}/images-field/";
+
+            public const string GetByID = Base + "/images-field/{image-id}";
+
+            public const string Update = Base + "/images-field/";
+
+            public const string Delete = Base + "/images-field/{image-id}";
+
+            public const string Add = Base + "/images-field/";
+        }
+
     }
 }
