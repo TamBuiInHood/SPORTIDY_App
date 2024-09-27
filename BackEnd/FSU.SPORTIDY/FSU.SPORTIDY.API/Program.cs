@@ -96,6 +96,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICommentInMeetingRepository, CommentInMeetingRepository>();
+builder.Services.AddScoped<IImageFieldRepository, ImageFeldReposiotory>();
 
 
 
@@ -115,6 +116,7 @@ builder.Services.AddScoped<WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IImageFieldService, ImageFieldService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));
