@@ -5,8 +5,10 @@ using FSU.SPORTIDY.Common.Role;
 using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Repository.UnitOfWork;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
 using Microsoft.AspNetCore.Http;
@@ -90,24 +92,19 @@ namespace FSU.SPORTIDY.Service.Services
         public async Task<MeetingModel?> GetByID(int meetingID)
         {
             Expression<Func<Meeting, bool>> condition = x => x.MeetingId == meetingID && (x.Status != (int)MeetingStatus.DELETED);
-            var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition);
+            string includeProperties = "UserMeetings,CommentInMeetings";
+            var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition,includeProperties);
             return _mapper?.Map<MeetingModel?>(entity)!;
 
         }
 
         public async Task<MeetingModel?> Insert(MeetingModel EntityInsert,  int currentLoginID, IFormFile? Image)
         {
-            //var userMeeting = new List<UserMeeting>();
-            //foreach (var player in invitedFriend)
-            //{
-            //    userMeeting.Add(new UserMeeting
-            //    {
-            //        UserId = player,
-            //        ClubId = EntityInsert.ClubId,
-            //        RoleInMeeting = MeetingRole.IS_INVITED,
-            //    });
-            //}
-            
+            if (EntityInsert.StartDate < DateTime.Now || EntityInsert.EndDate < DateTime.Now)
+            {
+                // You can either return null or a custom response indicating invalid dates
+                return null; // Or throw an exception or custom error response
+            }
             var meeting = new Meeting();
             meeting.MeetingCode = Guid.NewGuid().ToString();
             meeting.Address = EntityInsert.Address;
@@ -160,6 +157,89 @@ namespace FSU.SPORTIDY.Service.Services
             if (result )
             {
                 return EntityUpdate;
+            }
+            return null!;
+        }
+
+        public async Task<UserMeetingModel> UpdateRoleInMeeting(int userId, int meetingId, string RoleInMeeting)
+        {
+            var meeting = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId);
+            if (meeting == null)
+            {
+                return null;
+            }
+            meeting.RoleInMeeting = RoleInMeeting;
+            _unitOfWork.UserMeetingRepository.Update(meeting);
+            var result = (await _unitOfWork.SaveAsync()) > 0 ? true : false;
+            if (result)
+            {
+                return _mapper.Map<UserMeetingModel>(meeting);
+            }
+            return null!;
+        }
+
+        public async Task<bool> kickUserOfMeeting(int userId, int meetingId)
+        {
+            var userMeeting = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId);
+            if (userMeeting == null)
+            {
+                return false;
+            }
+            _unitOfWork.UserMeetingRepository.Delete(userMeeting);
+            var result = (await _unitOfWork.SaveAsync()) > 0 ? true : false;
+            if (result)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<IEnumerable<UserModel>> getUsersInMeeting(int meetingId)
+        {
+
+            Expression<Func<UserMeeting, bool>> condition = x => x.MeetingId == meetingId ;
+            string includeProperties = "Meeting,User";
+            var userMeeting = (await _unitOfWork.UserMeetingRepository.GetAllNoPaging(filter:condition, includeProperties: includeProperties)).Select(x => x.User);
+
+            if (!userMeeting.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            var mapdto = _mapper.Map<IEnumerable<UserModel>>(userMeeting);
+            return mapdto;
+        }
+
+        public async Task<UserMeetingModel> insertUserMeeting(int userId, int meetingId, int? cludId)
+        {
+
+            Expression<Func<Meeting, bool>> conditionGetMeeting = x => x.MeetingId == meetingId;
+            var meeting = await _unitOfWork.MeetingRepository.GetByCondition(conditionGetMeeting);
+            // tham gia o qua khu
+            if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now)
+            {
+                // You can either return null or a custom response indicating invalid dates
+                return null; // Or throw an exception or custom error response
+            }
+
+            var userHasEngage = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId);
+            if (userHasEngage != null)
+            {
+                return null;
+            }
+            var userMeeting = new UserMeeting();
+            userMeeting.UserId = userId;
+            userMeeting.MeetingId = meetingId;
+            if (cludId.HasValue)
+            {
+                userMeeting.ClubId = cludId.Value;
+            }
+            await _unitOfWork.UserMeetingRepository.Insert(userMeeting);
+            var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
+            if (result == true)
+            {
+                var mapdto = _mapper.Map<UserMeetingModel>(userMeeting);
+                return mapdto;
             }
             return null!;
         }

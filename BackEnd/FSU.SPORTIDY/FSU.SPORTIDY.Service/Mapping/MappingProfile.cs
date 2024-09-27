@@ -125,6 +125,10 @@ namespace FSU.SPORTIDY.Service.Mapping
             CreateMap<CommentInMeeting, CommentInMeetingModel>()
                 .ForMember(dest => dest.Meeting, opt => opt.MapFrom(src => src.Meeting))
                 .ReverseMap();
+            CreateMap<UserMeeting, UserMeetingModel>()
+               .ForMember(dest => dest.Meeting, opt => opt.MapFrom(src => src.Meeting))
+               .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+               .ReverseMap();
         }
     }
 }

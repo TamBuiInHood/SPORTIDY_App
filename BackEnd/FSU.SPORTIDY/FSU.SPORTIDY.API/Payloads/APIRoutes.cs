@@ -40,6 +40,17 @@
             public const string Delete = Base + "/meetings/";
 
             public const string Add = Base + "/meetings/";
+
+            public const string UpdateRoleInMeeting = Base + "/meetings/update-role-in-meeting";
+
+            public const string KickUser = Base + "/meetings/kick-user";
+
+            public const string EngageToMeeting = Base + "/meetings/engage-to-meeting";
+
+            public const string getAllUserInMeeting  = Base + "/meetings/get-all-user-in-meeting";
+
+
+
         }
 
         public static class Sport
