@@ -8,7 +8,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DetailBookingPage from '@/screens/booking/bookingDetail';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -35,6 +34,7 @@ export default function RootLayout() {
           <Stack.Screen name="+not-found" />
           <Stack.Screen name="(routes)/detail" />
           <Stack.Screen name="(routes)/bookingDetail" />
+          <Stack.Screen name="(routes)/commentPage" />
         </Stack>
       </ThemeProvider>
     </GestureHandlerRootView>

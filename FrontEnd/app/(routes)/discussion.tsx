@@ -1,4 +1,4 @@
-import Discussion from "@/screens/discussion/_layout";
+import Discussion from "@/screens/discussion/discussion";
 
 export default function DetailPage(){
     return <Discussion/>

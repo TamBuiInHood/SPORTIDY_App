@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import CommentModal from './comment';
 
-const Discussion = () => {
-  const [posts, setPosts] = useState([
+interface Post {
+  author: string;
+  date: string;
+  content: string;
+}
+
+const Discussion: React.FC = () => {
+  const [posts] = useState<Post[]>([
     {
       author: 'Tanas',
       date: '08/05/2024 6:30 PM',
@@ -25,6 +32,8 @@ const Discussion = () => {
     },
   ]);
 
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // State for modal visibility
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Forum</Text>
@@ -39,6 +48,24 @@ const Discussion = () => {
           </View>
         ))}
       </ScrollView>
+
+      <TouchableOpacity
+        style={styles.chatBubble}
+        onPress={() => setModalVisible(true)} // Show modal
+      >
+        <Text style={styles.chatBubbleText}>💬</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)} // Handle back button
+      >
+        <View style={styles.modalBackground}>
+          <CommentModal onClose={() => setModalVisible(false)} />
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -50,9 +77,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    backgroundColor: '#FFD966',
+    color: '#F8A933',
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 16,
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: '#F8A933',
   },
   scroll: {
     flex: 1,
@@ -76,6 +107,32 @@ const styles = StyleSheet.create({
   },
   content: {
     fontSize: 16,
+  },
+  chatBubble: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#FF4500',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  chatBubbleText: {
+    fontSize: 28,
+    color: '#fff',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
   },
 });
 

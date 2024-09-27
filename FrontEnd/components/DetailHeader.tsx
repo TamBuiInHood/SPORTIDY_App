@@ -1,43 +1,37 @@
-import Discussion from '@/screens/discussion/_layout';
-import EventDetailScreen from '@/screens/home/_layout';
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
 interface DetailHeaderProps {
     date: string;
     title: string;
+    activeTab: 'details' | 'discussion';
+    onTabChange: (newTab: 'details' | 'discussion') => void;
 }
 
-const DetailHeader: React.FC<DetailHeaderProps> = ({ date, title }) => {
-    const [activeTab, setActiveTab] = useState('details');
-
-    const handleTabChange = (newTab: 'details' | 'discussion') => {
-        setActiveTab(newTab);
-    };
+const DetailHeader: React.FC<DetailHeaderProps> = ({ date, title, activeTab, onTabChange }) => {
     return (
         <View style={styles.header}>
             <Text style={styles.headerDate}>{date}</Text>
             <Text style={styles.headerTitle}>{title}</Text>
             <View style={styles.tabContainer}>
-                <TouchableOpacity style={styles.activeTab} onPress={() => handleTabChange('details')}>
-                    <Text style={styles.tabTextActive}>Details</Text>
+                <TouchableOpacity
+                    style={activeTab === 'details' ? styles.activeTab : styles.inactiveTab}
+                    onPress={() => onTabChange('details')}>
+                    <Text style={activeTab === 'details' ? styles.tabTextActive : styles.tabTextInactive}>
+                        Details
+                    </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.inactiveTab} onPress={() => handleTabChange('discussion')}>
-                    <Text style={styles.tabTextInactive}>Discussion</Text>
+                <TouchableOpacity
+                    style={activeTab === 'discussion' ? styles.activeTab : styles.inactiveTab}
+                    onPress={() => onTabChange('discussion')}>
+                    <Text style={activeTab === 'discussion' ? styles.tabTextActive : styles.tabTextInactive}>
+                        Discussion
+                    </Text>
                 </TouchableOpacity>
             </View>
-
-            {activeTab === 'details' && (
-                <EventDetailScreen/>
-            )}
-
-            {activeTab === 'discussion' && (
-              <Discussion/>
-            )}
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     header: {
@@ -63,11 +57,12 @@ const styles = StyleSheet.create({
     },
     tabContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly', 
         alignItems: 'center',
-        marginLeft: 50,
+        width: '100%',
     },
     activeTab: {
+        flex: 1,
         paddingHorizontal: 15,
         backgroundColor: '#FFD01C',
         paddingVertical: 10,
@@ -75,7 +70,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     inactiveTab: {
-        flex: 1,
+        flex: 1, 
         backgroundColor: 'transparent',
         paddingVertical: 10,
         alignItems: 'center',
