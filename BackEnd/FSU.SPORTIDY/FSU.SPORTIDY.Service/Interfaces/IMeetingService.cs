@@ -1,5 +1,7 @@
-﻿using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+﻿using FSU.SPORTIDY.Service.BusinessModel.MeetingBsModels;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using Microsoft.AspNetCore.Http;
 
 namespace FSU.SPORTIDY.Service.Interfaces
@@ -17,5 +19,13 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<MeetingModel?> Insert(MeetingModel EntityInsert, int currentLoginID, IFormFile? Image);
        
         public Task<MeetingModel> Update(MeetingModel EntityUpdate);
+
+        public Task<UserMeetingModel> UpdateRoleInMeeting(int userId, int meetingId, string RoleInMeeting);
+
+        public Task<bool> kickUserOfMeeting(int userId, int meetingId);
+
+        public Task<UserMeetingModel> insertUserMeeting(int userId, int meetingId, int? cludId);
+
+        public Task<IEnumerable<UserModel>> getUsersInMeeting(int meetingId);
     }
 }
