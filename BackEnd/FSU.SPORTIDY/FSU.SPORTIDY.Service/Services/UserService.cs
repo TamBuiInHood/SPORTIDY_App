@@ -56,7 +56,7 @@ namespace FSU.SPORTIDY.Service.Services
                     var verifyPassword = PasswordHelper.VerifyPassword(password, existUser.Password);
                     if (verifyPassword)
                     {
-                        if(existUser.Status == 0 || existUser.IsDeleted == 1)
+                        if (existUser.Status == 0 || existUser.IsDeleted == 1)
                         {
                             return new AuthenModel
                             {
@@ -64,7 +64,7 @@ namespace FSU.SPORTIDY.Service.Services
                                 Message = "Your account is banned"
                             };
                         }
-                        var accessToken =  await GenerateAccessToken(email, existUser);
+                        var accessToken = await GenerateAccessToken(email, existUser);
                         _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
 
                         string refreshToken = await GenerateRefreshToken(email);
@@ -77,7 +77,7 @@ namespace FSU.SPORTIDY.Service.Services
                             RefreshToken = refreshToken,
                             CreateDate = DateTime.Now,
                             ExpiredTimeAccessToken = DateTime.Now.AddMinutes(tokenValidityInMinutes).ToString(),
-                            ExpiredTimeRefreshToken = DateTime.Now.AddDays(tokenValidityTime).ToString(),   
+                            ExpiredTimeRefreshToken = DateTime.Now.AddDays(tokenValidityTime).ToString(),
                         });
                         await transaction.CommitAsync();
                         return new AuthenModel
@@ -106,7 +106,7 @@ namespace FSU.SPORTIDY.Service.Services
         }
         public async Task<bool> RegisterAsync(SignUpModel model)
         {
-            using(var transaction = await _unitOfWork.BeginTransactionAsync())
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
             {
                 try
                 {
@@ -116,23 +116,23 @@ namespace FSU.SPORTIDY.Service.Services
                         UserCode = "SPD" + model.Email + NumberHelper.GenerateSixDigitNumber(),
                         FullName = model.FullName,
                         Status = 1,
-                        RoleId = (int) model.Role,
+                        RoleId = (int)model.Role,
                         IsDeleted = 0,
                         CreateDate = DateOnly.FromDateTime(DateTime.Now),
                         Avartar = model.Avatar
                     };
 
                     var existUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(newUser.Email);
-                    if(existUser != null)
+                    if (existUser != null)
                     {
                         throw new Exception("Accoust is existed");
                     }
-                    if(model.Password != null)
+                    if (model.Password != null)
                     {
                         newUser.Password = PasswordHelper.HashPassword(model.Password);
                     }
                     var role = await _unitOfWork._RoleRepo.GetRoleByName(model.Role.ToString());
-                    if(role == null)
+                    if (role == null)
                     {
                         Role newRole = new Role
                         {
@@ -142,7 +142,7 @@ namespace FSU.SPORTIDY.Service.Services
                         role = newRole;
                         newUser.RoleId = role.RoleId;
                     }
-                    
+
                     await _unitOfWork.UserRepository.AddUserAsync(newUser);
                     await transaction.CommitAsync();
                     return true;
@@ -172,11 +172,11 @@ namespace FSU.SPORTIDY.Service.Services
             };
             try
             {
-                
+
                 SecurityToken validatedToken;
                 var principal = handler.ValidateToken(jwtToken, validationParameters, out validatedToken);
                 var email = principal.Claims.FirstOrDefault(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
-                if(email != null)
+                if (email != null)
                 {
                     if (principal != null)
                     {
@@ -209,7 +209,7 @@ namespace FSU.SPORTIDY.Service.Services
                                         AccessToken = newAccessToken,
                                         RefreshToken = jwtToken,
                                     };
-                                } 
+                                }
                                 else
                                 {
                                     await _unitOfWork._UserTokenRepo.DeleteToken(jwtToken);
@@ -224,7 +224,7 @@ namespace FSU.SPORTIDY.Service.Services
                     HttpCode = 401,
                     Message = "Account does not exist",
                 };
-               
+
             }
             catch (Exception)
             {
@@ -232,19 +232,19 @@ namespace FSU.SPORTIDY.Service.Services
             }
         }
 
-        
+
 
         private async Task<string> GenerateAccessToken(string email, User user)
         {
             var role = await _unitOfWork._RoleRepo.GetRoleById(user.RoleId);
-            var authClaims = new List<Claim>(); 
-            if(role != null)
+            var authClaims = new List<Claim>();
+            if (role != null)
             {
-                authClaims.Add(new Claim(ClaimTypes.Email, email));
-                authClaims.Add(new Claim(ClaimTypes.Role, role.RoleName));
+                authClaims.Add(new Claim("email", email));
+                authClaims.Add(new Claim("role", role.RoleName));
                 authClaims.Add(new Claim("UserId", user.UserId.ToString()));
                 authClaims.Add(new Claim("Status", user.Status.ToString()));
-                authClaims.Add(new Claim("DeviceCode", user.DeviceCode));
+                authClaims.Add(new Claim("DeviceCode", user.DeviceCode ?? "Not yet"));
                 authClaims.Add(new Claim("FullName", user.FullName));
                 authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 
@@ -259,25 +259,25 @@ namespace FSU.SPORTIDY.Service.Services
             var role = await _unitOfWork._RoleRepo.GetRoleById(user.RoleId);
             var authClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Role, role.RoleName),
-                new Claim("UserId", user.UserId.ToString()),
-                new Claim("Status", user.Status.ToString()),
-                new Claim("DeviceCode", user.DeviceCode),
-                new Claim("FullName", user.FullName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+                 new Claim("email", email),
+                 new Claim("role", role.RoleName),
+                 new Claim("UserId", user.UserId.ToString()),
+                 new Claim("Status", user.Status.ToString()),
+                 new Claim("DeviceCode", user.DeviceCode ?? "Not yet"),
+                 new Claim("FullName", user.FullName),
+                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
 
-            
+
             var refreshToken = GenerateJWTToken.CreateRefreshToken(authClaims, _configuration, DateTime.UtcNow);
             return new JwtSecurityTokenHandler().WriteToken(refreshToken).ToString();
         }
         public async Task<bool> RequestResetPassword(string email)
         {
-            var existUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);  
-            if(existUser != null)
+            var existUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+            if (existUser != null)
             {
-                if(existUser.Status == 1 && existUser.IsDeleted == 0)
+                if (existUser.Status == 1 && existUser.IsDeleted == 0)
                 {
                     bool checkSendMail = await CreateOtpAsync(email);
                     return checkSendMail;
@@ -293,7 +293,7 @@ namespace FSU.SPORTIDY.Service.Services
                 bool checkInsertOtp = await _unitOfWork.UserRepository.UpdateOtpUser(email, otpCode);
                 if (checkInsertOtp)
                 {
-                    bool checkSendMail = await SendOtpResetPasswordAsync(email,otpCode);
+                    bool checkSendMail = await SendOtpResetPasswordAsync(email, otpCode);
                     return checkSendMail;
                 }
                 else
@@ -327,16 +327,17 @@ namespace FSU.SPORTIDY.Service.Services
             try
             {
                 var existUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(confirmOtpModel.Email);
-                if(existUser != null)
+                if (existUser != null)
                 {
-                    if(existUser.Otp.Equals(confirmOtpModel.OtpCode))
+                    if (existUser.Otp.Equals(confirmOtpModel.OtpCode))
                     {
                         return true;
-                    } else
+                    }
+                    else
                     {
                         throw new Exception("Otp does not correct. Please try again or another");
                     }
-                } 
+                }
                 else
                 {
                     return false;
@@ -354,19 +355,21 @@ namespace FSU.SPORTIDY.Service.Services
             try
             {
                 var checkUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(resetPasswordModel.Email);
-                if(checkUser != null)
+                if (checkUser != null)
                 {
                     checkUser.Password = PasswordHelper.HashPassword(resetPasswordModel.Password);
-                   var result = await _unitOfWork.UserRepository.UpdateUserAsync(checkUser);
-                    if(result > 0)
+                    var result = await _unitOfWork.UserRepository.UpdateUserAsync(checkUser);
+                    if (result > 0)
                     {
                         return true;
-                    } else
+                    }
+                    else
                     {
                         throw new Exception("Reset password failed");
                     }
 
-                } else
+                }
+                else
                 {
                     return false;
                 }
@@ -521,7 +524,7 @@ namespace FSU.SPORTIDY.Service.Services
         public async Task<bool> UpdateUser(UpdateUserModel updateUserRequestModel)
         {
             var existUser = await _unitOfWork.UserRepository.GetUserByIdAsync(updateUserRequestModel.UserId);
-            if(existUser != null)
+            if (existUser != null)
             {
                 // update account
                 existUser.FullName = updateUserRequestModel.FullName;
@@ -531,22 +534,22 @@ namespace FSU.SPORTIDY.Service.Services
                 existUser.Address = updateUserRequestModel.Address;
                 existUser.Gender = updateUserRequestModel.Gender;
                 existUser.Avartar = updateUserRequestModel.Avatar;
-               
+
                 bool checkOldPassword = PasswordHelper.VerifyPassword(updateUserRequestModel.Password, existUser.Password);
-                if(checkOldPassword)
+                if (checkOldPassword)
                 {
                     string newPassword = PasswordHelper.HashPassword(updateUserRequestModel.Password);
                     existUser.Password = newPassword;
                 }
-               var result = await _unitOfWork.UserRepository.UpdateUserAsync(existUser);
-               if(result > 0)
-               {
+                var result = await _unitOfWork.UserRepository.UpdateUserAsync(existUser);
+                if (result > 0)
+                {
                     return true;
-               }
-               else
-               {
+                }
+                else
+                {
                     throw new Exception("Update failed");
-               }
+                }
             }
             else
             {
@@ -562,7 +565,7 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 int validInt = 0;
                 var checkInt = int.TryParse(paginationParameter.Search, out validInt);
-                if(checkInt)
+                if (checkInt)
                 {
                     filter = x => x.UserId == validInt;
                 }
@@ -587,7 +590,7 @@ namespace FSU.SPORTIDY.Service.Services
                                : x => x.OrderBy(x => x.UserId)) : x => x.OrderBy(x => x.UserId);
                     break;
                 case "usercode":
-                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction) 
+                    orderBy = !string.IsNullOrEmpty(paginationParameter.Direction)
                                 ? (paginationParameter.Direction.ToLower().Equals("desc")
                                ? x => x.OrderByDescending(x => x.UserCode)
                                : x => x.OrderBy(x => x.UserCode)) : x => x.OrderBy(x => x.UserCode);
@@ -629,17 +632,17 @@ namespace FSU.SPORTIDY.Service.Services
                                : x => x.OrderBy(x => x.Phone)) : x => x.OrderBy(x => x.Phone);
                     break;
                 default:
-                    orderBy =  x => x.OrderBy(x => x.UserId);
+                    orderBy = x => x.OrderBy(x => x.UserId);
                     break;
             }
             string includeProperties = "Role";
-            var entities = await _unitOfWork.UserRepository.Get(filter, orderBy, includeProperties, paginationParameter.PageIndex , paginationParameter.PageSize);
+            var entities = await _unitOfWork.UserRepository.Get(filter, orderBy, includeProperties, paginationParameter.PageIndex, paginationParameter.PageSize);
             var pagin = new PageEntity<UserModel>();
             pagin.List = _mapper.Map<IEnumerable<UserModel>>(entities).ToList();
             pagin.TotalRecord = await _unitOfWork.UserRepository.Count();
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, paginationParameter.PageSize);
             return pagin;
-            
+
         }
 
         public async Task<UserModel> GetUserById(int userId)
@@ -764,11 +767,11 @@ namespace FSU.SPORTIDY.Service.Services
         public async Task<bool> BannedUser(int userId)
         {
             var existUser = await _unitOfWork.UserRepository.GetUserByIdAsync(userId);
-            if(existUser != null)
+            if (existUser != null)
             {
                 existUser.Status = 0;
                 var result = await _unitOfWork.SaveAsync();
-                if(result > 0)
+                if (result > 0)
                 {
                     return true;
                 }
@@ -821,7 +824,7 @@ namespace FSU.SPORTIDY.Service.Services
             try
             {
                 var result = await _unitOfWork.UserRepository.GetAllUsersByRole(roleName);
-                if(result.Count > 0)
+                if (result.Count > 0)
                 {
                     return result;
                 }

@@ -29,17 +29,17 @@ namespace FSU.SPORTIDY.API.Controllers
             try
             {
                 var dto = new MeetingModel();
-                dto.MeetingName = reqObj.MeetingName;
-                dto.Address = reqObj.Address;
-                dto.StartDate = reqObj.StartDate;
-                dto.EndDate = reqObj.EndDate;
-                dto.CancelBefore = reqObj.CancelBefore;
-                dto.Note = reqObj.Note;
-                dto.CancelBefore = reqObj.CancelBefore.Value;
-                dto.ClubId = reqObj.ClubId;
-                dto.IsPublic = reqObj.IsPublic;
-                dto.TotalMember = reqObj.TotalMember;
-                var MeetingAdd = await _meetingService.Insert(dto,reqObj.currentIDLogin, reqObj.MeetingImage);
+                dto.MeetingName = reqObj.meetingName;
+                dto.Address = reqObj.address;
+                dto.StartDate = reqObj.startDate;
+                dto.EndDate = reqObj.endDate;
+                dto.CancelBefore = reqObj.cancelBefore;
+                dto.Note = reqObj.note;
+                dto.CancelBefore = reqObj.cancelBefore.Value;
+                dto.ClubId = reqObj.clubId;
+                dto.IsPublic = reqObj.isPublic;
+                dto.TotalMember = reqObj.totalMember;
+                var MeetingAdd = await _meetingService.Insert(dto,reqObj.currentIdLogin, reqObj.meetingImage);
                 if (MeetingAdd == null)
                 {
                     return NotFound(new BaseResponse
@@ -111,20 +111,20 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
         [HttpPut(APIRoutes.Meeting.Update, Name = "UpdateMeetingAsync")]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromForm] UpdateMeetingRequest reqObj)
+        public async Task<IActionResult> UpdateUserAsync([FromQuery(Name = "meetingId")]int id, [FromForm] UpdateMeetingRequest reqObj)
         {
             try
             {
                 var dto = new MeetingModel();
-                dto.MeetingName = reqObj.MeetingName;
-                dto.StartDate = reqObj.StartDate;
-                dto.EndDate = reqObj.EndDate;
-                dto.Address = reqObj.Address;
-                dto.TotalMember = reqObj.TotalMember;
-                dto.CancelBefore = reqObj.CancelBefore;
-                dto.Note = reqObj.Note;
-                dto.IsPublic = reqObj.IsPublic;
-                dto.MeetingImage = reqObj.MeetingImage;
+                dto.MeetingName = reqObj.meetingName;
+                dto.StartDate = reqObj.startDate;
+                dto.EndDate = reqObj.endDate;
+                dto.Address = reqObj.address;
+                dto.TotalMember = reqObj.totalMember;
+                dto.CancelBefore = reqObj.cancelBefore;
+                dto.Note = reqObj.note;
+                dto.IsPublic = reqObj.isPublic;
+                dto.MeetingImage = reqObj.meetingImage;
                 var result = await _meetingService.Update(dto);
                 if (result != null)
                 {
@@ -158,14 +158,14 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
         [HttpGet(APIRoutes.Meeting.GetAll, Name = "GetMeetingAsync")]
-        public async Task<IActionResult> GetAllAsync([FromQuery(Name = "curr-id-login")] int currIdLoginID
-           , [FromQuery(Name = "search-key")] string? searchKey
-           , [FromQuery(Name = "page-number")] int pageNumber = Page.DEFAULT_PAGE_INDEX
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
+        public async Task<IActionResult> GetAllAsync([FromQuery(Name = "currIdLogin")] int currIdLoginId
+           , [FromQuery(Name = "searchKey")] string? searchKey
+           , [FromQuery(Name = "pageNumber")] int pageNumber = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "pageSize")] int PageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
-                var allAccount = await _meetingService.Get(currIdLoginID, searchKey!, PageIndex: pageNumber, PageSize: PageSize);
+                var allAccount = await _meetingService.Get(currIdLoginId, searchKey!, PageIndex: pageNumber, PageSize: PageSize);
 
                 return Ok(new BaseResponse
                 {
@@ -189,7 +189,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
         [HttpGet(APIRoutes.Meeting.GetByID, Name = "GetMeetingByID")]
-        public async Task<IActionResult> GetAsync([FromRoute(Name = "meeting-id")] int meetingId)
+        public async Task<IActionResult> GetAsync([FromRoute(Name = "meetingId")] int meetingId)
         {
             try
             {
@@ -231,7 +231,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var updatedUserMeeting = await _meetingService.UpdateRoleInMeeting(request.UserId, request.MeetingId, request.RoleInMeeting);
+                var updatedUserMeeting = await _meetingService.UpdateRoleInMeeting(request.userId, request.meetingId, request.roleInMeeting);
 
                 if (updatedUserMeeting == null)
                 {
@@ -270,7 +270,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var result = await _meetingService.kickUserOfMeeting(request.UserId, request.MeetingId);
+                var result = await _meetingService.kickUserOfMeeting(request.userId, request.meetingId);
 
                 if (!result)
                 {
@@ -348,7 +348,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var newUserMeeting = await _meetingService.insertUserMeeting(request.UserId, request.MeetingId, request.ClubId);
+                var newUserMeeting = await _meetingService.insertUserMeeting(request.userId, request.meetingId, request.clubId);
 
                 if (newUserMeeting == null)
                 {

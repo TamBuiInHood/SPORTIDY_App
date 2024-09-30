@@ -9,23 +9,23 @@ namespace FSU.SPORTIDY.Service.BusinessModel.ClubModels
 {
     public class UpdateClubModel
     {
-        public int ClubId { get; set; }
-        public string? ClubName { get; set; }
+        public int clubId { get; set; }
+        public string? clubName { get; set; }
 
-        public string? Regulation { get; set; }
+        public string? regulation { get; set; }
 
-        public string? Infomation { get; set; }
+        public string? infomation { get; set; }
 
-        public string? Slogan { get; set; }
+        public string? slogan { get; set; }
 
-        public string? MainSport { get; set; }
+        public string? mainSport { get; set; }
 
-        public string? Location { get; set; }
+        public string? location { get; set; }
 
-        public int? TotalMember { get; set; }
+        public int? totalMember { get; set; }
 
-        public string? AvartarClub { get; set; }
+        public string? avartarClub { get; set; }
 
-        public string? CoverImageClub { get; set; } = null;
+        public string? coverImageClub { get; set; } = null;
     }
 }

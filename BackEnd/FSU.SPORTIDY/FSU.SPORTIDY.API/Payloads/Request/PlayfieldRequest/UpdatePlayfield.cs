@@ -2,14 +2,14 @@
 {
     public class UpdatePlayfield
     {
-        public string? PlayFieldName { get; set; }
+        public string? playfieldName { get; set; }
 
-        public int? Price { get; set; }
+        public int? price { get; set; }
 
-        public string? Address { get; set; }
+        public string? address { get; set; }
 
-        public TimeOnly? OpenTime { get; set; }
+        public TimeOnly? openTime { get; set; }
 
-        public TimeOnly? CloseTime { get; set; }
+        public TimeOnly? closeTime { get; set; }
     }
 }

@@ -250,18 +250,18 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<bool> UpdateClub(UpdateClubModel updateClub)
         {
-            var oldClub = await _unitOfWork.ClubRepository.GetByID(updateClub.ClubId);
+            var oldClub = await _unitOfWork.ClubRepository.GetByID(updateClub.clubId);
             if(oldClub != null)
             {
-                oldClub.ClubName = updateClub.ClubName;
-                oldClub.AvartarClub = updateClub.AvartarClub;
-                oldClub.CoverImageClub = updateClub.CoverImageClub;
-                oldClub.Infomation = updateClub.Infomation;
-                oldClub.Slogan = updateClub.Slogan;
-                oldClub.Regulation = updateClub.Regulation;
-                oldClub.MainSport = updateClub.MainSport;
-                oldClub.TotalMember = updateClub.TotalMember;
-                oldClub.Location = updateClub.Location;
+                oldClub.ClubName = updateClub.clubName;
+                oldClub.AvartarClub = updateClub.avartarClub;
+                oldClub.CoverImageClub = updateClub.coverImageClub;
+                oldClub.Infomation = updateClub.infomation;
+                oldClub.Slogan = updateClub.slogan;
+                oldClub.Regulation = updateClub.regulation;
+                oldClub.MainSport = updateClub.mainSport;
+                oldClub.TotalMember = updateClub.totalMember;
+                oldClub.Location = updateClub.location;
                  _unitOfWork.ClubRepository.Update(oldClub);
                 var result = await _unitOfWork.SaveAsync();
                 return result > 0;
