@@ -11,30 +11,154 @@ interface Playfield {
   name: string;
   location: string;
   image: string;
+  pitchReady: {
+    name: string;
+    price: string;
+  }[];
+  services: string[]
 }
+
 
 const BookingScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const recentPlayfields: Playfield[] = [
-    { id: 1, name: 'Go Dau Stadium', location: 'Thu Dau Mot, Binh Duong', image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg' },
-    { id: 2, name: 'Pickleball Vuon Lan', location: 'District 7, Ho Chi Minh City', image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' },
-    { id: 3, name: 'Pickleball Vuon Lan', location: 'District 7, Ho Chi Minh City', image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' },
-
+    {
+      id: 1,
+      name: 'Go Dau Stadium',
+      location: 'Thu Dau Mot, Binh Duong',
+      image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg',
+      pitchReady: [
+        { name: 'Empty Football Pitch', price: '120k/h' },
+        { name: '5-a-side Pitch', price: '100k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water',
+        'Private changing rooms'
+      ]
+    },
+    {
+      id: 2,
+      name: 'Pickleball Vuon Lan',
+      location: 'District 7, Ho Chi Minh City',
+      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
+      pitchReady: [
+        { name: 'Pickleball Court', price: '80k/h' },
+        { name: 'Tennis Court', price: '150k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water',
+        'Private changing rooms'
+      ]
+    },
+    {
+      id: 3,
+      name: 'Pickleball Vuon Lan',
+      location: 'District 7, Ho Chi Minh City',
+      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
+      pitchReady: [
+        { name: 'Pickleball Court', price: '80k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water'
+      ]
+    }
   ];
 
   const bestPlayfields: Playfield[] = [
-    { id: 1, name: 'Santiago Bernabeu', location: 'Av. de Concha Espina, Spain', image: 'https://i.pinimg.com/564x/05/e4/fe/05e4fe1aa8d79e7892539ff0214d7015.jpg' },
-    { id: 2, name: 'New Sai Gon Fields', location: 'District 7, Ho Chi Minh City', image: 'https://i.pinimg.com/564x/05/e4/fe/05e4fe1aa8d79e7892539ff0214d7015.jpg' },
-    { id: 3, name: 'Pickleball Vuon Lan', location: 'District 7, Ho Chi Minh City', image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' },
+    {
+      id: 1,
+      name: 'Go Dau Stadium',
+      location: 'Thu Dau Mot, Binh Duong',
+      image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg',
+      pitchReady: [
+        { name: 'Empty Football Pitch', price: '120k/h' },
+        { name: '5-a-side Pitch', price: '100k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water',
+        'Private changing rooms'
+      ]
+    },
+    {
+      id: 2,
+      name: 'Pickleball Vuon Lan',
+      location: 'District 7, Ho Chi Minh City',
+      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
+      pitchReady: [
+        { name: 'Pickleball Court', price: '80k/h' },
+        { name: 'Tennis Court', price: '150k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water',
+        'Private changing rooms'
+      ]
+    },
+    {
+      id: 3,
+      name: 'Pickleball Vuon Lan',
+      location: 'District 7, Ho Chi Minh City',
+      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
+      pitchReady: [
+        { name: 'Pickleball Court', price: '80k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water'
+      ]
+    }
 
   ];
 
   const nearestPlayfields: Playfield[] = [
-    { id: 1, name: 'Thong Nhat Stadium', location: 'District 1, Thu Duc City', image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg' },
-    { id: 2, name: 'Pickleball Vuon Lan', location: 'District 7, Ho Chi Minh City', image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' },
-    { id: 3, name: 'Pickleball Vuon Lan', location: 'District 7, Ho Chi Minh City', image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' },
-
+    {
+      id: 1,
+      name: 'Go Dau Stadium',
+      location: 'Thu Dau Mot, Binh Duong',
+      image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg',
+      pitchReady: [
+        { name: 'Empty Football Pitch', price: '120k/h' },
+        { name: '5-a-side Pitch', price: '100k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water',
+        'Private changing rooms'
+      ]
+    },
+    {
+      id: 2,
+      name: 'Pickleball Vuon Lan',
+      location: 'District 7, Ho Chi Minh City',
+      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
+      pitchReady: [
+        { name: 'Pickleball Court', price: '80k/h' },
+        { name: 'Tennis Court', price: '150k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water',
+        'Private changing rooms'
+      ]
+    },
+    {
+      id: 3,
+      name: 'Pickleball Vuon Lan',
+      location: 'District 7, Ho Chi Minh City',
+      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
+      pitchReady: [
+        { name: 'Pickleball Court', price: '80k/h' }
+      ],
+      services: [
+        'Free parking',
+        'Free water'
+      ]
+    }
   ];
 
   const renderPlayfields = (playfields: Playfield[]) => (
@@ -44,7 +168,7 @@ const BookingScreen: React.FC = () => {
         <TouchableOpacity
           key={item.id}
           style={styles.playfieldCard}
-          onPress={() => navigation.navigate('BookingDetail', { playfield: item })}
+          onPress={() => navigation.navigate('(routes)/bookingDetail', { playfield: item })}
         >
           <Image source={{ uri: item.image }} style={styles.playfieldImage} />
           <Text style={styles.playfieldName}>{item.name}</Text>

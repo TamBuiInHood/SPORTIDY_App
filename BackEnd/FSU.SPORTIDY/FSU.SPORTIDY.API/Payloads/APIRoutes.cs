@@ -41,6 +41,17 @@
             public const string Delete = Base + "/meetings/";
 
             public const string Add = Base + "/meetings/";
+
+            public const string UpdateRoleInMeeting = Base + "/meetings/update-role-in-meeting";
+
+            public const string KickUser = Base + "/meetings/kick-user";
+
+            public const string EngageToMeeting = Base + "/meetings/engage-to-meeting";
+
+            public const string getAllUserInMeeting  = Base + "/meetings/get-all-user-in-meeting";
+
+
+
         }
 
         public static class Sport
@@ -158,7 +169,7 @@
 
             public const string GetByID = Base + "/Playfields/{playfield-id}";
 
-            public const string GetByUserID = Base + "/Playfields/{user-id}";
+            public const string GetByUserID = Base + "/Playfields/get-by-user-id/{user-id}";
 
             public const string Update = Base + "/Playfields/";
 
@@ -246,6 +257,19 @@
             public const string Delete = Base + "/comments/{comment-id}";
 
             public const string Add = Base + "/comments/";
+        }
+
+        public static class ImageField
+        {
+            public const string GetAll = Base + "{playfield-id}/images-field/";
+
+            public const string GetByID = Base + "/images-field/{image-id}";
+
+            public const string Update = Base + "/images-field/";
+
+            public const string Delete = Base + "/images-field/{image-id}";
+
+            public const string Add = Base + "/images-field/";
         }
 
     }

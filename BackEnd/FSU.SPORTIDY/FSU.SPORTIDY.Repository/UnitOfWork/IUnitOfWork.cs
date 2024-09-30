@@ -22,6 +22,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         PaymentRepository PaymentRepository { get; }
         NotificationRepository NotificationRepository { get; }
         CommentInMeetingRepository CommentRepository { get; }
+        UserMeetingRepository UserMeetingRepository { get; }
+        ImageFeldReposiotory ImageFieldRepository { get; }
 
         void Save();
         Task<int> SaveAsync();

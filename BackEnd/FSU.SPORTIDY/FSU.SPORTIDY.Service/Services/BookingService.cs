@@ -43,7 +43,8 @@ namespace FSU.SPORTIDY.Service.Services
                 {
                     throw new Exception("This booking is not found");
                 }
-                _unitOfWork.BookingRepository.Delete(booking);
+                booking.Status = BookingStatusID.BOOKING_DELETED_ID;
+                _unitOfWork.BookingRepository.Update(booking);
                 var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
                 return result;
             }
@@ -218,11 +219,18 @@ namespace FSU.SPORTIDY.Service.Services
                 {
                     throw new Exception("Check your booking about booking date, time starting and time endding");
                 }
+                Expression<Func<Booking, bool>> checkDuplication = x => x.DateStart >= entityInsert.DateStart && x.DateEnd >= entityInsert.DateEnd && x.PlayFieldId == entityInsert.PlayFieldId;
+                var checkExist = await _unitOfWork.BookingRepository.GetByCondition(checkDuplication);
+                if (checkExist == null)
+                {
+                    throw new Exception("This time of this playfield has booking");
+                }
+
                 _mapper.Map(entityInsert, booking);
                 // upload barcode to firebase
                 if (barCode != null)
                 {
-                    string fileName = Path.GetFileName(entityInsert.BookingCode);
+                    string fileName = Path.GetFileName(entityInsert.BookingCode)!;
                     var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                     await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).PutAsync(barCode.OpenReadStream());
                     booking.BarCode = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
@@ -231,6 +239,7 @@ namespace FSU.SPORTIDY.Service.Services
                 booking.PaymentMethod = entityInsert.PaymentMethod ?? "VietQR";
                 booking.BookingDate = DateTime.Now;
                 booking.Status = BookingStatusID.BOOKING_PENDING_ID;
+                // add payment here
                 var payment = new Payment
                 {
                     OrderCode = booking.BookingCode,
@@ -240,14 +249,6 @@ namespace FSU.SPORTIDY.Service.Services
                 };
                 booking.Payments.Add(payment);
 
-                //booking.BookingCode = entityInsert.BookingCode;
-                //booking.Price = entityInsert.Price;
-                //booking.DateStart = entityInsert.DateStart;
-                //booking.DateStart = entityInsert.DateStart;
-                //booking.BarCode = entityInsert.BarCode;
-                //booking.Description = entityInsert.Description;
-
-                // add payment here
 
                 await _unitOfWork.BookingRepository.Insert(booking);
                 var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
@@ -269,7 +270,7 @@ namespace FSU.SPORTIDY.Service.Services
             var booking = await _unitOfWork.BookingRepository.GetByCondition(x => x.BookingId == entityUpdate.BookingId);
             if (booking == null)
             {
-                return null;
+                return null!;
             }
             if (barCode != null)
             {
@@ -280,8 +281,8 @@ namespace FSU.SPORTIDY.Service.Services
 
             if (DateHelper.ValidateDates(entityUpdate.DateStart, entityUpdate.DateEnd))
             {
-                booking.DateStart = entityUpdate.DateStart.Value;
-                booking.DateEnd = entityUpdate.DateEnd.Value;
+                booking.DateStart = entityUpdate.DateStart!.Value;
+                booking.DateEnd = entityUpdate.DateEnd!.Value;
             }
             if (!entityUpdate.Description.IsNullOrEmpty())
             {
@@ -306,7 +307,7 @@ namespace FSU.SPORTIDY.Service.Services
             var booking = await _unitOfWork.BookingRepository.GetByID(bookingId);
             if (booking == null)
             {
-                return null;
+                return null!;
             }
             booking.Status = status;
             var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);

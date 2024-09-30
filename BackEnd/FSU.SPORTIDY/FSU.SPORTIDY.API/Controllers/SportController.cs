@@ -25,7 +25,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var dto = new SportDTO();
+                var dto = new SportModel();
                 dto.SportImage = reqObj.SportImage.FileName;
                 dto.SportName = reqObj.SportName;
                 var sportInsert = await _sportService.Insert(dto);
@@ -104,7 +104,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var dto = new SportDTO();
+                var dto = new SportModel();
                 dto.SportId = sportId;
                 dto.SportName = reqObj.SportName;
                 dto.SportImage = reqObj.SportImage.FileName;

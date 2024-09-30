@@ -13,9 +13,9 @@ namespace FSU.SPORTIDY.Service.Interfaces
     public interface ICommentInMeetingService
     {
         Task<CommentInMeetingModel> Insert(string content, int meetingId, int userId, IFormFile Image);
-        Task<CommentInMeetingModel> Update(string content,int meetingId ,IFormFile? Image);
+        Task<CommentInMeetingModel> Update(string? content,int meetingId ,IFormFile? Image);
         Task<bool> Delete(int CommentInmeetingId);
-        public Task<PageEntity<CommentInMeetingModel>> GetByMeetingId(int commentId, int? PageSize, int? PageIndex);
+        public Task<PageEntity<CommentInMeetingModel>> GetByMeetingId(int commentId, int PageSize, int PageIndex);
         Task<CommentInMeetingModel> GetById(int CommentId);
     }
 }

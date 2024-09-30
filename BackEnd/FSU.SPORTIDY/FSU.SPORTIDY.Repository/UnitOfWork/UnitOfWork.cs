@@ -28,6 +28,8 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private PaymentRepository _PaymentRepo;
         private NotificationRepository _NotficationRepo;
         private CommentInMeetingRepository _CommentRepo;
+        private UserMeetingRepository _UserMeetingRepo;
+        private ImageFeldReposiotory _ImageFieldRepo;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -256,6 +258,29 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._CommentRepo = new CommentInMeetingRepository(_context);
                 }
                 return _CommentRepo;
+            }
+        }
+        public UserMeetingRepository UserMeetingRepository
+        {
+            get
+            {
+                if (_UserMeetingRepo == null)
+                {
+                    this._UserMeetingRepo = new UserMeetingRepository(_context);
+                }
+                return _UserMeetingRepo;
+            }
+        }
+
+        public ImageFeldReposiotory ImageFieldRepository
+        {
+            get
+            {
+                if (_ImageFieldRepo == null)
+                {
+                    this._ImageFieldRepo = new ImageFeldReposiotory(_context);
+                }
+                return _ImageFieldRepo;
             }
         }
     }

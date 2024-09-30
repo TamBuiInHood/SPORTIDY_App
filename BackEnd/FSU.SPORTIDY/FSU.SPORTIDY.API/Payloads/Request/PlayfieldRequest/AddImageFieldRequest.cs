@@ -1,12 +1,15 @@
-﻿namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+
+namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
 {
-    [AtLeastOneRequired(nameof(ImageUrl), nameof(VideoUrl))]
+    //[AtLeastOneRequired(nameof(ImageUrl), nameof(VideoUrl))]
     public class AddImageFieldRequest
     {
-        public IFormFile? ImageUrl { get; set; }
-
-        public IFormFile? VideoUrl { get; set; }
-
+        [FromForm]
+        [FileFormat(".jpg", ".jpeg", ".png")]
+        public IFormFile ImageUrl { get; set; }
+        [Required]
         public int? ImageIndex { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FSU.SmartMenuWithAI.API.Payloads.Responses;
 using FSU.SPORTIDY.API.Payloads;
 using FSU.SPORTIDY.API.Payloads.Request.MeetingRequest;
+using FSU.SPORTIDY.Common.Status;
 using FSU.SPORTIDY.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -16,8 +17,14 @@ namespace FSU.SPORTIDY.API.Controllers
         private readonly ICommentInMeetingService _commentService;
         private readonly WebSocketService _websocketService;
 
+        public CommentMeetingController(ICommentInMeetingService commentService, WebSocketService websocketService)
+        {
+            _commentService = commentService;
+            _websocketService = websocketService;
+        }
+
         [HttpPost(APIRoutes.Comment.Add)]
-        public async Task<IActionResult> Insert([FromBody] AddCommentRequest reqObj)
+        public async Task<IActionResult> Insert([FromForm] AddCommentRequest reqObj)
         {
             try
             {
@@ -60,6 +67,153 @@ namespace FSU.SPORTIDY.API.Controllers
                 HttpContext.Response.StatusCode = 400;
             }
         }
+
+        [HttpGet(APIRoutes.Comment.GetAll)]
+        public async Task<IActionResult> GetCommentsByMeeting([FromRoute(Name = "meeting-id")] int meetingId,
+                                                                int PageSize = Page.DEFAULT_PAGE_SIZE,
+                                                                int PageIndex = Page.DEFAULT_PAGE_INDEX)
+        {
+            try
+            {
+                var paginatedComments = await _commentService.GetByMeetingId(meetingId, PageSize, PageIndex);
+
+                //if (paginatedComments == null || !paginatedComments.List.Any())
+                //{
+                //    return NotFound(new BaseResponse
+                //    {
+                //        StatusCode = StatusCodes.Status404NotFound,
+                //        Message = "No comments found for the specified meeting.",
+                //        IsSuccess = false
+                //    });
+                //}
+
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Comments retrieved successfully.",
+                    Data = paginatedComments,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpDelete(APIRoutes.Comment.Delete)]
+        public async Task<IActionResult> DeleteComment([FromRoute(Name = "comment-id")] int commentId)
+        {
+            try
+            {
+                var result = await _commentService.Delete(commentId);
+
+                if (!result)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Comment not found or deletion failed.",
+                        IsSuccess = false
+                    });
+                }
+
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Comment deleted successfully.",
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpGet(APIRoutes.Comment.GetByID)]
+        public async Task<IActionResult> GetCommentById([FromRoute(Name = "comment-id")] int commentId)
+        {
+            try
+            {
+                var comment = await _commentService.GetById(commentId);
+
+                if (comment == null)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Comment not found.",
+                        IsSuccess = false
+                    });
+                }
+
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Comment retrieved successfully.",
+                    Data = comment,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        [HttpPut(APIRoutes.Comment.Update)]
+        public async Task<IActionResult> UpdateComment([FromForm]UpdateCommentRequest reqObj)
+        {
+            try
+            {
+                var updatedComment = await _commentService.Update(reqObj.content, reqObj.commentId, reqObj.Image);
+
+                if (updatedComment == null)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Comment not found or update failed.",
+                        IsSuccess = false
+                    });
+                }
+
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Comment updated successfully.",
+                    Data = updatedComment,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+            }
+        }
+
+
     }
 
 }

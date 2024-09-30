@@ -21,6 +21,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder.Extensions;
 using FSU.SPORTIDY.Service.Services.PaymentServices;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
+using FSU.SPORTIDY.API.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Sportidy API", Version = "v1" });
+    option.OperationFilter<FileUploadOperationFilter>();
+
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -93,6 +96,7 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICommentInMeetingRepository, CommentInMeetingRepository>();
+builder.Services.AddScoped<IImageFieldRepository, ImageFeldReposiotory>();
 
 
 
@@ -108,11 +112,12 @@ builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
 builder.Services.AddScoped<IFriendShipService, FriendShipService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<ICommentInMeetingService, CommentInMeetingService>();
-builder.Services.AddScoped< WebSocketService>();
+builder.Services.AddScoped<WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IImageFieldService, ImageFieldService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));
