@@ -112,6 +112,7 @@ builder.Services.AddScoped< WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));

@@ -8,7 +8,8 @@ namespace FSU.SPORTIDY.Service.BusinessModel.BookingBsModels
 {
     public class FieldTypePercentage
     {
-        public string FieldTypeName { get; set; }
-        public double Percentage { get; set; }
+        public string? FieldTypeName { get; set; }
+        public double? Percentage { get; set; }
+       
     }
 }

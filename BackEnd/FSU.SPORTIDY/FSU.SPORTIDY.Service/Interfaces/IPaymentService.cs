@@ -1,4 +1,5 @@
-﻿using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
+﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
 using System;
@@ -22,5 +23,7 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<PaymentModel?> Insert(PaymentModel EntityInsert);
 
         public Task<PaymentModel> Update(PaymentModel EntityUpdate);
+
+        public Task<List<PaymentStatistic>> GetAllPaymentsAsync();
     }
 }

@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -312,11 +313,12 @@ namespace FSU.SPORTIDY.Service.Services
             return _mapper.Map<BookingModel>(booking);
         }
 
-        public async Task<List<FieldTypePercentage>> GetFieldTypePercentageAsync(int month, int year)
+        public async Task<FieldTypeResponse> GetFieldTypePercentageAsync(int year)
         {
-            var bookings = await _unitOfWork.BookingRepository.GetBookingsByMonthAndYearAsync(month, year);
+            var bookings = await _unitOfWork.BookingRepository.GetPlayFieldRateInBookingByYearAsync(year);
 
             var totalBookings = bookings.Count;
+            var totalPlayField = await _unitOfWork.PlayFieldRepository.GetAllNoPaging();
 
             var fieldTypePercentages = bookings
                 .GroupBy(b => b.PlayField.Sport.SportName)
@@ -327,7 +329,12 @@ namespace FSU.SPORTIDY.Service.Services
                 })
                 .ToList();
 
-            return fieldTypePercentages;
+            return new FieldTypeResponse
+            {
+                TotalPlayField = totalPlayField.Count(),
+                TotalBooking = totalBookings,
+                FieldPercentages = fieldTypePercentages
+            };
         }
     }
 }

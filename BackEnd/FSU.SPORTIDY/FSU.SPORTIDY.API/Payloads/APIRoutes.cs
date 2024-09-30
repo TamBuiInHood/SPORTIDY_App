@@ -13,6 +13,7 @@
         {
             public const string createPaymentLink = Base + "/payment/create-payment-link";
             public const string getPaymentInformation = Base + "/payment/get-payment-information";
+            public const string getPaymentStatistic = Base + "/payment/payment-statistic";
         }
 
         public static class Authentication
@@ -67,7 +68,7 @@
 
             public const string GetByEmail = Base + "/users/by-email/{email}";
 
-            public const string Update = Base + "/users/";
+            public const string Update = Base + "/users/update-user";
 
             public const string UpdateAvatar = Base + "/users/update-avatar/{id}";
 
@@ -78,6 +79,8 @@
             public const string Add = Base + "/users/";
 
             public const string UpdateDeviceCode = Base + "/users/device-code/{id}";
+            public const string StatisticUser = Base + "/users/statistic/{year}";
+            public const string BannedUser = Base + "/users/banned-user/{userId}";
         }
 
         public static class Club
@@ -207,7 +210,7 @@
 
             public const string RevenuePlayFieldForAdmin = Base + "/bookings/statistic/{year}";
 
-            public const string StatisticPlayFieldTypePercentage = Base + "/bookings/statistic/{month}/{year}";
+            public const string StatisticPlayFieldTypePercentage = Base + "/bookings/statistic/play-field-rate/{year}";
         }
 
         public static class Notifcation
