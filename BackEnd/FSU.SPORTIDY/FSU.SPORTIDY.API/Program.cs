@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Builder.Extensions;
 using FSU.SPORTIDY.Service.Services.PaymentServices;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
 using FSU.SPORTIDY.API.Validations;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,8 +39,7 @@ builder.Services.AddSwaggerGen();
 // return json with kabab case 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.PropertyNamingPolicy = new KebabCaseNamingPolicy();
-    options.JsonSerializerOptions.DictionaryKeyPolicy = new KebabCaseNamingPolicy();
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 
 builder.Services.AddSwaggerGen(option =>

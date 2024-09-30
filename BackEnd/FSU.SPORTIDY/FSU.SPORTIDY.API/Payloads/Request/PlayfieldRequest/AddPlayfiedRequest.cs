@@ -9,17 +9,17 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
     public class AddPlayfiedRequest
     {
         [Required]
-        public int? CurrentIDLogin { get; set; }
+        public int? currentIdLogin { get; set; }
         [Required]
-        public string? PlayFieldName { get; set; }
+        public string? playfieldName { get; set; }
         [Required]
-        public int? Price { get; set; }
+        public int? price { get; set; }
         [Required]
-        public string? Address { get; set; }
+        public string? address { get; set; }
         [Required]
-        public DateTime? OpenTime { get; set; }
+        public DateTime? openTime { get; set; }
         [Required]
-        public DateTime? CloseTime { get; set; }
+        public DateTime? closeTime { get; set; }
 
         [Required]
         public List<string> subPlayfieds { get; set; } = new List<string>();
@@ -28,9 +28,9 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
         [Required]
         [FromForm]
         [FileFormat(".jpg", ".jpeg", ".png")]
-        public IFormFile? AvatarImage { get; set; }
+        public IFormFile? avatarImage { get; set; }
         [FromForm]
-        public List<AddImageFieldRequest> AddImageField { get; set; } = new List<AddImageFieldRequest>();
+        public List<AddImageFieldRequest> addImageField { get; set; } = new List<AddImageFieldRequest>();
 
     }
 }

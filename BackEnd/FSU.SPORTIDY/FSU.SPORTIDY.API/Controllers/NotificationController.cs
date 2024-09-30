@@ -61,7 +61,7 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpGet(APIRoutes.Notifcation.GetByCustomerID, Name = "Get Notification By Customer Id")]
-        public async Task<IActionResult> GetNotificationsByCustomerId([FromRoute(Name = "customer-id")] int customerId)
+        public async Task<IActionResult> GetNotificationsByCustomerId([FromRoute(Name = "customerId")] int customerId)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
 
         [HttpGet(APIRoutes.Notifcation.GetByID, Name = "GetNotificationByIdAsync")]
-        public async Task<IActionResult> GetNotificationById([FromRoute(Name = "notification-id")] int id)
+        public async Task<IActionResult> GetNotificationById([FromRoute(Name = "notificationId")] int id)
         {
             try
             {
@@ -135,7 +135,7 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpPost(APIRoutes.Notifcation.AddByCustomerId, Name = "Add Notification By Customerr Id")]
-        public async Task<IActionResult> AddNotificationByCustomerId([FromRoute(Name = "customer-id")] int id, [FromBody] NotificationModel notificationModel)
+        public async Task<IActionResult> AddNotificationByCustomerId([FromRoute(Name = "customerId")] int id, [FromBody] NotificationModel notificationModel)
         {
             try
             {
@@ -172,7 +172,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         [HttpPost(APIRoutes.Notifcation.MarkAllCustomerNotificationIsReadByCustomerId, 
                   Name = "Mark All Customer  Notification Is Read By Customer Id")]
-        public async Task<IActionResult> MarkAllCustomerNotificationIsReadByCustomerId([FromRoute(Name = "customer-id")] int customerId)
+        public async Task<IActionResult> MarkAllCustomerNotificationIsReadByCustomerId([FromRoute(Name = "customerId")] int customerId)
         {
             try
             {
@@ -205,7 +205,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         [HttpPost(APIRoutes.Notifcation.MarkNotificationIsReadByNotificationId,
                   Name = "Mark Notification Is Read By Notification Id")]
-        public async Task<IActionResult> MarkAllNotificationIsReadByNotificationId([FromRoute(Name = "notification-id")] int notificationId)
+        public async Task<IActionResult> MarkAllNotificationIsReadByNotificationId([FromRoute(Name = "notificationId")] int notificationId)
         {
             try
             {
@@ -237,7 +237,7 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpPost(APIRoutes.Notifcation.AddByRole, Name = "Add Notification By Role")]
-        public async Task<IActionResult> AddNotificationForRole([FromRoute(Name = "role-name")] string roleName, NotificationListModel notificationListModel)
+        public async Task<IActionResult> AddNotificationForRole([FromRoute(Name = "roleName")] string roleName, NotificationListModel notificationListModel)
         {
             try
             {
@@ -275,7 +275,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var result = await _notificationService.AddNotificationByListCustomerId(notificationModel.ListUserId, notificationModel);
+                var result = await _notificationService.AddNotificationByListCustomerId(notificationModel.listUserId, notificationModel);
                 if (result)
                 {
                     return Ok(new BaseResponse()

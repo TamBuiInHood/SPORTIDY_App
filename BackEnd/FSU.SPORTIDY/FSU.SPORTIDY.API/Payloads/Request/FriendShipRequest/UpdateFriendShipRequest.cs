@@ -6,7 +6,7 @@ namespace FSU.SPORTIDY.API.Payloads.Request.FriendShipRequest
     public class UpdateFriendShipRequest
     {
         [Required]
-        public int currentIDLogin { get; set; }
+        public int currentIdLogin { get; set; }
         [Required]
         public int userId2 { get; set; }
         [Required]
