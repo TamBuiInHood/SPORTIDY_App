@@ -116,6 +116,7 @@ builder.Services.AddScoped<WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IImageFieldService, ImageFieldService>();
 
 // add mail settings

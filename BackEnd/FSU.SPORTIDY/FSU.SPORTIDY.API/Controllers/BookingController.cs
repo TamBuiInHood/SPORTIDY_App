@@ -325,16 +325,16 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpGet(APIRoutes.Booking.StatisticPlayFieldTypePercentage, Name = "Statistic PlayField Type Percentage")]
-        public async Task<IActionResult> GetFieldTypePercentage(int month, int year)
+        public async Task<IActionResult> GetFieldTypePercentage([FromRoute(Name = "year")] int year)
         {
-            var percentages = await _bookingService.GetFieldTypePercentageAsync(month, year);
+            var result = await _bookingService.GetFieldTypePercentageAsync(year);
 
-            if (percentages == null || !percentages.Any())
+            if (result == null)
             {
-                return NotFound("No bookings found for this month and year.");
+                return NotFound("No bookings found.");
             }
 
-            return Ok(percentages);
+            return Ok(result);
         }
 
     }

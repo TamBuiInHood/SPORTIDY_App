@@ -31,15 +31,15 @@ namespace FSU.SPORTIDY.Repository.Repositories
                            .ToListAsync();
         }
 
-        public async Task<List<Booking>> GetBookingsByMonthAndYearAsync(int month, int year)
+        public async Task<List<Booking>> GetPlayFieldRateInBookingByYearAsync(int year)
         {
             return await context.Bookings
                 .Where(b => b.BookingDate.HasValue &&
-                            b.BookingDate.Value.Month == month &&
                             b.BookingDate.Value.Year == year)
-                .Include(b => b.PlayField) 
-                .Include(b => b.PlayField.Sport) 
+                .Include(b => b.PlayField)
+                .Include(b => b.PlayField.Sport)
                 .ToListAsync();
         }
+
     }
 }

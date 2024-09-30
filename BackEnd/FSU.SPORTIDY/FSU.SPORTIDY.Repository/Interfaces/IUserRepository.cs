@@ -17,6 +17,7 @@ namespace FSU.SPORTIDY.Repository.Interfaces
         public Task<int> UpdateUserAsync(User user);
         public Task<int> SoftDeleteUserAsync(int userId);
         public Task<List<User>> GetAllUsersByRole(string roleName);
+        public Task<List<User>> GetUsersByYear(int year);
     }
 }
 

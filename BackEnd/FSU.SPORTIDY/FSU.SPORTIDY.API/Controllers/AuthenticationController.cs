@@ -9,7 +9,7 @@ using System.Net;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
-    [Route("api/authentication")]
+    [Route("sportidy/authentication")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {

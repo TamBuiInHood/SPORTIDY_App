@@ -170,7 +170,8 @@ namespace FSU.SPORTIDY.API.Controllers
                 });
             }
         }
-        [HttpPut("update-user")]
+
+        [HttpPut(APIRoutes.User.Update, Name = "UpdateUser")]
         public async Task<IActionResult> UpdateUser(UpdateUserModel updateUserRequestModel)
         {
             try
@@ -207,7 +208,7 @@ namespace FSU.SPORTIDY.API.Controllers
                 });
             }
         }
-        [HttpPost("banned-user/{userId}")]
+        [HttpPost(APIRoutes.User.BannedUser, Name = "BannedUser")]
         public async Task<IActionResult> BannedUser([FromRoute] int userId)
         {
             try
@@ -245,8 +246,8 @@ namespace FSU.SPORTIDY.API.Controllers
             }
         }
 
-        [HttpDelete("soft-delete-user/{userId}")]
-        public async Task<IActionResult> SoftDeleteUser([FromRoute] int userId)
+        [HttpDelete(APIRoutes.User.SoftDelete, Name = "SoftDeleteUser")]
+        public async Task<IActionResult> SoftDeleteUser([FromRoute(Name = "id")] int userId)
         {
             try
             {
@@ -420,6 +421,46 @@ namespace FSU.SPORTIDY.API.Controllers
                     {
                         StatusCode = StatusCodes.Status404NotFound,
                         Message = "Can not find user for update device Code",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+
+            }
+        }
+
+
+        [HttpGet(APIRoutes.User.StatisticUser, Name = "Statistic User")]
+        public async Task<IActionResult> StatisticUser([FromRoute] int year)
+        {
+            try
+            {
+                var result = await _userService.GetUserStatisticsByMonth(year);
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get Statistic User Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not get Statistic User Success",
                         IsSuccess = false
                     });
                 }
