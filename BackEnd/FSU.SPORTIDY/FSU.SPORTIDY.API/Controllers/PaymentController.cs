@@ -7,6 +7,7 @@ using FSU.SPORTIDY.Service.Services.PaymentServices;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SmartMenuWithAI.API.Payloads.Responses;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using FSU.SPORTIDY.Service.Services;
 
 namespace FSU.SPORTIDY.API.Controllers
 {
@@ -15,10 +16,13 @@ namespace FSU.SPORTIDY.API.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IPayOSService _payOSService;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(IPayOSService payOSService)
+        public PaymentController(IPayOSService payOSService, IPaymentService paymentService)
         {
             _payOSService = payOSService;
+            _paymentService = paymentService;
+
         }
 
         [HttpPost(APIRoutes.Payment.createPaymentLink, Name = "createPaymentLink")]
@@ -43,6 +47,45 @@ namespace FSU.SPORTIDY.API.Controllers
                 Data = paymentReponse,
                 IsSuccess = true
             });
+        }
+
+        [HttpGet(APIRoutes.Payment.getPaymentStatistic, Name = "Payment Statistic")]
+        public async Task<IActionResult> StatisticPayment()
+        {
+            try
+            {
+                var result = await _paymentService.GetAllPaymentsAsync();
+                if (result != null)
+                {
+                    return Ok(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status200OK,
+                        Message = "Get Statistic Payment Success",
+                        Data = result,
+                        IsSuccess = true
+                    });
+                }
+                else
+                {
+                    return NotFound(new BaseResponse()
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Can not get Statistic Payment Success",
+                        IsSuccess = false
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(new BaseResponse()
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    IsSuccess = false
+                });
+
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ using Firebase.Storage;
 using FSU.SPORTIDY.Common.Utils;
 using FSU.SPORTIDY.Common.Role;
 using Microsoft.AspNetCore.Routing.Tree;
+using FSU.SPORTIDY.Service.BusinessModel.UserBsModels;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -240,11 +241,11 @@ namespace FSU.SPORTIDY.Service.Services
             var authClaims = new List<Claim>(); 
             if(role != null)
             {
-                authClaims.Add(new Claim(ClaimTypes.Email, email));
-                authClaims.Add(new Claim(ClaimTypes.Role, role.RoleName));
+                authClaims.Add(new Claim("email", email));
+                authClaims.Add(new Claim("role", role.RoleName));
                 authClaims.Add(new Claim("UserId", user.UserId.ToString()));
                 authClaims.Add(new Claim("Status", user.Status.ToString()));
-                authClaims.Add(new Claim("DeviceCode", user.DeviceCode));
+                authClaims.Add(new Claim("DeviceCode", user.DeviceCode ?? "Not yet"));
                 authClaims.Add(new Claim("FullName", user.FullName));
                 authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 
@@ -259,11 +260,11 @@ namespace FSU.SPORTIDY.Service.Services
             var role = await _unitOfWork._RoleRepo.GetRoleById(user.RoleId);
             var authClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Role, role.RoleName),
+                new Claim("email", email),
+                new Claim("role", role.RoleName),
                 new Claim("UserId", user.UserId.ToString()),
                 new Claim("Status", user.Status.ToString()),
-                new Claim("DeviceCode", user.DeviceCode),
+                new Claim("DeviceCode", user.DeviceCode ?? "Not yet"),
                 new Claim("FullName", user.FullName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
@@ -852,6 +853,41 @@ namespace FSU.SPORTIDY.Service.Services
 
                 throw new Exception(ex.Message);
             }
+        }
+
+        public async Task<UserMonthlyStatisticResponse> GetUserStatisticsByMonth(int year)
+        {
+            // Lấy danh sách user từ repository
+            var users = await _unitOfWork.UserRepository.GetUsersByYear(year);
+
+            // Tính tổng số user hiện tại trong hệ thống
+            var listUsers = await _unitOfWork.UserRepository.GetAllNoPaging();
+            var totalUsers = listUsers.ToList().Count;
+
+            // Nhóm người dùng theo tháng và tính số lượng
+            var statistics = users
+                .GroupBy(u => u.CreateDate.Value.ToDateTime(TimeOnly.MinValue).Month)
+                .Select(g => new UserMonthlyStatistic
+                {
+                    Month = g.Key,
+                    UserCount = g.Count()
+                })
+                .ToList();
+
+            // Đảm bảo trả về danh sách đủ 12 tháng
+            var fullStatistics = Enumerable.Range(1, 12)
+                .Select(month => new UserMonthlyStatistic
+                {
+                    Month = month,
+                    UserCount = statistics.FirstOrDefault(s => s.Month == month)?.UserCount ?? 0
+                }).ToList();
+
+            // Tạo đối tượng trả về bao gồm tổng số user và thống kê theo tháng
+            return new UserMonthlyStatisticResponse
+            {
+                TotalUsers = totalUsers,
+                MonthlyStatistics = fullStatistics
+            };
         }
     }
 }
