@@ -73,7 +73,7 @@
         {
             public const string GetAll = Base + "/users/";
 
-            public const string GetAllByRoleName = Base + "/users/{roleName}";
+            public const string GetAllByRoleName = Base + "/users/role/{roleName}";
 
             public const string GetByID = Base + "/users/{id}";
 

@@ -5,6 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import SearchBar from '@/components/SearchBar';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import Sidebar from '@/components/Sidebar';
 
 interface Playfield {
   id: number;
@@ -184,6 +185,7 @@ const BookingScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <Sidebar/>
       <View style={styles.searchContainer}>
         <SearchBar />
       </View>
