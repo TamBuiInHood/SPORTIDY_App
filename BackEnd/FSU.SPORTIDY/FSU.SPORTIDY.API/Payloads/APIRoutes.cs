@@ -6,7 +6,7 @@
 
         public static class WebSocket
         {
-            public const string ws = Base + "websocket";
+            public const string ws = Base + "/websocket";
         }
 
         public static class Payment
@@ -248,7 +248,7 @@
         }
         public static class Comment
         {
-            public const string GetAll = Base + "{meetingId}/comments/";
+            public const string GetAll = Base + "/{meetingId}/comments/";
 
             public const string GetByID = Base + "/comments/{commentId}";
 
@@ -261,7 +261,7 @@
 
         public static class ImageField
         {
-            public const string GetAll = Base + "{playfieldId}/images-field/";
+            public const string GetAll = Base + "/{playfieldId}/images-field/";
 
             public const string GetByID = Base + "/images-field/{imageId}";
 

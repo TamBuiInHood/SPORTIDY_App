@@ -9,6 +9,7 @@ import ActionButtons from '@/components/ActionButton';
 import ActionIcons from '@/components/ActionIcons';
 import api from '@/config/api';
 import { Card } from '@/types/types';
+import axios from 'axios';
 
 
 
@@ -21,8 +22,8 @@ const HomeScreen: React.FC = () => {
 
   const fetchMeetings = async () => {
     try {
-      const response = await api.getAllMeeting(0,10);
-      setCards(response.meetings); // Ensure response meets your structure
+      const response = await axios.get( 'https://65a09e6c600f49256fb01938.mockapi.io/api/tools');
+      setCards(response.data); 
     } catch (error) {
       console.error('Failed to fetch meetings:', error);
       setError('Failed to load meetings. Please try again later.');
@@ -53,23 +54,23 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.headerLine} />
-      <Image style={styles.image} source={{ uri: card.meetingImage }} />
+      <Image style={styles.image} source={{ uri: card.image }} />
       <View style={styles.cardContent}>
         <View style={styles.infoLeft}>
-          <Text style={styles.infoTitle}>{card.meetingName || 'Unnamed Meeting'}</Text>
+          <Text style={styles.infoTitle}>{card.artName || 'Unnamed Meeting'}</Text>
           <View style={styles.location}>
             <Ionicons name="location-sharp" size={16} color="black" />
-            <Text style={styles.locationText}>{card.address}</Text>
+            <Text style={styles.locationText}>{card.artName}</Text>
           </View>
-          <Text style={styles.time}>{new Date(card.startDate).toLocaleTimeString()}</Text>
-          <Text style={styles.date}>{new Date(card.startDate).toLocaleDateString()}</Text>
+          <Text style={styles.time}>{new Date(card.brand).toLocaleTimeString()}</Text>
+          <Text style={styles.date}>{new Date(card.brand).toLocaleDateString()}</Text>
         </View>
         <View style={styles.infoRight}>
           <View style={styles.heartIcon}>
             <Ionicons name="heart" size={20} color="blue" />
           </View>
           <View style={styles.stats}>
-            <Text style={styles.statNumber}>{`${card.host}/${card.totalMember}`}</Text>
+            <Text style={styles.statNumber}>{`${card.artName}/${card.price}`}</Text>
             <Text style={styles.statNumber}>+0 others</Text>
           </View>
         </View>
