@@ -715,18 +715,21 @@ namespace FSU.SPORTIDY.Service.Services
 
             try
             {
-                // Create a Firebase Storage client
-                var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
-                // Parse the image URL to get the file name
-                var fileNameAvatar = EntityDelete.Avartar.Substring(EntityDelete.Avartar.LastIndexOf('/') + 1);
-                fileNameAvatar = fileNameAvatar.Split('?')[0]; // Remove the query parameters
-                var encodedFileAvatar = Path.GetFileName(fileNameAvatar);
-                var fileNameAvatarOfficial = Uri.UnescapeDataString(encodedFileAvatar);
+                if(EntityDelete.Avartar != null && EntityDelete.Avartar.Contains("firebasestorage"))
+                {
+                    // Create a Firebase Storage client
+                    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                    // Parse the image URL to get the file name
+                    var fileNameAvatar = EntityDelete.Avartar.Substring(EntityDelete.Avartar.LastIndexOf('/') + 1);
+                    fileNameAvatar = fileNameAvatar.Split('?')[0]; // Remove the query parameters
+                    var encodedFileAvatar = Path.GetFileName(fileNameAvatar);
+                    var fileNameAvatarOfficial = Uri.UnescapeDataString(encodedFileAvatar);
 
 
-                // Delete the avaatar club from Firebase Storage
-                var fileRefAvatar = firebaseStorage.Child(fileNameAvatarOfficial);
-                await fileRefAvatar.DeleteAsync();
+                    // Delete the avaatar club from Firebase Storage
+                    var fileRefAvatar = firebaseStorage.Child(fileNameAvatarOfficial);
+                    await fileRefAvatar.DeleteAsync();
+                }
 
             }
             catch (Exception ex)
