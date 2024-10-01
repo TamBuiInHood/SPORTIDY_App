@@ -21,7 +21,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = $"{UserRoleConst.ADMIN},{UserRoleConst.SPORTOWNER}")]
         [HttpDelete(APIRoutes.ImageField.Delete)]
-        public async Task<IActionResult> DeleteImage([FromRoute(Name = "image-id")] int imageId)
+        public async Task<IActionResult> DeleteImage([FromRoute(Name = "imageId")] int imageId)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = $"{UserRoleConst.ADMIN},{UserRoleConst.SPORTOWNER}")]
         [HttpGet(APIRoutes.ImageField.GetAll)]
-        public async Task<IActionResult> GetImages([FromRoute(Name = "playfield-id")] int playfieldId)
+        public async Task<IActionResult> GetImages([FromRoute(Name = "playfieldId")] int playfieldId)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = $"{UserRoleConst.ADMIN},{UserRoleConst.SPORTOWNER}")]
         [HttpGet(APIRoutes.ImageField.GetByID)]
-        public async Task<IActionResult> GetImageById([FromRoute(Name = "image-id")] int imageId)
+        public async Task<IActionResult> GetImageById([FromRoute(Name = "imageId")] int imageId)
         {
             try
             {

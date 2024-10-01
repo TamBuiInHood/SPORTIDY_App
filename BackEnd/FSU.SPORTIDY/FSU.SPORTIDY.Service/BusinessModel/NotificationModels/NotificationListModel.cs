@@ -8,9 +8,9 @@ namespace FSU.SPORTIDY.Service.BusinessModel.NotificationModels
 {
     public class NotificationListModel
     {
-        public string Title { get; set; }
-        public string Message { get; set; }
+        public string title { get; set; }
+        public string message { get; set; }
 
-        public List<int>? ListUserId { get; set; }
+        public List<int>? listUserId { get; set; }
     }
 }
