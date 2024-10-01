@@ -525,19 +525,44 @@ namespace FSU.SPORTIDY.Service.Services
             if(existUser != null)
             {
                 // update account
-                existUser.FullName = updateUserRequestModel.FullName;
-                existUser.Description = updateUserRequestModel.Description;
-                existUser.Phone = updateUserRequestModel.PhoneNumber;
-                existUser.Birtday = updateUserRequestModel.Birthday;
-                existUser.Address = updateUserRequestModel.Address;
-                existUser.Gender = updateUserRequestModel.Gender;
-                existUser.Avartar = updateUserRequestModel.Avatar;
-               
-                bool checkOldPassword = PasswordHelper.VerifyPassword(updateUserRequestModel.Password, existUser.Password);
-                if(checkOldPassword)
+                if(updateUserRequestModel.FullName != null)
                 {
-                    string newPassword = PasswordHelper.HashPassword(updateUserRequestModel.Password);
-                    existUser.Password = newPassword;
+                    existUser.FullName = updateUserRequestModel.FullName;
+                }
+                if(updateUserRequestModel.Description != null)
+                {
+                    existUser.Description = updateUserRequestModel.Description;
+                }
+                if(updateUserRequestModel.PhoneNumber != null)
+                {
+                    existUser.Phone = updateUserRequestModel.PhoneNumber;
+                }
+                if(updateUserRequestModel.Birthday != null)
+                {
+                    existUser.Birtday = updateUserRequestModel.Birthday;
+                }
+                if(updateUserRequestModel.Address != null)
+                {
+                    existUser.Address = updateUserRequestModel.Address;
+                }
+                if(updateUserRequestModel.Gender != null)
+                {
+                    existUser.Gender = updateUserRequestModel.Gender;
+                }
+                if(updateUserRequestModel.Avatar != null)
+                {
+                    existUser.Avartar = updateUserRequestModel.Avatar;
+                }
+                existUser.IsDeleted = updateUserRequestModel.IsDeleted != null ? updateUserRequestModel.IsDeleted : 0;
+               
+                if(!string.IsNullOrEmpty(updateUserRequestModel.Password))
+                {
+                    bool checkOldPassword = PasswordHelper.VerifyPassword(updateUserRequestModel.Password, existUser.Password);
+                    if (checkOldPassword)
+                    {
+                        string newPassword = PasswordHelper.HashPassword(updateUserRequestModel.Password);
+                        existUser.Password = newPassword;
+                    }
                 }
                var result = await _unitOfWork.UserRepository.UpdateUserAsync(existUser);
                if(result > 0)
