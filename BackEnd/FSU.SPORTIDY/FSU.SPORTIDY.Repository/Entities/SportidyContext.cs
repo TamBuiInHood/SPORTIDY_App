@@ -45,6 +45,7 @@ public partial class SportidyContext : DbContext
     public virtual DbSet<UserMeeting> UserMeetings { get; set; }
     public virtual DbSet<UserToken> UserTokens { get; set; }
     public virtual DbSet<SystemFeedback> SystemFeedbacks { get; set; }
+    public virtual DbSet<Payment> Payments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

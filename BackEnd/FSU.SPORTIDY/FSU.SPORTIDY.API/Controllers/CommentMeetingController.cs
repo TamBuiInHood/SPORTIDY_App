@@ -69,13 +69,13 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpGet(APIRoutes.Comment.GetAll)]
-        public async Task<IActionResult> GetCommentsByMeeting([FromRoute(Name = "meeting-id")] int meetingId,
-                                                                int PageSize = Page.DEFAULT_PAGE_SIZE,
-                                                                int PageIndex = Page.DEFAULT_PAGE_INDEX)
+        public async Task<IActionResult> GetCommentsByMeeting([FromRoute(Name = "meetingId")] int meetingId,
+                                                                int pageSize = Page.DEFAULT_PAGE_SIZE,
+                                                                int pageIndex = Page.DEFAULT_PAGE_INDEX)
         {
             try
             {
-                var paginatedComments = await _commentService.GetByMeetingId(meetingId, PageSize, PageIndex);
+                var paginatedComments = await _commentService.GetByMeetingId(meetingId, pageSize, pageIndex);
 
                 //if (paginatedComments == null || !paginatedComments.List.Any())
                 //{
@@ -107,7 +107,7 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpDelete(APIRoutes.Comment.Delete)]
-        public async Task<IActionResult> DeleteComment([FromRoute(Name = "comment-id")] int commentId)
+        public async Task<IActionResult> DeleteComment([FromRoute(Name = "commentId")] int commentId)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         [HttpGet(APIRoutes.Comment.GetByID)]
-        public async Task<IActionResult> GetCommentById([FromRoute(Name = "comment-id")] int commentId)
+        public async Task<IActionResult> GetCommentById([FromRoute(Name = "commentId")] int commentId)
         {
             try
             {
@@ -182,7 +182,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var updatedComment = await _commentService.Update(reqObj.content, reqObj.commentId, reqObj.Image);
+                var updatedComment = await _commentService.Update(reqObj.content, reqObj.commentId, reqObj.image);
 
                 if (updatedComment == null)
                 {

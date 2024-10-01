@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FSU.SPORTIDY.Repository.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace FSU.SPORTIDY.Repository.Interfaces
 {
     public interface IPaymentRepository
     {
+        public Task<List<Payment>> GetStatisticPayment();
+
     }
 }

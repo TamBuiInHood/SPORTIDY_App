@@ -5,8 +5,8 @@ namespace FSU.SPORTIDY.API.Payloads.Request.SportRequest
     public class AddSportRequest
     {
         [Required]
-        public string? SportName { get; set; }
+        public string? sportName { get; set; }
         [Required]
-        public IFormFile? SportImage { get; set; }
+        public IFormFile? sportImage { get; set; }
     }
 }

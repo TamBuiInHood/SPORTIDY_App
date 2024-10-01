@@ -8,10 +8,10 @@ namespace FSU.SPORTIDY.Service.BusinessModel.NotificationModels
 {
     public class NotificationModel
     {
-        public string DeviceToken { get; set; }
-        public string Title { get; set; }
-        public string Message { get; set; }
-        public int UserId { get; set; }
+        public string deviceToken { get; set; }
+        public string title { get; set; }
+        public string message { get; set; }
+        public int userId { get; set; }
 
     }
 }

@@ -2,6 +2,7 @@
 using FSU.SPORTIDY.Repository.Entities;
 using FSU.SPORTIDY.Service.BusinessModel.AuthensModel;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.UserBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.UserModels;
 using Microsoft.AspNetCore.Http;
 
@@ -28,5 +29,6 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<string> UpdateAvatarOfUser(IFormFile avatarOfUser, int id);
         public Task<List<User>> GetAllUsersByRole(string roleName);
         public Task<bool> UpdateDeviceCodeByUserId(string deviceCode, int id);
+        public Task<UserMonthlyStatisticResponse> GetUserStatisticsByMonth(int year);
     }
 }

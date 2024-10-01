@@ -32,11 +32,11 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 var notification = new Notification()
                 {
-                    NotificationCode = notificationModel.DeviceToken,
+                    NotificationCode = notificationModel.deviceToken,
                     IsRead = false,
-                    Tiltle = notificationModel.Title,
-                    Message = notificationModel.Message,
-                    UserId = notificationModel.UserId,
+                    Tiltle = notificationModel.title,
+                    Message = notificationModel.message,
+                    UserId = notificationModel.userId,
                     NotificationType = true,
                     InviteDate = DateTime.Now,
                 };
@@ -58,8 +58,8 @@ namespace FSU.SPORTIDY.Service.Services
                         {
                             NotificationCode = user.DeviceCode,
                             IsRead = false,
-                            Tiltle = notificationModel.Title,
-                            Message = notificationModel.Message,
+                            Tiltle = notificationModel.title,
+                            Message = notificationModel.message,
                             UserId = user.UserId,
                             NotificationType = true,
                             InviteDate = DateTime.Now,
@@ -83,8 +83,8 @@ namespace FSU.SPORTIDY.Service.Services
                     {
                         NotificationCode = user.DeviceCode,
                         IsRead = false,
-                        Tiltle = notificationModel.Title,
-                        Message = notificationModel.Message,
+                        Tiltle = notificationModel.title,
+                        Message = notificationModel.message,
                         UserId = user.UserId,
                         NotificationType = true,
                         InviteDate = DateTime.Now,

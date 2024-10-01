@@ -7,11 +7,10 @@ namespace FSU.SPORTIDY.API.Payloads.Request.MeetingRequest
     public class UpdateCommentRequest
     {
         [Required]
-        [JsonProperty("comment-id")]
         public int commentId {  get; set; }
         public string? content { get; set; }
 
         [FileFormat(".jpg", ".jpeg", ".png", ".pdf", ErrorMessage = "Please upload a valid file format (.jpg, .jpeg, .png, .pdf).")]
-        public IFormFile? Image { get; set; }
+        public IFormFile? image { get; set; }
     }
 }

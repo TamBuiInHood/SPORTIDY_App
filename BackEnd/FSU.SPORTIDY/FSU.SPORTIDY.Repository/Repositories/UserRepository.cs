@@ -48,6 +48,17 @@ namespace FSU.SPORTIDY.Repository.Repositories
             return null;
         }
 
+        public async Task<List<User>> GetUsersByYear(int year)
+        {
+            var users = await _context.Users
+                            .Where(u => u.CreateDate.HasValue)  
+                            .ToListAsync();
+
+            return users
+                .Where(u => u.CreateDate.Value.Year == year)  
+                .ToList();
+        }
+
         public async Task<int> SoftDeleteUserAsync(int userId)
         {
             var user = await GetUserByIdAsync(userId);

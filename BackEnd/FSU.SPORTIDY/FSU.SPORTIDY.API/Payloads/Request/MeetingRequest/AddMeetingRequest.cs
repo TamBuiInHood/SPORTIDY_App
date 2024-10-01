@@ -6,26 +6,26 @@ namespace FSU.SPORTIDY.API.Payloads.Request.MeetingRequest
     public class AddMeetingRequest
     {
         [Required]
-        public string? MeetingName { get; set; }
-        public IFormFile? MeetingImage { get; set; }
+        public string? meetingName { get; set; }
+        public IFormFile? meetingImage { get; set; }
         [Required]
-        public string? Address { get; set; }
+        public string? address { get; set; }
         [Required]
-        public DateTime? StartDate { get; set; }
+        public DateTime? startDate { get; set; }
         [Required]
-        public DateTime? EndDate { get; set; }
+        public DateTime? endDate { get; set; }
         [Required]
-        public int? TotalMember { get; set; }
-        public int? ClubId { get; set; }
-        public string? Note { get; set; }
+        public int? totalMember { get; set; }
+        public int? clubId { get; set; }
+        public string? note { get; set; }
         [Required]
-        public bool? IsPublic { get; set; }
+        public bool? isPublic { get; set; }
         [Required]
-        public int? SportId { get; set; }
+        public int? sportId { get; set; }
         [Required]
-        public int? CancelBefore { get; set; }
+        public int? cancelBefore { get; set; }
         //public List<int> InvitedFriend { get; set; }
         [Required]
-        public int currentIDLogin { get; set; }
+        public int currentIdLogin { get; set; }
     }
 }
