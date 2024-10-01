@@ -36,7 +36,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true}>
+      <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true} >
         <Stack.Navigator initialRouteName="(routes)/login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(routes)/splash" component={SplashScreenComponent} />
           <Stack.Screen name="(routes)/login" component={LoginScreen} />

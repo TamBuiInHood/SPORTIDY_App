@@ -21,8 +21,12 @@ const HomeScreen: React.FC = () => {
 
   const fetchMeetings = async () => {
     try {
-      const response = await api.getAllMeeting(0,10);
-      setCards(response.meetings); // Ensure response meets your structure
+      const response = await fetch('http://192.168.1.4:5183/sportidy/meetings?page-number=1&page-size=5'); // Sử dụng địa chỉ IP của máy tính
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setCards(data.meetings);
     } catch (error) {
       console.error('Failed to fetch meetings:', error);
       setError('Failed to load meetings. Please try again later.');
@@ -30,7 +34,7 @@ const HomeScreen: React.FC = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchMeetings();
   }, []);
@@ -127,8 +131,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   card: {
-    width: Dimensions.get('window').width * 0.9,
-    height: Dimensions.get('window').height * 0.6,
+    width: '90%',
+    height: '60%',
     borderRadius: 30,
     borderWidth: 1,
     borderColor: '#ddd',

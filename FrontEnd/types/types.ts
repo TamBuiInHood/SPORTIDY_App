@@ -6,7 +6,20 @@ export type RootStackParamList = {
   Verification: any;
   NewPassword: any;
   UserProfile: any;
-  Tabs: any;
+  '(tabs)': {
+    params: {
+      screen: any;
+    };
+  };
+  PlayField: any;
+  
+};
+export type TabParamList = {
+  index: undefined;
+  booking: undefined;
+  create: undefined;
+  club: undefined;
+  account: undefined;
 };
 
 export interface Card{
@@ -19,11 +32,36 @@ export interface Card{
   endDate: string; // or Date
   host: number;
   totalMember: number;
-  clubId: number | null;
-  note: string;
   isPublic: boolean;
 }
 
 export interface MeetingsResponse {
   meetings: Card[];
+}
+
+export interface Booking{
+  bookingId: number,
+  bookingCode: string,
+  bookingDate: Date,
+  price: number,
+  dateStart: Date,
+  dateEnd: Date,
+  status: number,
+  barcode: string,
+  description: string,
+  customerId: number,
+  playField: PlayField
+}
+
+export interface PlayField {
+  playFieldId: number,
+  playFieldName: string,
+  playFieldCode: string,
+  price: number,
+  address: string,
+  openTime: string,
+  closeTime: string,
+  avatarImage: string,
+  status: number,
+  sportId: number,
 }
