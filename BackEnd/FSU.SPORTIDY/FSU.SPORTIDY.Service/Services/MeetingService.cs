@@ -124,7 +124,12 @@ namespace FSU.SPORTIDY.Service.Services
             meeting.TotalMember = EntityInsert.TotalMember;
             meeting.SportId = EntityInsert.SportId;
             meeting.CancelBefore = EntityInsert.CancelBefore;
-
+            meeting.UserMeetings.Add(new UserMeeting
+            {
+                ClubId = EntityInsert.ClubId,
+                UserId = currentLoginID,
+                RoleInMeeting = MeetingRole.HOST,
+            });
             // push hinh len firebase
             if (Image != null)
             {
@@ -180,7 +185,7 @@ namespace FSU.SPORTIDY.Service.Services
 
         public async Task<bool> kickUserOfMeeting(int userId, int meetingId)
         {
-            var userMeeting = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId);
+            var userMeeting = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId && x.RoleInMeeting != MeetingRole.HOST);
             if (userMeeting == null)
             {
                 return false;
@@ -216,7 +221,7 @@ namespace FSU.SPORTIDY.Service.Services
             Expression<Func<Meeting, bool>> conditionGetMeeting = x => x.MeetingId == meetingId;
             var meeting = await _unitOfWork.MeetingRepository.GetByCondition(conditionGetMeeting);
             // tham gia o qua khu
-            if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now)
+            if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now || meeting.UserMeetings.Count == meeting.TotalMember)
             {
                 // You can either return null or a custom response indicating invalid dates
                 return null; // Or throw an exception or custom error response
