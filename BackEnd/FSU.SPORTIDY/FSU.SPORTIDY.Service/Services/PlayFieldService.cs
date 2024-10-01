@@ -124,7 +124,9 @@ namespace FSU.SPORTIDY.Service.Services
 
             Func<IQueryable<PlayField>, IOrderedQueryable<PlayField>> orderBy = q => q.OrderBy(x => x.PlayFieldName);
 
-            var entities = await _unitOfWork.PlayFieldRepository.Get(filter: filter, orderBy: orderBy, pageIndex: pageIndex, pageSize: pageSize);
+            string includePropoperties = "User,Sport";
+
+            var entities = await _unitOfWork.PlayFieldRepository.Get(filter: filter, orderBy: orderBy, pageIndex: pageIndex, pageSize: pageSize, includeProperties: includePropoperties);
             var pagin = new PageEntity<PlayFieldModel>();
             pagin.List = _mapper.Map<IEnumerable<PlayFieldModel>>(entities);
             pagin.TotalRecord = await _unitOfWork.PlayFieldRepository.Count();

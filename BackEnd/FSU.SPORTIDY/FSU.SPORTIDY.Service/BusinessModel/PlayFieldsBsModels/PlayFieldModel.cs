@@ -26,6 +26,7 @@ namespace FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels
         public TimeOnly? OpenTime { get; set; }
 
         public int? UserId { get; set; }
+        public string? FullName { get; set; }
 
         public TimeOnly? CloseTime { get; set; }
 
@@ -36,6 +37,7 @@ namespace FSU.SPORTIDY.Service.BusinessModel.PlayFieldsModels
         public int? IsDependency { get; set; }
 
         public int? SportId { get; set; }
+        public string? SportName { get; set; }  
 
         public virtual ICollection<BookingModel> Bookings { get; set; } = new List<BookingModel>();
 
