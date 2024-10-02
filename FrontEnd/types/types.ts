@@ -1,3 +1,5 @@
+import { RouteProp } from "@react-navigation/native";
+
 export type RootStackParamList = {
   Splash: any;
   SignUp: any;
@@ -6,7 +8,24 @@ export type RootStackParamList = {
   Verification: any;
   NewPassword: any;
   UserProfile: any;
-  Tabs: any;
+  '(tabs)': {
+    params: {
+      screen: any;
+    };
+  };
+  PlayField: any;
+  EventDetail: {meetingId: number},
+  HomeScreen: any;
+  
+};
+export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
+
+export type TabParamList = {
+  index: undefined;
+  booking: undefined;
+  create: undefined;
+  club: undefined;
+  account: undefined;
 };
 
 export interface Card{
@@ -19,11 +38,72 @@ export interface Card{
   endDate: string; // or Date
   host: number;
   totalMember: number;
-  clubId: number | null;
-  note: string;
   isPublic: boolean;
+  clubId: number;
+  note: string;
+  sportId: number;
+  cancelBefore: number
 }
 
 export interface MeetingsResponse {
-  meetings: Card[];
+  list: Card[];
+}
+
+export interface Booking{
+  bookingId: number,
+  bookingCode: string,
+  bookingDate: Date,
+  price: number,
+  dateStart: Date,
+  dateEnd: Date,
+  status: number,
+  barcode: string,
+  description: string,
+  customerId: number,
+  playField: PlayField
+}
+
+export interface PlayField {
+  playFieldId: number,
+  playFieldName: string,
+  playFieldCode: string,
+  price: number,
+  address: string,
+  openTime: string,
+  closeTime: string,
+  avatarImage: string,
+  status: number,
+  sportId: number,
+}
+export interface MeetingDetail {
+  meetingId: number;
+  meetingCode: string;
+  meetingName: string;
+  meetingImage: string;
+  address: string;
+  startDate: string;
+  endDate: string;
+  host: number;
+  totalMember: number;
+  clubId: number;
+  note: string;
+  isPublic: boolean;
+  sportId: number;
+  cancelBefore: number;
+  commentInMeetings?: any[]; // Thay đổi kiểu nếu cần
+}
+
+export interface Club {
+  clubId: number,
+  clubName: string,
+  clubCode: string,
+  regulation: string,
+  information: string,
+  slogan: string,
+  mainSport: string,
+  createDate: string,
+  location: string,
+  totalMember: number,
+  avatarClub: string,
+  coverImageClub: string
 }

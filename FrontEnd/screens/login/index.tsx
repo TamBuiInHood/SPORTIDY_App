@@ -26,13 +26,13 @@ const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handleLogin = async () => {
-    if (email && password) {
+    if (email == 'admin@gmail.com' && password == '123456') {
       try {
         // Save email to AsyncStorage
         await AsyncStorage.setItem("userEmail", email);
 
         // Navigate to UserProfile after successful login
-        navigation.replace('Tabs');
+        navigation.navigate('(tabs)', { params: { screen: 'index' } });
       } catch (error) {
         console.error("Failed to save email", error);
       }
