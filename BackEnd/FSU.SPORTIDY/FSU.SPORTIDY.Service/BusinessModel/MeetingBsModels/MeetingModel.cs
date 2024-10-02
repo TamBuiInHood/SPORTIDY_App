@@ -1,4 +1,5 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using FSU.SPORTIDY.Service.BusinessModel.ClubModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingBsModels;
 
 namespace FSU.SPORTIDY.Service.BusinessModel.MeetingModels
@@ -32,9 +33,12 @@ namespace FSU.SPORTIDY.Service.BusinessModel.MeetingModels
         public int? SportId { get; set; }
 
         public int? CancelBefore { get; set; }
+        public string? ClubName { get; set; }
+        public string? ImageClub { get; set; }
 
         public virtual ICollection<CommentInMeetingModel> CommentInMeetings { get; set; } = new List<CommentInMeetingModel>();
 
         public virtual ICollection<UserMeeting> UserMeetings { get; set; } = new List<UserMeeting>();
+
     }
 }

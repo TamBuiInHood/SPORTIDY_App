@@ -93,12 +93,19 @@ namespace FSU.SPORTIDY.Service.Services
         {
             Expression<Func<Meeting, bool>> condition = x => x.MeetingId == meetingID && (x.Status != (int)MeetingStatus.DELETED);
             string includeProperties = "UserMeetings,CommentInMeetings";
-            var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition,includeProperties);
-            return _mapper?.Map<MeetingModel?>(entity)!;
+            var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition, includeProperties);
+            var mapDto = _mapper?.Map<MeetingModel?>(entity)!;
+            var club = await _unitOfWork.ClubRepository.GetByID(entity.ClubId.Value);
+            if ( entity.ClubId.HasValue && club != null )
+            {
+                mapDto.ClubName = club.ClubName;
+                mapDto.ImageClub = club.CoverImageClub;
+            }
+            return mapDto;
 
         }
 
-        public async Task<MeetingModel?> Insert(MeetingModel EntityInsert,  int currentLoginID, IFormFile? Image)
+        public async Task<MeetingModel?> Insert(MeetingModel EntityInsert, int currentLoginID, IFormFile? Image)
         {
             if (EntityInsert.StartDate < DateTime.Now || EntityInsert.EndDate < DateTime.Now)
             {
@@ -158,8 +165,8 @@ namespace FSU.SPORTIDY.Service.Services
             }
             _mapper.Map(EntityUpdate, meeting);
             _unitOfWork.MeetingRepository.Update(meeting);
-            var result = (await _unitOfWork.SaveAsync()) > 0 ? true : false ;
-            if (result )
+            var result = (await _unitOfWork.SaveAsync()) > 0 ? true : false;
+            if (result)
             {
                 return EntityUpdate;
             }
@@ -202,9 +209,9 @@ namespace FSU.SPORTIDY.Service.Services
         public async Task<IEnumerable<UserModel>> getUsersInMeeting(int meetingId)
         {
 
-            Expression<Func<UserMeeting, bool>> condition = x => x.MeetingId == meetingId ;
+            Expression<Func<UserMeeting, bool>> condition = x => x.MeetingId == meetingId;
             string includeProperties = "Meeting,User";
-            var userMeeting = (await _unitOfWork.UserMeetingRepository.GetAllNoPaging(filter:condition, includeProperties: includeProperties)).Select(x => x.User);
+            var userMeeting = (await _unitOfWork.UserMeetingRepository.GetAllNoPaging(filter: condition, includeProperties: includeProperties)).Select(x => x.User);
 
             if (!userMeeting.IsNullOrEmpty())
             {
@@ -221,7 +228,7 @@ namespace FSU.SPORTIDY.Service.Services
             Expression<Func<Meeting, bool>> conditionGetMeeting = x => x.MeetingId == meetingId;
             var meeting = await _unitOfWork.MeetingRepository.GetByCondition(conditionGetMeeting);
             // tham gia o qua khu
-            if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now || meeting.UserMeetings.Count == meeting.TotalMember)
+            if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now || meeting.UserMeetings.Count == meeting.TotalMember || (meeting.ClubId != null ? (cludId != null) == true : false))
             {
                 // You can either return null or a custom response indicating invalid dates
                 return null; // Or throw an exception or custom error response
