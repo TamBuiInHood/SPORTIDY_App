@@ -4,7 +4,7 @@ import queryString from "query-string";
 
 // Create an instance of axios
 const axiosClient = axios.create({
-  baseURL: 'http://192.168.1.8',
+  baseURL: 'https://fsusportidyapi20241001230520.azurewebsites.net',
   headers: {
     'Content-Type': 'application/json',
   },

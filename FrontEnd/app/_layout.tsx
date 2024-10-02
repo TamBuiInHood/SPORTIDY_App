@@ -14,9 +14,11 @@ import NewPasswordScreen from '@/screens/newPassword';
 import ForgotPasswordScreen from '@/screens/forgotPassword';
 import VerificationScreen from '@/screens/verification';
 import SplashScreenComponent from '@/screens/splashScreen';
+import EventDetailScreen from '@/screens/home/_layout';
+import { RootStackParamList } from '@/types/types';
 
 SplashScreen.preventAutoHideAsync();
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -36,17 +38,17 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true}>
-        <Stack.Navigator initialRouteName="(routes)/login" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(routes)/splash" component={SplashScreenComponent} />
-          <Stack.Screen name="(routes)/login" component={LoginScreen} />
-          <Stack.Screen name="(routes)/newPassword" component={NewPasswordScreen} />
-          <Stack.Screen name="(routes)/forgotPassword" component={ForgotPasswordScreen} />
-          <Stack.Screen name="(routes)/verify" component={VerificationScreen} />
-          <Stack.Screen name="(routes)/signup" component={SignUpScreen} />
+      <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true} >
+        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Splash" component={SplashScreenComponent} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="Verification" component={VerificationScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="(tabs)" component={TabLayout} options={{ headerShown: false }} />
-          <Stack.Screen name="(routes)/detail" component={DetailBookingPage} />
-          <Stack.Screen name="(routes)/bookingDetail" component={DetailBookingPage} />
+          <Stack.Screen name="EventDetail" component={EventDetailScreen} />
+          {/* <Stack.Screen name="(routes)/bookingDetail" component={DetailBookingPage} /> */}
 
         </Stack.Navigator>
       </NavigationContainer>
