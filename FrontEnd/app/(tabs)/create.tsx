@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
+import SportChoose from '@/components/SportChoose';
+import api from '@/config/api';
+import axios from 'axios';
 
 const CreateMeetScreen = () => {
   const [club, setClub] = useState(null);
-  const [sport, setSport] = useState(null);
+  const [sport, setSport] = useState<number | null>(null);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [duration, setDuration] = useState(1);
@@ -18,31 +21,34 @@ const CreateMeetScreen = () => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
-  const handleAddClub = () => {
-    setClub({ name: "THE TAM CLUB", schedule: "Every day", image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' });
+  const handleCreateMeet = async () => {
+    const meetingData = {
+      meetingName: "Test Meeting",
+      meetingImage: "",
+      address: "Location",
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 3600000).toISOString(),
+      totalMember: 1,
+      isPublic: true,
+      note: "No notes",
+      cancelBefore: 1,
+      currentIdLogin: 1,
+      sportId: 1,
+    };
+  
+    console.log("Simplified Meeting Data:", JSON.stringify(meetingData, null, 2));
+  
+    try {
+      const response = await axios.post('https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/meetings', meetingData);
+      Alert.alert("Success", "Meeting created successfully!");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Request error:", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to create meeting. Please try again.");
+    }
   };
-
-  const handleRemoveClub = () => {
-    setClub(null);
-  };
-
-  const handleCreateMeet = () => {
-    console.log('Creating meet:', {
-      club,
-      sport,
-      date,
-      time,
-      duration,
-      repeat,
-      location,
-      cancelTime,
-      numPlayers,
-      meetName,
-      notes,
-    });
-  };
-
+  
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -53,7 +59,7 @@ const CreateMeetScreen = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {!club ? (
+        {/* {!club ? (
           <View style={styles.addClubSection}>
             <Text style={styles.title}>Creating a meet for your club?</Text>
             <TouchableOpacity onPress={handleAddClub}>
@@ -68,45 +74,12 @@ const CreateMeetScreen = () => {
               <Text style={styles.removeClubText}>Remove</Text>
             </TouchableOpacity>
           </View>
-        )}
+        )} */}
 
         <View style={styles.sportOptions}>
-          <Text style={styles.sectionTitle}>SPORT</Text>
-
-          <View style={styles.sportChoices}>
-            <TouchableOpacity
-              style={[
-                styles.sportOption,
-                sport === 'football' && styles.sportOptionSelected
-              ]}
-              onPress={() => setSport('football')}
-            >
-              <Ionicons name="football" size={30} color={sport === 'football' ? '#fff' : '#000'} />
-              <Text style={[
-                styles.sportOptionText,
-                sport === 'football' && styles.sportOptionTextSelected
-              ]}>
-                Football
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.sportOption,
-                sport === 'basketball' && styles.sportOptionSelected
-              ]}
-              onPress={() => setSport('basketball')}
-            >
-              <Ionicons name="basketball" size={30} color={sport === 'basketball' ? '#fff' : '#000'} />
-              <Text style={[
-                styles.sportOptionText,
-                sport === 'basketball' && styles.sportOptionTextSelected
-              ]}>
-                Basketball
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <SportChoose setSport={setSport} />
         </View>
+
 
         <Text style={styles.sectionTitle}>MEET</Text>
         <View style={styles.form}>
@@ -116,7 +89,8 @@ const CreateMeetScreen = () => {
               <Text style={styles.formLabel}>Select date</Text>
             </View>
             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-              <Text style={styles.dateText}>{date.toDateString()}</Text>
+              <Text style={styles.dateText}
+               >{date.toDateString()}</Text>
             </TouchableOpacity>
             {showDatePicker && (
               <DateTimePicker
@@ -169,28 +143,15 @@ const CreateMeetScreen = () => {
 
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Text style={styles.formLabel}>Repeat every day</Text>
-            </View>
-            <TouchableOpacity onPress={() => setRepeat(!repeat)} style={styles.checkbox}>
-              <Ionicons
-                name={repeat ? 'checkbox' : 'square-outline'}
-                size={24}
-                color={repeat ? '#ff951d' : '#000'}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.formItem}>
-            <View style={styles.formLabelContainer}>
               <Ionicons name='location-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
               <Text style={styles.formLabel}>Set location</Text>
             </View>
-            {/* <TextInput
+            <TextInput
               style={styles.formInput}
               value={location}
               onChangeText={setLocation}
               placeholder="Enter location"
-            /> */}
+            />
           </View>
 
           <View style={styles.formItem}>
@@ -228,7 +189,7 @@ const CreateMeetScreen = () => {
               onChangeText={setMeetName}
               placeholder="Enter meet name"
             />
-              <TextInput
+            <TextInput
               style={styles.formInputMeeting}
               value={notes}
               onChangeText={setNotes}
@@ -237,7 +198,7 @@ const CreateMeetScreen = () => {
             />
           </View>
 
-         
+
         </View>
 
         <View style={styles.buttonContainer}>
@@ -249,6 +210,7 @@ const CreateMeetScreen = () => {
 };
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -452,6 +414,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     padding: 16,
+    marginBottom: 60
   },
   formInputMeeting: {
     width: '100%', // Make the input take the full width of the screen
@@ -465,12 +428,12 @@ const styles = StyleSheet.create({
   },
   formItemMeeting: {
     marginBottom: 16,
-    flexDirection: 'column', 
+    flexDirection: 'column',
   },
   formLabelMeeting: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8, 
+    marginBottom: 8,
   },
 
 });

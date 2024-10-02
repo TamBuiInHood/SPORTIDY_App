@@ -1,71 +1,81 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
-import CommentModal from './comment';
-
-interface Post {
-  author: string;
-  date: string;
-  content: string;
-}
+import api from '@/config/api';
+import { Comment } from '@/types/types';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TextInput, Button } from 'react-native';
 
 const Discussion: React.FC = () => {
-  const [posts] = useState<Post[]>([
-    {
-      author: 'Tanas',
-      date: '08/05/2024 6:30 PM',
-      content: 'Emotion After playing: So interesting !!!\nThis is the first time I feel good after playing one kind of sport. The coach and teammate also support me a lot. Hope I have it in the next time.',
-    },
-    {
-      author: 'Yen Hoang',
-      date: '08/06/2024 6:35 PM',
-      content: 'Emotion After playing: So interesting !!!\nTeam bên kia cần tập luyện nhiều hơn nhé',
-    },
-    {
-      author: 'Tanas',
-      date: '08/05/2024 6:30 PM',
-      content: 'Emotion After playing: So interesting !!!\nThis is the first time I feel good after playing one kind of sport. The coach and teammate also support me a lot. Hope I have it in the next time.',
-    },
-    {
-      author: 'Tanas',
-      date: '08/05/2024 6:30 PM',
-      content: 'Emotion After playing: So interesting !!!\nThis is the first time I feel good after playing one kind',
-    },
-  ]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [input, setInput] = useState<string>('');
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  
+  // Lấy meetingId từ localStorage
+  const meetingId = localStorage.getItem('meetingId');
+  
+  useEffect(() => {
+    if (meetingId) {
+      const fetchComments = async () => {
+        try {
+          const response = await api.getComments(parseInt(meetingId)); // Chuyển đổi sang số
+          const result: Comment = response.data;
+          setComments(result.list);
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+        }
+      };
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false); // State for modal visibility
+      fetchComments();
+
+      // Kết nối WebSocket
+      const socket = new WebSocket(`wss://localhost:7102/api/sportidywebsocket`);
+      setWs(socket);
+
+      // Nhận bình luận mới từ WebSocket
+      socket.onmessage = (event) => {
+        const newComment = JSON.parse(event.data);
+        setComments((prevComments) => [...prevComments, newComment]);
+      };
+
+      // Đóng kết nối khi component bị hủy
+      return () => {
+        socket.close();
+      };
+    }
+  }, [meetingId]);
+
+  // Gửi bình luận mới
+  const sendComment = async () => {
+    if (input.trim() && ws && ws.readyState === WebSocket.OPEN && meetingId) {
+      const userId = 1; // Lấy userId từ trạng thái người dùng hoặc props nếu cần
+      const image = ''; // Thêm image nếu cần
+      try {
+        await api.createComment(userId, input, image, meetingId);
+        setInput(''); // Xóa ô nhập sau khi gửi
+      } catch (error) {
+        console.error('Error creating comment:', error);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Forum</Text>
+      <Text style={styles.title}>Discussion</Text>
       <ScrollView style={styles.scroll}>
-        {posts.map((post, index) => (
-          <View key={index} style={styles.post}>
-            <View style={styles.postHeader}>
-              <Text style={styles.author}>{post.author}</Text>
-              <Text style={styles.date}>{post.date}</Text>
-            </View>
-            <Text style={styles.content}>{post.content}</Text>
+        {comments.map((comment, index) => (
+          <View key={index} style={styles.comment}>
+            <Text style={styles.userId}>User ID: {comment.userId}</Text>
+            <Text style={styles.content}>{comment.content}</Text>
           </View>
         ))}
       </ScrollView>
-
-      <TouchableOpacity
-        style={styles.chatBubble}
-        onPress={() => setModalVisible(true)} // Show modal
-      >
-        <Text style={styles.chatBubbleText}>💬</Text>
-      </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)} // Handle back button
-      >
-        <View style={styles.modalBackground}>
-          <CommentModal onClose={() => setModalVisible(false)} />
-        </View>
-      </Modal>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          value={input}
+          onChangeText={setInput}
+          placeholder="Thêm bình luận..."
+        />
+        <Button title="Gửi" onPress={sendComment} />
+      </View>
     </View>
   );
 };
@@ -77,62 +87,38 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    backgroundColor: '#FFD966',
-    color: '#F8A933',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    borderWidth: 1,
-    borderColor: '#F8A933',
+    marginBottom: 16,
   },
   scroll: {
     flex: 1,
   },
-  post: {
+  comment: {
     backgroundColor: '#f5f5f5',
-    padding: 16,
-    marginBottom: 16,
-    borderRadius: 8,
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 5,
   },
-  postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  author: {
+  userId: {
     fontWeight: 'bold',
   },
-  date: {
-    color: '#999',
-  },
   content: {
-    fontSize: 16,
+    marginTop: 5,
   },
-  chatBubble: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    backgroundColor: '#FF4500',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
+  inputContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
+    marginTop: 10,
   },
-  chatBubbleText: {
-    fontSize: 28,
-    color: '#fff',
-  },
-  modalBackground: {
+  input: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 5,
+    marginRight: 5,
   },
 });
 

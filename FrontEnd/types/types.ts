@@ -34,15 +34,17 @@ export interface Card{
   meetingName: string | null;
   meetingImage: string;
   address: string;
-  startDate: string; // or Date
-  endDate: string; // or Date
+  startDate: string; 
+  endDate: string; 
   host: number;
   totalMember: number;
   isPublic: boolean;
   clubId: number;
   note: string;
   sportId: number;
-  cancelBefore: number
+  cancelBefore: number;
+  clubName:string;
+  imageClub: string
 }
 
 export interface MeetingsResponse {
@@ -106,4 +108,21 @@ export interface Club {
   totalMember: number,
   avatarClub: string,
   coverImageClub: string
+}
+
+export interface Comment{
+  commentId: number,
+  commentCode: string,
+  commentDate: Date,
+  userId: number,
+  content: string,
+  image: string,
+  meetingId: number,
+}
+
+export interface Sport {
+  sportId: number;
+  sportCode: string;
+  sportName: string;
+  sportImage: string;
 }
