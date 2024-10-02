@@ -8,25 +8,30 @@ import SearchBar from '@/components/SearchBar';
 import ActionButtons from '@/components/ActionButton';
 import ActionIcons from '@/components/ActionIcons';
 import api from '@/config/api';
-import { Card } from '@/types/types';
+import { Card, MeetingsResponse, RootStackParamList } from '@/types/types';
 
-
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
 const HomeScreen: React.FC = () => {
   const [cards, setCards] = useState<Card[]>([]);
   const [likedCards, setLikedCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   const fetchMeetings = async () => {
     try {
-      const response = await fetch('http://192.168.1.4:5183/sportidy/meetings?page-number=1&page-size=5'); // Sử dụng địa chỉ IP của máy tính
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await api.getAllMeeting(0, 20);
+      console.log('response:', response);
+      console.log('response.data:', response.data);
+      const result: MeetingsResponse = response.data;
+      console.log('result:', result);
+
+      if (result && result.list && Array.isArray(result.list)) {
+        setCards(result.list);
+      } else {
+        throw new Error('Unexpected data format: data.list is not an array');
       }
-      const data = await response.json();
-      setCards(data.meetings);
     } catch (error) {
       console.error('Failed to fetch meetings:', error);
       setError('Failed to load meetings. Please try again later.');
@@ -34,7 +39,6 @@ const HomeScreen: React.FC = () => {
       setLoading(false);
     }
   };
-  
   useEffect(() => {
     fetchMeetings();
   }, []);
@@ -48,7 +52,7 @@ const HomeScreen: React.FC = () => {
     console.log('Liked:', cards[cardIndex]);
   };
 
-  const renderCard = (card: Card) => (
+  const renderCard = (card: Card, index: number) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.headerTitle}>Meeting</Text>
@@ -99,7 +103,7 @@ const HomeScreen: React.FC = () => {
           renderCard={renderCard}
           onSwipedLeft={onSwipedLeft}
           onSwipedRight={onSwipedRight}
-          onTapCard={() => navigation.navigate('(routes)/detail')}
+          onTapCard={(index) => navigation.navigate('EventDetail', { meetingId: cards[index].meetingId })}
           backgroundColor={'transparent'}
           stackSize={1}
           cardIndex={0}

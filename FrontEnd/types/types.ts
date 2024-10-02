@@ -1,3 +1,5 @@
+import { RouteProp } from "@react-navigation/native";
+
 export type RootStackParamList = {
   Splash: any;
   SignUp: any;
@@ -12,8 +14,12 @@ export type RootStackParamList = {
     };
   };
   PlayField: any;
+  EventDetail: {meetingId: number},
+  HomeScreen: any;
   
 };
+export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
+
 export type TabParamList = {
   index: undefined;
   booking: undefined;
@@ -33,10 +39,14 @@ export interface Card{
   host: number;
   totalMember: number;
   isPublic: boolean;
+  clubId: number;
+  note: string;
+  sportId: number;
+  cancelBefore: number
 }
 
 export interface MeetingsResponse {
-  meetings: Card[];
+  list: Card[];
 }
 
 export interface Booking{
@@ -64,4 +74,36 @@ export interface PlayField {
   avatarImage: string,
   status: number,
   sportId: number,
+}
+export interface MeetingDetail {
+  meetingId: number;
+  meetingCode: string;
+  meetingName: string;
+  meetingImage: string;
+  address: string;
+  startDate: string;
+  endDate: string;
+  host: number;
+  totalMember: number;
+  clubId: number;
+  note: string;
+  isPublic: boolean;
+  sportId: number;
+  cancelBefore: number;
+  commentInMeetings?: any[]; // Thay đổi kiểu nếu cần
+}
+
+export interface Club {
+  clubId: number,
+  clubName: string,
+  clubCode: string,
+  regulation: string,
+  information: string,
+  slogan: string,
+  mainSport: string,
+  createDate: string,
+  location: string,
+  totalMember: number,
+  avatarClub: string,
+  coverImageClub: string
 }

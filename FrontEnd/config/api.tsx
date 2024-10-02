@@ -1,20 +1,24 @@
-import { MeetingsResponse } from '@/types/types';
+import { Card, Club, MeetingDetail, MeetingsResponse } from '@/types/types';
 import axiosClient from './axios';
+import { AxiosResponse } from 'axios';
 
 const api = {
   //MEETING
-  getAllMeeting: (pageNumber: number, pageSize: number) => {
+  getAllMeeting: (pageNumber: number, pageSize: number): Promise<AxiosResponse<MeetingsResponse>> => {
     const url = `/sportidy/meetings?page-number=${pageNumber}&page-size=${pageSize}`;
-    return axiosClient.get<MeetingsResponse>(url)
-      .then(response => response.data); // Extract the data here
+    return axiosClient.get(url);
   },
   getMeetingById: (meetingId: number) => {
-    const url = `/sportidy/meeting/${meetingId}`;
-    return axiosClient.get<MeetingsResponse>(url)
+    const url = `/sportidy/meetings/${meetingId}`;
+    return axiosClient.get<Card>(url)
   },
-  joinMeeting: () => {
+  joinMeeting: (userId: number, clubId: number, meetingId: number) => {
     const url = `/sportidy/meeting/engage-to-meeting`;
-    return axiosClient.post(url)
+    return axiosClient.post(url, {
+      userId: userId,
+      clubId: clubId,
+      meetingId: meetingId
+    })
   },
   //COMMENTS
   getComments: (meetingId: number) => {
@@ -65,6 +69,11 @@ const api = {
     const url = `/sportidy/sports`;
     return axiosClient.post(url);
   },
+  //CLUB
+  getClubById: (clubId: number) => {
+    const url = `/sportidy/clubs/${clubId}`;
+    return axiosClient.get<Club>(url);
+  }
 };
 
 export default api;
