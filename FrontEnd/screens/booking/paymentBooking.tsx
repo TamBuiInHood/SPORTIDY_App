@@ -1,10 +1,16 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import SvgQRCode from 'react-native-qrcode-svg';
+import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { RootStackParamList } from '@/types/types';
+
+type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "PaymentBooking">;
 
 const PaymentSuccessPage: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<PaymentScreenNavigationProp>();
+  const [paymentLink, setPaymentLink] = React.useState<string | null>(null);
 
   const orderDetails = {
     invoiceNumber: "INV567488240UI",
@@ -19,34 +25,47 @@ const PaymentSuccessPage: React.FC = () => {
     price: "1,000,000 VND",
   };
 
+  // Call the API to create the payment link
+  const createPaymentLink = async () => {
+    try {
+      const response = await axios.post('https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/payment/create-payment-link', {
+        invoiceNumber: orderDetails.invoiceNumber,
+        amount: 1000000,  // Amount in VND, based on your order
+        paymentMethod: orderDetails.paymentMethod,
+      });
+
+      const paymentData = response.data;
+      if (paymentData && paymentData.link) {
+        setPaymentLink(paymentData.link);  // Store payment link for QR or further action
+      } else {
+        Alert.alert('Error', 'Unable to get payment link');
+      }
+    } catch (error) {
+      console.error('Error creating payment link:', error);
+      Alert.alert('Error', 'Something went wrong while creating the payment link');
+    }
+  };
+
+  useEffect(() => {
+    createPaymentLink();
+  }, []);
+
   const orderDetailsString = JSON.stringify(orderDetails);
 
   return (
     <View style={styles.container}>
-      <Image 
-        source={{ uri: 'https://i.pinimg.com/originals/a2/f4/70/a2f4707d5c9f54e1d67be007d25ff3a4.png' }} 
-        style={styles.checkmark} 
+      <Image
+        source={{ uri: 'https://i.pinimg.com/originals/a2/f4/70/a2f4707d5c9f54e1d67be007d25ff3a4.png' }}
+        style={styles.checkmark}
       />
       <Text style={styles.successText}>Your payment was successful!</Text>
-      
-      {/* Payment Details */}
+
       <View style={styles.detailsContainer}>
         <View style={styles.detailRow}>
           <Text style={styles.label}>Invoice Number:</Text>
           <Text style={styles.value}>{orderDetails.invoiceNumber}</Text>
         </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Payment Method:</Text>
-          <Text style={styles.value}>{orderDetails.paymentMethod}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Date:</Text>
-          <Text style={styles.value}>{orderDetails.paymentDate}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Time:</Text>
-          <Text style={styles.value}>{orderDetails.paymentTime}</Text>
-        </View>
+        {/* More details */}
         <View style={styles.detailRow}>
           <Text style={styles.label}>Amount Paid:</Text>
           <Text style={styles.value}>{orderDetails.amountPaid}</Text>
@@ -55,29 +74,21 @@ const PaymentSuccessPage: React.FC = () => {
           <Text style={styles.label}>Status:</Text>
           <Text style={styles.value}>{orderDetails.status}</Text>
         </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Playfield Name:</Text>
-          <Text style={styles.value}>{orderDetails.playfieldName}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Address:</Text>
-          <Text style={styles.value}>{orderDetails.address}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Time:</Text>
-          <Text style={styles.value}>{orderDetails.timeSlot}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Price:</Text>
-          <Text style={styles.value}>{orderDetails.price}</Text>
-        </View>
       </View>
 
-      <SvgQRCode value={orderDetailsString} size={150} />
-
-      <TouchableOpacity style={styles.returnButton} >
-        <Text style={styles.returnButtonText}>Return to Home</Text>
-      </TouchableOpacity>
+      {/* Display the payment link or QR code */}
+      {paymentLink ? (
+        <>
+          <SvgQRCode value={paymentLink} size={150} />
+          <TouchableOpacity
+            style={styles.returnButton}
+            onPress={() => navigation.navigate('HomeScreen')}>
+            <Text style={styles.returnButtonText}>Return to Home</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <Text>Loading payment link...</Text>
+      )}
     </View>
   );
 };
@@ -88,8 +99,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     alignItems: 'center',
-    borderWidth: 1,
-    shadowColor: 'grey'
   },
   checkmark: {
     width: 100,

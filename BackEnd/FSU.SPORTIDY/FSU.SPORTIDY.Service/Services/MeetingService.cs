@@ -60,11 +60,18 @@ namespace FSU.SPORTIDY.Service.Services
             var orderedMeetings = meetings.AsEnumerable()
                 .OrderByDescending(x => (x.StartDate!.Value.Date - DateTime.Now.Date).TotalHours);
 
+            foreach (var meeting in meetings)
+            {
+                foreach (var userMeeting in meeting.UserMeetings)
+                {
+                    userMeeting.Meeting = null; // Break circular reference
+                }
+            }
+
             var pagin = new PageEntity<MeetingModel>
             {
                 List = _mapper.Map<IEnumerable<MeetingModel>>(orderedMeetings).ToList()
             };
-
             Expression<Func<Meeting, bool>> countMeeting = x => x.Status != (int)MeetingStatus.DELETED && x.Status != (int)MeetingStatus.FINISHED;
             pagin.TotalRecord = await _unitOfWork.MeetingRepository.Count(countMeeting);
             pagin.TotalPage = PaginHelper.PageCount(pagin.TotalRecord, PageSize!.Value);
@@ -80,11 +87,19 @@ namespace FSU.SPORTIDY.Service.Services
     .OrderByDescending(o => o.UserMeetings.OrderBy(um => um.Meeting.StartDate).FirstOrDefault()!.Meeting.StartDate);
 
             string includeProperties = "UserMeetings";
-            string thenIncludeProperties = "Meeting";
+            //string thenIncludeProperties = "Meeting";
             var meetingOfUser = await _unitOfWork.MeetingRepository.GetAllNoPaging(filter: conditionGetMeeting,
                 orderBy: orderBy,
-                includeProperties: includeProperties,
-                thenIncludeProperties: thenIncludeProperties);
+                includeProperties: includeProperties
+                );
+
+            foreach (var meeting in meetingOfUser)
+            {
+                foreach (var userMeeting in meeting.UserMeetings)
+                {
+                    userMeeting.Meeting = null; // Break circular reference
+                }
+            }
             var mapDTO = _mapper.Map<IEnumerable<MeetingModel>>(meetingOfUser);
             return mapDTO;
         }
@@ -95,9 +110,15 @@ namespace FSU.SPORTIDY.Service.Services
             string includeProperties = "UserMeetings,CommentInMeetings";
             var entity = await _unitOfWork.MeetingRepository.GetByCondition(condition, includeProperties);
             var mapDto = _mapper?.Map<MeetingModel?>(entity)!;
-            var club = await _unitOfWork.ClubRepository.GetByID(entity.ClubId.Value);
-            if ( entity.ClubId.HasValue && club != null )
+
+            foreach (var userMeeting in entity.UserMeetings)
             {
+                userMeeting.Meeting = null; // Remove circular reference
+            }
+
+            if (entity.ClubId.HasValue)
+            {
+                var club = await _unitOfWork.ClubRepository.GetByID(entity.ClubId.Value);
                 mapDto.ClubName = club.ClubName;
                 mapDto.ImageClub = club.CoverImageClub;
             }
@@ -117,6 +138,7 @@ namespace FSU.SPORTIDY.Service.Services
             meeting.Address = EntityInsert.Address;
             meeting.Status = (int)MeetingStatus.WAITING;
             meeting.Host = currentLoginID;
+            meeting.MeetingName = EntityInsert.MeetingName;
 
             meeting.StartDate = EntityInsert.StartDate;
             meeting.EndDate = EntityInsert.EndDate;
@@ -150,6 +172,7 @@ namespace FSU.SPORTIDY.Service.Services
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             if (result == true)
             {
+                meeting.UserMeetings.ToList().ForEach(x => x.Meeting = null!);
                 var mapdto = _mapper.Map<MeetingModel>(meeting);
                 return mapdto;
             }
@@ -213,7 +236,7 @@ namespace FSU.SPORTIDY.Service.Services
             string includeProperties = "Meeting,User";
             var userMeeting = (await _unitOfWork.UserMeetingRepository.GetAllNoPaging(filter: condition, includeProperties: includeProperties)).Select(x => x.User);
 
-            if (!userMeeting.IsNullOrEmpty())
+            if (userMeeting.IsNullOrEmpty())
             {
                 return null;
             }
@@ -222,38 +245,52 @@ namespace FSU.SPORTIDY.Service.Services
             return mapdto;
         }
 
-        public async Task<UserMeetingModel> insertUserMeeting(int userId, int meetingId, int? cludId)
+        public async Task<UserMeetingModel> insertUserMeeting(int userId, int meetingId)
         {
+            try
+            {
 
-            Expression<Func<Meeting, bool>> conditionGetMeeting = x => x.MeetingId == meetingId;
-            var meeting = await _unitOfWork.MeetingRepository.GetByCondition(conditionGetMeeting);
-            // tham gia o qua khu
-            if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now || meeting.UserMeetings.Count == meeting.TotalMember || (meeting.ClubId != null ? (cludId != null) == true : false))
-            {
-                // You can either return null or a custom response indicating invalid dates
-                return null; // Or throw an exception or custom error response
-            }
 
-            var userHasEngage = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId);
-            if (userHasEngage != null)
-            {
-                return null;
+                Expression<Func<Meeting, bool>> conditionGetMeeting = x => x.MeetingId == meetingId;
+                var meeting = await _unitOfWork.MeetingRepository.GetByCondition(conditionGetMeeting);
+                // tham gia o qua khu
+                if (meeting.StartDate < DateTime.Now || meeting.EndDate < DateTime.Now)
+                {
+                    // You can either return null or a custom response indicating invalid dates
+                    throw new Exception("you cannot engage to last meeting"); // Or throw an exception or custom error response
+                }
+                if (meeting.UserMeetings.Count == meeting.TotalMember)
+                {
+                    throw new Exception("This meet has full member.");
+                }
+
+                var userHasEngage = await _unitOfWork.UserMeetingRepository.GetByCondition(x => x.MeetingId == meetingId && x.UserId == userId);
+                if (userHasEngage != null)
+                {
+                    throw new Exception("This user has engage");
+                }
+                var userMeeting = new UserMeeting();
+                userMeeting.UserId = userId;
+                userMeeting.MeetingId = meetingId;
+                userMeeting.RoleInMeeting = MeetingRole.PLAYER;
+                userMeeting.ClubId = meeting.ClubId;
+                //if (cludId.HasValue)
+                //{
+                //    userMeeting.ClubId = cludId.Value;
+                //}
+                await _unitOfWork.UserMeetingRepository.Insert(userMeeting);
+                var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
+                if (result == true)
+                {
+                    var mapdto = _mapper.Map<UserMeetingModel>(userMeeting);
+                    return mapdto;
+                }
+                return null!;
             }
-            var userMeeting = new UserMeeting();
-            userMeeting.UserId = userId;
-            userMeeting.MeetingId = meetingId;
-            if (cludId.HasValue)
+            catch (Exception ex)
             {
-                userMeeting.ClubId = cludId.Value;
+                throw new Exception(ex.ToString());
             }
-            await _unitOfWork.UserMeetingRepository.Insert(userMeeting);
-            var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
-            if (result == true)
-            {
-                var mapdto = _mapper.Map<UserMeetingModel>(userMeeting);
-                return mapdto;
-            }
-            return null!;
         }
     }
 }

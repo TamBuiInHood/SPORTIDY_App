@@ -1,40 +1,55 @@
+// Sidebar.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-const Sidebar = () => {
+interface SidebarProps {
+  isVisible: boolean; 
+  onClose: () => void; 
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
+  if (!isVisible) return null; 
+
   return (
-    <View style={styles.container}>
-      
-      <TouchableOpacity style={styles.option}>
-        <Text style={styles.optionText}>View history booking fields</Text>
+    <View style={styles.sidebar}>
+      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <Text style={styles.closeText}>Close</Text>
       </TouchableOpacity>
-      
-      <TouchableOpacity style={styles.option}>
-        <Text style={styles.optionText}>Feedback</Text>
+      <TouchableOpacity>
+        <Text style={styles.menuItem}>View history booking fields</Text>
+      </TouchableOpacity>
+      <TouchableOpacity>
+        <Text style={styles.menuItem}>Feedback</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#B0E0E6', // Light blue background
-    padding: 16,
-    borderRadius: 10,
-    width: '80%',  // adjust based on screen size
-  },
-  option: {
+  sidebar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: '80%',
     backgroundColor: '#fff',
-    padding: 16,
-    marginBottom: 10,
-    borderRadius: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+    padding: 20,
+    zIndex: 10,
   },
-  optionText: {
+  closeButton: {
+    marginBottom: 10,
+  },
+  closeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  menuItem: {
     fontSize: 16,
-    color: '#0000EE', // blue text with underline
-    textDecorationLine: 'underline',
+    marginVertical: 5,
   },
 });
 

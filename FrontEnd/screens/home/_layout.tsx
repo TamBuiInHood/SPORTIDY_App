@@ -15,7 +15,7 @@ const EventDetailScreen = () => {
     const [activeTab, setActiveTab] = useState<'details' | 'discussion'>('details');
     const [meeting, setMeeting] = useState<Card | null>(null);
     const [club, setClub] = useState<Club | null>(null);
-    const [userId, setUserId] = useState(1);
+    const [userId, setUserId] = useState(3);
 
     useEffect(() => {
         const fetchMeeting = async () => {
@@ -36,13 +36,16 @@ const EventDetailScreen = () => {
         return <Text>Loading...</Text>;
     }
     const handleJoinMeeting = async () => {
-        if (!meeting || !club || !userId) return; 
+        if (!meeting || !meeting.clubId || !userId) {
+            console.log('Missing data:', { meeting, club:meeting?.clubId, userId });
+            return;
+        }
         try {
-            const response = await api.joinMeeting(userId, club?.clubId, meeting?.meetingId);
+            const response = await api.joinMeeting(userId, meeting.clubId, meeting.meetingId);
             console.log('Successfully joined the meeting:', response.data);
             setJoined(true); 
         } catch (error) {
-            console.error('Error joining the meeting:', error);
+            console.error('Error joining the meeting:', error.response?.data || error.message);
         }
     };
     return (
@@ -60,8 +63,8 @@ const EventDetailScreen = () => {
                     <View style={styles.clubInfoSection}>
                         <Image source={{ uri: meeting.meetingImage || 'default_image_url_here' }} style={styles.clubImage} />
                         <View>
-                            <Text style={styles.clubName}>{meeting.meetingName || 'Undefined'}</Text>
-                            <Text style={styles.clubFrequency}>{meeting.totalMember}</Text>
+                            <Text style={styles.clubName}>{meeting.clubName || 'Undefined'}</Text>
+                            <Text style={styles.clubFrequency}>{meeting.totalMember} members</Text>
                         </View>
                         {joined && (
                             <View style={styles.joinedBadge}>

@@ -162,7 +162,7 @@ builder.Services.AddCors(p => p.AddPolicy("Cors", policy =>
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.WriteIndented = false;
 });
 
 builder.Services.AddSwaggerGen(options => {

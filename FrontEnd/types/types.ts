@@ -16,9 +16,20 @@ export type RootStackParamList = {
   PlayField: any;
   EventDetail: {meetingId: number},
   HomeScreen: any;
+  BookingScreen: any;
+  DetailBookingPage: any;
+  BookingInformationPage: {
+    playFieldId: string ;
+    playFieldName: string ;
+    price: number;
+    address: string ;
+  };
+  PaymentBooking: any;
+  WebViewScreen: any;
   
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
+export type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
 
 export type TabParamList = {
   index: undefined;
@@ -34,15 +45,17 @@ export interface Card{
   meetingName: string | null;
   meetingImage: string;
   address: string;
-  startDate: string; // or Date
-  endDate: string; // or Date
+  startDate: string; 
+  endDate: string; 
   host: number;
   totalMember: number;
   isPublic: boolean;
   clubId: number;
   note: string;
   sportId: number;
-  cancelBefore: number
+  cancelBefore: number;
+  clubName:string;
+  imageClub: string
 }
 
 export interface MeetingsResponse {
@@ -64,6 +77,7 @@ export interface Booking{
 }
 
 export interface PlayField {
+  id: never;
   playFieldId: number,
   playFieldName: string,
   playFieldCode: string,
@@ -106,4 +120,21 @@ export interface Club {
   totalMember: number,
   avatarClub: string,
   coverImageClub: string
+}
+
+export interface Comment{
+  commentId: number,
+  commentCode: string,
+  commentDate: Date,
+  userId: number,
+  content: string,
+  image: string,
+  meetingId: number,
+}
+
+export interface Sport {
+  sportId: number;
+  sportCode: string;
+  sportName: string;
+  sportImage: string;
 }

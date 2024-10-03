@@ -21,7 +21,6 @@ namespace FSU.SPORTIDY.API.Payloads.Request.MeetingRequest
     {
         public int userId { get; set; }
         public int meetingId { get; set; }
-        public int? clubId { get; set; }
     }
 
 }

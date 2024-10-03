@@ -235,14 +235,14 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 var booking = new Booking();
                 if (entityInsert.DateStart <= DateTime.Now ||
-                    entityInsert.DateEnd < booking.DateStart
+                    entityInsert.DateEnd < entityInsert.DateStart
                     )
                 {
                     throw new Exception("Check your booking about booking date, time starting and time endding");
                 }
                 Expression<Func<Booking, bool>> checkDuplication = x => x.DateStart >= entityInsert.DateStart && x.DateEnd >= entityInsert.DateEnd && x.PlayFieldId == entityInsert.PlayFieldId;
                 var checkExist = await _unitOfWork.BookingRepository.GetByCondition(checkDuplication);
-                if (checkExist == null)
+                if (checkExist != null)
                 {
                     throw new Exception("This time of this playfield has booking");
                 }
@@ -322,16 +322,23 @@ namespace FSU.SPORTIDY.Service.Services
             return null!;
         }
 
-        public async Task<BookingModel> UpdateStatus(int bookingId, int status)
+        public async Task<BookingModel> UpdateStatus(string bookingCode, int status)
         {
-            Expression<Func<Booking, bool>> filter = x => x.BookingId == bookingId;
-            var booking = await _unitOfWork.BookingRepository.GetByID(bookingId);
+            Expression<Func<Booking, bool>> filter = x => x.BookingCode == bookingCode;
+            string includeProperties = "Payments";
+            var booking = await _unitOfWork.BookingRepository.GetByCondition(filter, includeProperties);
             if (booking == null)
             {
                 return null!;
             }
             booking.Status = status;
-            var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
+            foreach (var item in booking.Payments.ToList())
+            {
+                item.Status = status;
+            }
+            //var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
+            _unitOfWork.BookingRepository.Update(booking);
+            var result = (await _unitOfWork.SaveAsync()) > 0 ? true : false;
             return _mapper.Map<BookingModel>(booking);
         }
 

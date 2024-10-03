@@ -1,4 +1,4 @@
-import { Card, Club, MeetingDetail, MeetingsResponse } from '@/types/types';
+import { Card, Club,  MeetingsResponse, PlayField, Sport } from '@/types/types';
 import axiosClient from './axios';
 import { AxiosResponse } from 'axios';
 
@@ -13,34 +13,59 @@ const api = {
     return axiosClient.get<Card>(url)
   },
   joinMeeting: (userId: number, clubId: number, meetingId: number) => {
-    const url = `/sportidy/meeting/engage-to-meeting`;
+    const url = `/sportidy/meetings/engage-to-meeting`;
     return axiosClient.post(url, {
       userId: userId,
       clubId: clubId,
       meetingId: meetingId
     })
   },
+  createMeeting: (meetingName: string, meetingImage: string, address: string, startDate: string, endDate: string, totalMember: number, isPublic: boolean,note: string, cancelBefore: number, currentIdLogin: number, sportId:number) => {
+    const url = `/sportidy/meetings`;
+    return axiosClient.post(url, {
+      meetingName: meetingName,
+      meetingImage: meetingImage,
+      address: address,
+      startDate: startDate,
+      endDate: endDate,
+      totalMember: totalMember,
+      isPublic: isPublic,
+      note: note,
+      cancelBefore: cancelBefore,
+      currentIdLogin: currentIdLogin,
+      sportId:sportId
+    })
+  },
   //COMMENTS
   getComments: (meetingId: number) => {
     const url = `/sportidy${meetingId}/comments`;
-    return axiosClient.get(url)
+    return axiosClient.get<Comment>(url)
   },
   webSocket: () => {
     const url = `/sportidywebsocket`;
     return axiosClient.get(url);
   },
-  createComment: () => {
+  createComment: (userId: number, content: string, image: string, meetingId: string) => {
     const url = `/sportidy/comments`;
-    return axiosClient.post(url);
+    return axiosClient.post(url, {
+      userId: userId,
+      content: content,
+      image: image,
+      meetingId: meetingId
+    });
   },
   updateComment: () => {
     const url = '/sportidy/comments';
     return axiosClient.put(url);
   },
   //PLAYFIELD
-  getAllPlayField: () => {
-    const url = `/sportidy/Playfields`;
-    return axiosClient.get(url);
+  getAllPlayField: (pageIndex: number, pageSize: number) => {
+    const url = `/sportidy/Playfields?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    return axiosClient.get<PlayField>(url);
+  },
+  getPlayfieldById: (playFieldId: number) => {
+    const url = `/sportidy/PlayFields/${playFieldId}`;
+    return axiosClient.get<PlayField>(url)
   },
   //BOOKING
   createBooking: () => {
@@ -57,21 +82,25 @@ const api = {
     return axiosClient.post(url);
   },
   //SPORTS
-  getAllSports: () =>{
+  getAllSports: () => {
     const url = `/sportidy/sports/get-all-not-paging`;
-    return axiosClient.get(url);
+    return axiosClient.get<Sport>(url);
   },
-  getSportById: (sportId:number) =>{
+  getSportById: (sportId: number) => {
     const url = `/sportidy/sports/${sportId}`;
     return axiosClient.get(url);
   },
-  createSport: () =>{
+  createSport: () => {
     const url = `/sportidy/sports`;
     return axiosClient.post(url);
   },
   //CLUB
   getClubById: (clubId: number) => {
     const url = `/sportidy/clubs/${clubId}`;
+    return axiosClient.get<Club>(url);
+  },
+  getClubByUserId: (userId: number) => {
+    const url = `/sportidy/clubs/joined-club/${userId}`;
     return axiosClient.get<Club>(url);
   }
 };

@@ -167,7 +167,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var result = await _bookingService.UpdateStatus(reqObj.bookingId,(int) reqObj.status);
+                var result = await _bookingService.UpdateStatus(reqObj.bookingCode,(int) reqObj.status);
                 if (result == null)
                 {
                     return NotFound(new BaseResponse

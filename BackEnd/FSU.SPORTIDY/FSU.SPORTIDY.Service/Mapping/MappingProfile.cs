@@ -30,8 +30,8 @@ namespace FSU.SPORTIDY.Service.Mapping
             CreateMap<Meeting, MeetingModel>()
                 .ForMember(dto => dto.CommentInMeetings, opt => opt.MapFrom(entity => entity.CommentInMeetings))
                 .ForMember(dto => dto.UserMeetings, opt => opt.MapFrom(entity => entity.UserMeetings))
-                .ReverseMap()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                //.ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null))
+                .ReverseMap();
 
             CreateMap<User, UserModel>()
                 .ForMember(x => x.RoleName, opt => opt.MapFrom(x => x.Role.RoleName))
@@ -128,9 +128,9 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ForMember(dest => dest.Meeting, opt => opt.MapFrom(src => src.Meeting))
                 .ReverseMap();
             CreateMap<UserMeeting, UserMeetingModel>()
-               .ForMember(dest => dest.Meeting, opt => opt.MapFrom(src => src.Meeting))
-               .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
-               .ReverseMap();
+                .ForMember(dest => dest.Meeting, opt => opt.Ignore()) // Ignore Meeting to prevent recursion
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ReverseMap();
         }
     }
 }

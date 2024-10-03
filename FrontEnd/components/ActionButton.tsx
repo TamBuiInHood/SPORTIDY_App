@@ -1,30 +1,67 @@
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 
 const ActionButtons: React.FC = () => {
-    return (
+  const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available');
+
+  return (
+    <View>
+      {/* Buttons to switch tabs */}
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.availableButton}>
-          <Text style={styles.availableButtonText}>Available</Text>
+        <TouchableOpacity 
+          style={[
+            styles.availableButton, 
+            activeTab === 'available' && styles.activeTabButton
+          ]}
+          onPress={() => setActiveTab('available')}
+        >
+          <Text 
+            style={[
+              styles.availableButtonText, 
+              activeTab === 'available' && styles.activeTabText
+            ]}
+          >
+            Available
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.meetButton}>
-          <Text style={styles.meetButtonText}>Your meet</Text>
+        <TouchableOpacity 
+          style={[
+            styles.meetButton, 
+            activeTab === 'meet' && styles.activeTabButton
+          ]}
+          onPress={() => setActiveTab('meet')}
+        >
+          <Text 
+            style={[
+              styles.meetButtonText, 
+              activeTab === 'meet' && styles.activeTabText
+            ]}
+          >
+            Your Meet
+          </Text>
         </TouchableOpacity>
       </View>
-    );
-  };
+
+      <View style={styles.content}>
+        {activeTab === 'available' ? (
+          <Text>Showing Available Content</Text>
+        ) : (
+          <Text>Showing Your Meet Content</Text>
+        )}
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   actionButtons: {
     position: 'absolute',
-    top: 80, 
+    top: -220, 
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
     paddingHorizontal: 20,
   },
-
   availableButton: {
     backgroundColor: '#FF915D',
     paddingVertical: 10,
@@ -48,6 +85,18 @@ const styles = StyleSheet.create({
   meetButtonText: {
     color: '#FF915D',
     fontWeight: 'bold',
+  },
+  content: {
+    marginTop: 150,
+    alignItems: 'center',
+  },
+  // Styles for active tab
+  activeTabButton: {
+    backgroundColor: '#FF915D',
+    borderColor: '#FF915D',
+  },
+  activeTabText: {
+    color: '#fff',
   },
 });
 

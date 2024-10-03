@@ -24,7 +24,7 @@ namespace FSU.SPORTIDY.Service.Interfaces
 
         public Task<bool> kickUserOfMeeting(int userId, int meetingId);
 
-        public Task<UserMeetingModel> insertUserMeeting(int userId, int meetingId, int? cludId);
+        public Task<UserMeetingModel> insertUserMeeting(int userId, int meetingId);
 
         public Task<IEnumerable<UserModel>> getUsersInMeeting(int meetingId);
     }

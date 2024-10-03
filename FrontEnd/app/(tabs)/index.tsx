@@ -18,7 +18,19 @@ const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<HomeScreenNavigationProp>();
-
+  const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available');
+  const getSportIcon = (sportId: number) =>{
+    switch (sportId) {
+      case 1:
+        return 'football';
+      case 2:
+        return 'basketball';
+      case 3:
+        return 'badminton';
+      default:
+        return 'football'; 
+    }
+  }
   const fetchMeetings = async () => {
     try {
       const response = await api.getAllMeeting(0, 20);
@@ -57,7 +69,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.cardHeader}>
         <Text style={styles.headerTitle}>Meeting</Text>
         <TouchableOpacity style={styles.headerIcon}>
-          <Ionicons name="football" size={24} color="black" />
+          <Ionicons name={getSportIcon(card.sportId)} size={24} color="black" />
         </TouchableOpacity>
       </View>
       <View style={styles.headerLine} />
