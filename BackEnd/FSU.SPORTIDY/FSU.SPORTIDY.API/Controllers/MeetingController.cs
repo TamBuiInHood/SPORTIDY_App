@@ -348,7 +348,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var newUserMeeting = await _meetingService.insertUserMeeting(request.userId, request.meetingId, request.clubId);
+                var newUserMeeting = await _meetingService.insertUserMeeting(request.userId, request.meetingId);
 
                 if (newUserMeeting == null)
                 {
