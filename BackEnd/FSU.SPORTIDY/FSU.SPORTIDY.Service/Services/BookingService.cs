@@ -87,6 +87,27 @@ namespace FSU.SPORTIDY.Service.Services
                 var pagin = new PageEntity<BookingModel>();
                 pagin.List = _mapper.Map<IEnumerable<BookingModel>>(entities).ToList();
 
+
+
+                var playFieldList = pagin.List.ToList(); // Chuyển IEnumerable thành List
+
+                for (int i = pagin.List.ToList().Count - 1; i >= 0; i--)
+                {
+                    var item = playFieldList[i];
+                    var findPlayFieldOwner = await _unitOfWork.UserRepository.GetByID(item.CustomerId.Value);
+
+                    if (findPlayFieldOwner != null)
+                    {
+                        item.PlayFieldOwnerName = findPlayFieldOwner.FullName;
+                        item.BankCode = findPlayFieldOwner.BankCode;
+                        item.BankName = findPlayFieldOwner.BankName;
+                    }
+                    else
+                    {
+                        playFieldList.RemoveAt(i); // Xóa phần tử nếu findPlayFieldOwner == null
+                    }
+                }
+                pagin.List = playFieldList;
                 // Count total records
                 Expression<Func<Booking, bool>> countBooking = x => x.Status != (int)BookingStatusID.BOOKING_DELETED_ID;
                 pagin.TotalRecord = await _unitOfWork.BookingRepository.Count(countBooking);

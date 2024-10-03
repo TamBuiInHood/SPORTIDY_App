@@ -172,6 +172,7 @@
             public const string GetByUserID = Base + "/Playfields/get-by-user-id/{userId}";
 
             public const string Update = Base + "/Playfields/";
+            public const string UpdateForAdmin = Base + "/Playfields/update/{playfieldId}";
 
             public const string UpdateAvatar = Base + "/Playfields/update-avatar";
 
