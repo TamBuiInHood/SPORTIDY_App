@@ -332,9 +332,12 @@ namespace FSU.SPORTIDY.Service.Services
                 return null!;
             }
             booking.Status = status;
-            foreach (var item in booking.Payments.ToList())
+            if(booking.Payments.Any())
             {
-                item.Status = status;
+                foreach (var item in booking.Payments.ToList())
+                {
+                    item.Status = status;
+                }
             }
             //var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
             _unitOfWork.BookingRepository.Update(booking);
