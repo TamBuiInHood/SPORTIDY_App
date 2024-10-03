@@ -16,9 +16,20 @@ export type RootStackParamList = {
   PlayField: any;
   EventDetail: {meetingId: number},
   HomeScreen: any;
+  BookingScreen: any;
+  DetailBookingPage: any;
+  BookingInformationPage: {
+    playFieldId: string ;
+    playFieldName: string ;
+    price: number;
+    address: string ;
+  };
+  PaymentBooking: any;
+  WebViewScreen: any;
   
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
+export type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
 
 export type TabParamList = {
   index: undefined;
@@ -66,6 +77,7 @@ export interface Booking{
 }
 
 export interface PlayField {
+  id: never;
   playFieldId: number,
   playFieldName: string,
   playFieldCode: string,

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView, Alert } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import SportChoose from '@/components/SportChoose';
-import api from '@/config/api';
 import axios from 'axios';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { format } from 'date-fns';
 
 const CreateMeetScreen = () => {
   const [club, setClub] = useState(null);
@@ -12,138 +12,139 @@ const CreateMeetScreen = () => {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [duration, setDuration] = useState(1);
-  const [repeat, setRepeat] = useState(false);
   const [location, setLocation] = useState('');
   const [cancelTime, setCancelTime] = useState(4);
   const [numPlayers, setNumPlayers] = useState(12);
   const [meetName, setMeetName] = useState('');
   const [notes, setNotes] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+  const handleConfirmDate = (selectedDate: any) => {
+    setDate(selectedDate);
+    hideDatePicker();
+  };
+
+  const showTimePicker = () => setTimePickerVisibility(true);
+  const hideTimePicker = () => setTimePickerVisibility(false);
+  const handleConfirmTime = (selectedTime: any) => {
+    setTime(selectedTime);
+    hideTimePicker();
+  };
+
   const handleCreateMeet = async () => {
-    const meetingData = {
-      meetingName: "Test Meeting",
-      meetingImage: "",
-      address: "Location",
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 3600000).toISOString(),
-      totalMember: 1,
-      isPublic: true,
-      note: "No notes",
-      cancelBefore: 1,
-      currentIdLogin: 1,
-      sportId: 1,
-    };
+    if (!meetName || !sport || !location) {
+      Alert.alert("Missing fields", "Please fill in all required fields.");
+      return;
+    }
   
-    console.log("Simplified Meeting Data:", JSON.stringify(meetingData, null, 2));
+    // Formatting the startDate and endDate properly
+    const formattedStartDate = format(date, 'dd-MM-yyyy HH:mm'); // Format date using date-fns
+    const endDateTime = new Date(date.getTime() + duration * 60 * 60 * 1000); // Add duration hours to the start date
+    const formattedEndDate = format(endDateTime, 'dd-MM-yyyy HH:mm'); // Format end date
+  
+    const formData = new FormData();
+    formData.append('meetingImage', ''); // Add image if available
+    formData.append('meetingName', meetName || "Test Meeting");
+    formData.append('endDate', formattedEndDate);
+    formData.append('sportId', sport.toString()); // Ensure this is a string
+    formData.append('startDate', formattedStartDate);
+    formData.append('address', location || "Location");
+    formData.append('cancelBefore', cancelTime.toString()); // Ensure this is a string
+    formData.append('totalMember', numPlayers.toString()); // Ensure this is a string
+    formData.append('currentIdLogin', '2'); // Assuming this is the logged-in user
+    formData.append('isPublic', true);
+    formData.append('clubId', '');
+    formData.append('note', '');
+    console.log("FormData: ", formData);
   
     try {
-      const response = await axios.post('https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/meetings', meetingData);
+      const response = await axios.post(
+        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/meetings',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
       Alert.alert("Success", "Meeting created successfully!");
       console.log(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Request error:", error.response?.data || error.message);
-      Alert.alert("Error", "Failed to create meeting. Please try again.");
+  console.error("Response Status:", error.response?.status);
+  console.error("Response Headers:", error.response?.headers);
+  Alert.alert("Error", "Failed to create meeting. Please try again.");
     }
   };
-  
   
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => { /* Handle going back */ }}>
-          <Ionicons name='arrow-back-circle-outline' color={'#ffff'} size={30} />
+        <TouchableOpacity style={styles.backButton} onPress={() => {}}>
+          <Ionicons name="arrow-back-circle-outline" color={"#ffff"} size={30} />
         </TouchableOpacity>
         <Text style={styles.headerText}>CREATE A MEET</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* {!club ? (
-          <View style={styles.addClubSection}>
-            <Text style={styles.title}>Creating a meet for your club?</Text>
-            <TouchableOpacity onPress={handleAddClub}>
-              <Text style={styles.addClubText}>Add club</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.clubSection}>
-            <Text style={styles.clubName}>{club.name}</Text>
-            <Text style={styles.clubSchedule}>{club.schedule}</Text>
-            <TouchableOpacity style={styles.removeClubButton} onPress={handleRemoveClub}>
-              <Text style={styles.removeClubText}>Remove</Text>
-            </TouchableOpacity>
-          </View>
-        )} */}
-
         <View style={styles.sportOptions}>
           <SportChoose setSport={setSport} />
         </View>
-
 
         <Text style={styles.sectionTitle}>MEET</Text>
         <View style={styles.form}>
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='calendar-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="calendar-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Select date</Text>
             </View>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-              <Text style={styles.dateText}
-               >{date.toDateString()}</Text>
+            <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
+              <Text style={styles.dateText}>{date.toDateString()}</Text>
             </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  if (selectedDate) setDate(selectedDate);
-                }}
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirmDate}
+              onCancel={hideDatePicker}
+            />
           </View>
+
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='timer-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="timer-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Select time</Text>
             </View>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.dateButton}>
+            <TouchableOpacity onPress={showTimePicker} style={styles.dateButton}>
               <Text>{time.toLocaleTimeString()}</Text>
             </TouchableOpacity>
-            {showTimePicker && (
-              <DateTimePicker
-                value={time}
-                mode="time"
-                display="default"
-                onChange={(event, selectedTime) => {
-                  setShowTimePicker(false);
-                  if (selectedTime) setTime(selectedTime);
-                }}
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={isTimePickerVisible}
+              mode="time"
+              onConfirm={handleConfirmTime}
+              onCancel={hideTimePicker}
+            />
           </View>
 
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='time-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="time-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Duration</Text>
             </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.formInput}
-                value={duration.toString()}
-                onChangeText={(text) => setDuration(parseInt(text) || 1)}
-                keyboardType="numeric"
-              />
-              <Text style={styles.formUnit}>hour(s)</Text>
-            </View>
+            <TextInput
+              style={styles.formInput}
+              value={duration.toString()}
+              onChangeText={(text) => setDuration(parseInt(text) || 1)}
+              keyboardType="numeric"
+            />
+            <Text style={styles.formUnit}>hour(s)</Text>
           </View>
 
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='location-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="location-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Set location</Text>
             </View>
             <TextInput
@@ -159,7 +160,7 @@ const CreateMeetScreen = () => {
             <TextInput
               style={styles.formInput}
               value={cancelTime.toString()}
-              onChangeText={(text) => setCancelTime(parseInt(text) || 4)} // Ensure it's a number
+              onChangeText={(text) => setCancelTime(parseInt(text) || 4)}
               keyboardType="numeric"
             />
             <Text style={styles.formUnit}>hour(s)</Text>
@@ -167,7 +168,7 @@ const CreateMeetScreen = () => {
 
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='person-add-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="person-add-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Number of players</Text>
             </View>
             <View style={styles.playerCounter}>
@@ -197,8 +198,6 @@ const CreateMeetScreen = () => {
               placeholder="Add notes"
             />
           </View>
-
-
         </View>
 
         <View style={styles.buttonContainer}>
@@ -208,7 +207,6 @@ const CreateMeetScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
 
   container: {
@@ -437,5 +435,7 @@ const styles = StyleSheet.create({
   },
 
 });
+
+
 
 export default CreateMeetScreen;

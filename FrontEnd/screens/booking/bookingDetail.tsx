@@ -1,38 +1,55 @@
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import {  PlayField, RootStackParamList } from '@/types/types';
+import api from '@/config/api';
 
+type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
 
-interface Pitch {
-  name: string;
-  price: string;
-}
+const DetailBookingPage: React.FC = () => {
+  const route = useRoute<DetailBookingRouteProp>();
+  const navigation = useNavigation();
 
-interface Playfield {
-  id: number;
-  name: string;
-  location: string;
-  image: string;
-  pitchReady: Pitch[];
-  services: string[];
-}
+  const playId = route.params?.playFieldId; 
 
-interface DetailBookingParams {
-  playfield: Playfield;
-}
+  const [playfields, setPlayFields] = useState<PlayField | null>(null);
+  const [loading, setLoading] = useState<boolean>(true); // Loading state to manage API call state
+  const handlePress = () => {
+    if (playfields) {
+        navigation.navigate('BookingInformationPage', {
+            playFieldId: playfields.playFieldId, 
+            playFieldName: playfields.playFieldName,
+            price: 120000,
+            address: playfields.address,
+        });
+    } else {
+        console.error('Playfields data is not available');
+    }
+};
+  useEffect(() => {
+    const fetchPlayField = async () => {
+      if (!playId) {
+        console.error('No playFieldId provided');
+        setLoading(false);
+        return;
+      }
 
+      try {
+        const response = await api.getPlayfieldById(playId);
+        const result: PlayField = response.data;
+        setPlayFields(result);
+      } catch (error) {
+        console.error('Failed to fetch play field:', error);
+        setPlayFields(null);
+      } finally {
+        setLoading(false); // End loading regardless of success or failure
+      }
+    };
 
-const DetailBookingPage = () => {
-  const route = useRoute<RouteProp<{ bookingDetail: DetailBookingParams }, 'bookingDetail'>>();
-  const { playfield } = route.params || { playfield: { id: 0, name: '', location: '', image: '', pitchReady: [], services: [] } };
-  const navigation: any = useNavigation();
-
-  const handleBookingPress = () => {
-    navigation.navigate('(routes)/bookingInfo', { playfield }); // Không cần kiểu xác định
-  };
-
+    fetchPlayField();
+  }, [playId]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -41,8 +58,8 @@ const DetailBookingPage = () => {
         </TouchableOpacity>
 
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.title}>{playfield.name}</Text>
-          <Text style={styles.date}>20/06/2024</Text>
+          <Text style={styles.title}>{playfields?.playFieldName}</Text>
+          <Text style={styles.date}>{playfields?.openTime} -{playfields?.closeTime} </Text>
         </View>
 
         <View style={styles.buttonContainer}>
@@ -57,17 +74,17 @@ const DetailBookingPage = () => {
 
       <View style={styles.imageContainer}>
         <Image
-          source={{ uri: playfield.image }}
+          source={{ uri: playfields?.avatarImage }}
           style={styles.image}
         />
       </View>
       <View style={styles.details}>
         <Ionicons name='location-outline' size={20} />
-        <Text style={styles.locationText}>{playfield.location}</Text>
+        <Text style={styles.locationText}>{playfields?.address}</Text>
 
         <Text style={styles.pitchStatusText}>Pitch ready:</Text>
-        <FlatList
-          data={playfield.pitchReady}
+        {/* <FlatList
+          data={playfields?.price}
           renderItem={({ item }) => (
             <View style={styles.pitchOption}>
               <Text style={styles.pitchOptionText}>{item.name} - {item.price}</Text>
@@ -79,9 +96,9 @@ const DetailBookingPage = () => {
         <Text style={styles.servicesText}>Services:</Text>
         {playfield.services.map((service, index) => (
           <Text key={index} style={styles.amenitiesText}>• {service}</Text>
-        ))}
+        ))} */}
 
-        <TouchableOpacity style={styles.bookingButton} onPress={handleBookingPress}>
+        <TouchableOpacity style={styles.bookingButton} onPress={handlePress}>
           <Text style={styles.bookingButtonText}>Booking PlayFields</Text>
         </TouchableOpacity>
       </View>

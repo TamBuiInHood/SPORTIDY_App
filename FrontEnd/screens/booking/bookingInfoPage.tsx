@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Dimensions, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, Dimensions, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ProgressBar from '@/components/ProgressBar';
 import { RadioButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import axios from 'axios';
+import { RootStackParamList } from '@/types/types';
+import { Ionicons } from '@expo/vector-icons';
+
+type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
 
 const { width } = Dimensions.get('window');
 
 const BookingInformationPage: React.FC = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Transfer');
   const [date, setDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState('1h');
-  const [openPaymentDropdown, setOpenPaymentDropdown] = useState(false);
+  const [selectedTime, setSelectedTime] = useState('1');
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
 
-  const totalPrice = 120000 * parseInt(selectedTime); 
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-
+  const totalPrice = 120000 * parseInt(selectedTime);
+  const navigation = useNavigation<PaymentScreenNavigationProp>();
 
   const timeOptions = [
     { label: '1h', value: '1' },
@@ -31,6 +34,70 @@ const BookingInformationPage: React.FC = () => {
     setDate(currentDate);
   };
 
+  const handlePlaceOrder = async () => {
+    const bookingCode = `BOOK-${new Date().getTime()}`;
+    const customerId = 1;
+    const playFieldId = 1; // Replace with actual playfield ID
+    // const bookingData = {
+    //   bookingCode: bookingCode, // Provide the booking code
+    //   price: totalPrice, // Pass the price
+    //   dateStart: date.toISOString(), // Convert start date to ISO string
+    //   dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(), // Calculate and pass end date
+    //   barCode: "GeneratedBarcodeHere", // Ensure to provide a valid barcode
+    //   playFieldId: playFieldId, // Ensure playFieldId is a valid positive number
+    //   customerId: customerId, // Provide valid customer ID
+    // };
+
+    try {
+      // Step 1: Create booking
+      // const bookingResponse = await axios.post(
+      //   'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings',
+      //   bookingData
+      // );
+
+      // console.log('Booking API Response:', bookingResponse.data);
+
+      // Step 2: After booking, generate payment link
+      const paymentData = {
+        amount: totalPrice,
+        description: "Booking Football Field",
+        buyerName: "John Doe",
+        buyerPhone: "0123456789",
+        userId: "user123",
+        playfieldName: "Football playfields",
+        playfieldId: 1, // Use the actual playfield ID from the booking
+        hour: parseInt(selectedTime),
+      };
+
+      const paymentResponse = await axios.post(
+        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/payment/create-payment-link',
+        paymentData
+      );
+
+      console.log('Payment API Response:', paymentResponse.data);
+
+      // Step 3: Check and open payment link
+      if (paymentResponse.data?.data?.checkoutUrl) {
+        const checkoutUrl = paymentResponse.data.data.checkoutUrl;
+
+        // Open payment link in the default browser
+        await Linking.openURL(checkoutUrl);
+
+        // Step 4: Navigate to PaymentBookingPage with booking details
+        navigation.navigate('PaymentBooking', {
+          bookingCode: bookingResponse.data.bookingCode,
+          price: bookingResponse.data.price,
+          barCode: bookingResponse.data.barCode,
+        });
+      } else {
+        Alert.alert('Error', 'Failed to retrieve payment URL.');
+      }
+    } catch (error) {
+      console.error('Error during booking or payment:', error.response?.data || error.message);
+      Alert.alert('Error', 'Failed to process your request. Please try again.');
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Booking Information</Text>
@@ -40,32 +107,38 @@ const BookingInformationPage: React.FC = () => {
       <Text style={styles.price}>120,000đ / hour</Text>
       <Text style={styles.location}>Location: 30 Tháng 4, Phú Thọ, Thủ Dầu Một, Bình Dương</Text>
 
-      {/* Payment Method Dropdown */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Payment Method</Text>
+        <View style={styles.row}>
+          <Ionicons name='card-outline' size={25} style={styles.icon}></Ionicons>
+          <Text style={styles.label}>
+            Payment Method</Text>
+        </View>
         <View style={styles.radioGroup}>
-          <RadioButton
-            value="Transfer"
-            status={selectedPaymentMethod === 'Transfer' ? 'checked' : 'unchecked'}
-            onPress={() => setSelectedPaymentMethod('Transfer')}
-          />
-          <Text style={styles.radioLabel}>Chuyển khoản (Pay by Transfer)</Text>
+
+          <Text style={styles.radioLabel}>Pay by Transfer</Text>
+          <Ionicons name='checkbox-sharp' size={25} color={'#ffd591'} />
         </View>
       </View>
 
-      {/* Date Picker */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Date</Text>
+        <View style={styles.row}>
+          <Ionicons name='calendar-outline' size={25} style={styles.icon} />
+          <Text style={styles.label}>Date</Text>
+        </View>
         <DateTimePicker
           value={date}
-          mode="date"
+          mode="datetime"
           display="default"
           onChange={onChangeDate}
+          style={styles.datePicker}
         />
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Time</Text>
+        <View style={styles.row}>
+          <Ionicons name='time-outline' size={25} style={styles.icon} />
+          <Text style={styles.label}>Time</Text>
+        </View>
         <DropDownPicker
           open={openTimeDropdown}
           value={selectedTime}
@@ -79,7 +152,7 @@ const BookingInformationPage: React.FC = () => {
 
       <Text style={styles.totalPrice}>Total price: {totalPrice.toLocaleString()} VND</Text>
 
-      <TouchableOpacity style={styles.orderButton} onPress={() => navigation.navigate('(routes)/paymentBooking')}>
+      <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder}>
         <Text style={styles.orderButtonText}>Place Order</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -133,11 +206,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 5,
     fontWeight: '500',
+
   },
   dropdown: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
+    marginVertical: 10,
   },
   dropdownContainer: {
     height: 50,
@@ -154,6 +229,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
+    marginBottom: 80
   },
   orderButtonText: {
     color: 'white',
@@ -167,6 +243,18 @@ const styles = StyleSheet.create({
   radioLabel: {
     marginLeft: 10,
     fontSize: 16,
+  },
+  row: {
+    flexDirection: 'row', // Align items horizontally
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 10, // Adjust space between icon and text
+  },
+  datePicker: {
+    marginRight: 120, 
+    marginTop: 5, 
+    color: 'white'
   },
 });
 

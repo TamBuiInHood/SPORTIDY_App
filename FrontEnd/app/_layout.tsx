@@ -16,6 +16,8 @@ import VerificationScreen from '@/screens/verification';
 import SplashScreenComponent from '@/screens/splashScreen';
 import EventDetailScreen from '@/screens/home/_layout';
 import { RootStackParamList } from '@/types/types';
+import BookingInformationPage from '@/screens/booking/bookingInfoPage';
+import PaymentSuccessPage from '@/screens/booking/paymentBooking';
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,7 +41,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true} >
-        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="(tabs)" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Splash" component={SplashScreenComponent} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
@@ -48,7 +50,10 @@ export default function RootLayout() {
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="(tabs)" component={TabLayout} options={{ headerShown: false }} />
           <Stack.Screen name="EventDetail" component={EventDetailScreen} />
-          {/* <Stack.Screen name="(routes)/bookingDetail" component={DetailBookingPage} /> */}
+          <Stack.Screen name="DetailBookingPage" component={DetailBookingPage} />
+          <Stack.Screen name="BookingInformationPage" component={BookingInformationPage} />
+          <Stack.Screen name="PaymentBooking" component={PaymentSuccessPage} />
+
 
         </Stack.Navigator>
       </NavigationContainer>
