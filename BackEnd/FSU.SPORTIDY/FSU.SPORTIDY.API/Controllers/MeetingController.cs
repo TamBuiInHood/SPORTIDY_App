@@ -304,8 +304,36 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
+        [HttpGet(APIRoutes.Meeting.getAllMeetingOfUser)]
+        public async Task<IActionResult> GetAllUsersInMeeting([FromRoute] int userId)
+        {
+            try
+            {
+                var usersInMeeting = await _meetingService.GetAllMeetingByUserID(userId);
+
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Users fetched successfully",
+                    Data = usersInMeeting,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    Data = null,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        //[Authorize(Roles = UserRoleConst.PLAYER)]
         [HttpGet(APIRoutes.Meeting.getAllUserInMeeting)]
-        public async Task<IActionResult> GetAllUsersInMeeting([FromRoute] int meetingId)
+        public async Task<IActionResult> GetAllMeetingOfUser([FromRoute] int meetingId)
         {
             try
             {
@@ -374,7 +402,7 @@ namespace FSU.SPORTIDY.API.Controllers
                 return BadRequest(new BaseResponse
                 {
                     StatusCode = StatusCodes.Status400BadRequest,
-                    Message = ex.Message,
+                    Message = ex.Message.ToString(),
                     Data = null,
                     IsSuccess = false
                 });
