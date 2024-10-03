@@ -40,7 +40,7 @@ namespace FSU.SPORTIDY.API.Controllers
                     });
                 }
                 var dto = new BookingModel();
-                dto.BookingCode = reqObj.bookingCode;
+                //dto.BookingCode = reqObj.bookingCode;
                 dto.DateStart  = reqObj.dateStart;
                 dto.DateEnd = reqObj.dateEnd;
                 dto.Price = reqObj.price;
@@ -163,7 +163,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut(APIRoutes.Booking.UpdateStatus, Name = "UpdateBookingStatusAsync")]
-        public async Task<IActionResult> UpdateStatusAsync([FromForm] UpdateBookingStatusRequest reqObj)
+        public async Task<IActionResult> UpdateStatusAsync([FromBody] UpdateBookingStatusRequest reqObj)
         {
             try
             {

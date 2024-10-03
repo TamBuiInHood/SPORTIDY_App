@@ -20,8 +20,6 @@ const ForgotPasswordScreen = () => {
       alert("Please enter your email address");
       return;
     }
-    // If email is not inside the database -> Send a message for example ("Your email is not registered, kindly create one!")
-    // If email is in the database -> Navigate to the verification screen
     navigation.navigate("Verification");
     console.log("Reset password for:", email);
   };
@@ -66,7 +64,6 @@ const ForgotPasswordScreen = () => {
       </TouchableOpacity>
 
       <Text style={styles.orText}>Or</Text>
-      {/* FB & Gmail icons*/}
       <span>Don't have an account?</span>
       <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
         <Text style={styles.signUpButtonText}>Sign Up</Text>

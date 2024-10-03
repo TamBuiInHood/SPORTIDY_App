@@ -38,14 +38,14 @@ const api = {
   },
   //COMMENTS
   getComments: (meetingId: number) => {
-    const url = `/sportidy${meetingId}/comments`;
+    const url = `/sportidy/${meetingId}/comments`;
     return axiosClient.get<Comment>(url)
   },
   webSocket: () => {
     const url = `/sportidywebsocket`;
     return axiosClient.get(url);
   },
-  createComment: (userId: number, content: string, image: string, meetingId: string) => {
+  createComment: (userId: number, content: string, image: string, meetingId: number) => {
     const url = `/sportidy/comments`;
     return axiosClient.post(url, {
       userId: userId,

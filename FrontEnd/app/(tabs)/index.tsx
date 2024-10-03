@@ -9,6 +9,7 @@ import ActionButtons from '@/components/ActionButton';
 import ActionIcons from '@/components/ActionIcons';
 import api from '@/config/api';
 import { Card, MeetingsResponse, RootStackParamList } from '@/types/types';
+import YourMeeting from '@/screens/home/yourMeet';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -19,7 +20,7 @@ const HomeScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available');
-  const getSportIcon = (sportId: number) =>{
+  const getSportIcon = (sportId: number) => {
     switch (sportId) {
       case 1:
         return 'football';
@@ -28,7 +29,7 @@ const HomeScreen: React.FC = () => {
       case 3:
         return 'badminton';
       default:
-        return 'football'; 
+        return 'football';
     }
   }
   const fetchMeetings = async () => {
@@ -108,27 +109,48 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <SearchBar />
-      <ActionButtons />
-      {cards.length > 0 ? (
-        <Swiper
-          cards={cards}
-          renderCard={renderCard}
-          onSwipedLeft={onSwipedLeft}
-          onSwipedRight={onSwipedRight}
-          onTapCard={(index) => navigation.navigate('EventDetail', { meetingId: cards[index].meetingId })}
-          backgroundColor={'transparent'}
-          stackSize={1}
-          cardIndex={0}
-          infinite={false}
-          verticalSwipe={false}
-          horizontalSwipe={true}
-          containerStyle={styles.swiperContainer}
-          cardStyle={styles.cardStyle}
-        />
-      ) : (
-        <Text>No meetings available</Text>
-      )}
-      <ActionIcons onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight} />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.meetButton, activeTab === 'available' && styles.activeTabButton]}
+          onPress={() => setActiveTab('available')}
+        >
+          <Text style={[styles.meetButtonText, activeTab === 'available' && styles.activeTabText]}>
+            Available
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.meetButton, activeTab === 'meet' && styles.activeTabButton]}
+          onPress={() => setActiveTab('meet')}
+        >
+          <Text style={[styles.meetButtonText, activeTab === 'meet' && styles.activeTabText]}>
+            Your Meet
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+        {activeTab === 'available' && (
+          cards.length > 0 ? (
+            <Swiper
+              cards={cards}
+              renderCard={renderCard}
+              onSwipedLeft={onSwipedLeft}
+              onSwipedRight={onSwipedRight}
+              onTapCard={(index) => navigation.navigate('EventDetail', { meetingId: cards[index].meetingId })}
+              backgroundColor={'transparent'}
+              stackSize={1}
+              cardIndex={0}
+              infinite={false}
+              verticalSwipe={false}
+              horizontalSwipe={true}
+              cardStyle={styles.cardStyle}
+            />
+          ) : (
+            <Text>No meetings available</Text>
+          )
+        )}
+      </View>
+      {activeTab === 'meet' && <YourMeeting />}
     </View>
   );
 };
@@ -138,10 +160,32 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: '#fff',
-    justifyContent: 'center',
     marginTop: 50
   },
-  swiperContainer: {
+  buttonContainer: {
+    flexDirection: 'row', 
+    justifyContent: 'space-around', 
+    marginTop: 80
+  },
+  meetButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#FF915D',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 50,
+  },
+  meetButtonText: {
+    color: '#FF915D',
+    fontSize: 16,
+  },
+  activeTabButton: {
+    backgroundColor: '#FF915D',
+  },
+  activeTabText: {
+    color: '#fff',
+  },
+  swiper: {
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -155,7 +199,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#fff',
     padding: 10,
-    marginTop: 100,
     overflow: 'hidden',
   },
   cardStyle: {
