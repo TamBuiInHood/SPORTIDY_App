@@ -73,7 +73,7 @@ const BookingScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, marginLeft: 10 }}>
         <TouchableOpacity onPress={toggleSidebar} style={styles.iconButton}>
           <Text>
             <Ionicons name="menu-outline" size={24} color="#000" />

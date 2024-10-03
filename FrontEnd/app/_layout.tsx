@@ -18,6 +18,8 @@ import EventDetailScreen from '@/screens/home/_layout';
 import { RootStackParamList } from '@/types/types';
 import BookingInformationPage from '@/screens/booking/bookingInfoPage';
 import PaymentSuccessPage from '@/screens/booking/paymentBooking';
+import YourMeeting from './(tabs)/club';
+import MyHistory from '@/screens/viewBookingHistory/bookingHistory';
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,6 +55,8 @@ export default function RootLayout() {
           <Stack.Screen name="DetailBookingPage" component={DetailBookingPage} />
           <Stack.Screen name="BookingInformationPage" component={BookingInformationPage} />
           <Stack.Screen name="PaymentBooking" component={PaymentSuccessPage} />
+          <Stack.Screen name="YourMeeting" component={YourMeeting} />
+          <Stack.Screen name="MyHistory" component={MyHistory} />
 
 
         </Stack.Navigator>

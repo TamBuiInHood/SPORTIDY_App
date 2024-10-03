@@ -25,7 +25,8 @@ export type RootStackParamList = {
     address: string ;
   };
   PaymentBooking: any;
-  WebViewScreen: any;
+  YourMeeting: any;
+  MyHistory: any;
   
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
