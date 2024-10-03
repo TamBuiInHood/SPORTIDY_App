@@ -1,4 +1,4 @@
-import { Card, Club,  MeetingsResponse, Sport } from '@/types/types';
+import { Card, Club,  MeetingsResponse, PlayField, Sport } from '@/types/types';
 import axiosClient from './axios';
 import { AxiosResponse } from 'axios';
 
@@ -59,9 +59,13 @@ const api = {
     return axiosClient.put(url);
   },
   //PLAYFIELD
-  getAllPlayField: () => {
-    const url = `/sportidy/Playfields`;
-    return axiosClient.get(url);
+  getAllPlayField: (pageIndex: number, pageSize: number) => {
+    const url = `/sportidy/Playfields?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    return axiosClient.get<PlayField>(url);
+  },
+  getPlayfieldById: (playFieldId: number) => {
+    const url = `/sportidy/PlayFields/${playFieldId}`;
+    return axiosClient.get<PlayField>(url)
   },
   //BOOKING
   createBooking: () => {

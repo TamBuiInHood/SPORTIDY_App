@@ -18,6 +18,7 @@ const HomeScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available');
   const getSportIcon = (sportId: number) =>{
     switch (sportId) {
       case 1:

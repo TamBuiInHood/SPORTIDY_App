@@ -1,182 +1,70 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Button } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FlatList } from 'react-native-gesture-handler';
 import SearchBar from '@/components/SearchBar';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import Sidebar from '@/components/Sidebar';
+import { PlayField, RootStackParamList } from '@/types/types';
+import api from '@/config/api';
 
-interface Playfield {
-  id: number;
-  name: string;
-  location: string;
-  image: string;
-  pitchReady: {
-    name: string;
-    price: string;
-  }[];
-  services: string[]
-}
-
+type BookingScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BookingScreen'>;
 
 const BookingScreen: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<BookingScreenNavigationProp>();
 
-  const recentPlayfields: Playfield[] = [
-    {
-      id: 1,
-      name: 'Go Dau Stadium',
-      location: 'Thu Dau Mot, Binh Duong',
-      image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg',
-      pitchReady: [
-        { name: 'Empty Football Pitch', price: '120k/h' },
-        { name: '5-a-side Pitch', price: '100k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water',
-        'Private changing rooms'
-      ]
-    },
-    {
-      id: 2,
-      name: 'Pickleball Vuon Lan',
-      location: 'District 7, Ho Chi Minh City',
-      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
-      pitchReady: [
-        { name: 'Pickleball Court', price: '80k/h' },
-        { name: 'Tennis Court', price: '150k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water',
-        'Private changing rooms'
-      ]
-    },
-    {
-      id: 3,
-      name: 'Pickleball Vuon Lan',
-      location: 'District 7, Ho Chi Minh City',
-      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
-      pitchReady: [
-        { name: 'Pickleball Court', price: '80k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water'
-      ]
+  const [playfields, setPlayFields] = useState<PlayField[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isSidebarVisible, setSidebarVisible] = useState<boolean>(false);
+  const toggleSidebar = () => {
+    setSidebarVisible(prevState => !prevState);
+  };
+  const fetchData = async () => {
+    try {
+      const response = await api.getAllPlayField(0, 20);
+      console.log('response:', response);
+      console.log('response.data:', response.data);
+      const result: PlayField = response.data;
+      console.log('result:', result);
+
+      if (result && result.list && Array.isArray(result.list)) {
+        setPlayFields(result.list);
+      } else {
+        throw new Error('Unexpected data format: data.list is not an array');
+      }
+    } catch (error) {
+      console.error('Failed to fetch meetings:', error);
+      setError('Failed to load meetings. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const bestPlayfields: Playfield[] = [
-    {
-      id: 1,
-      name: 'Go Dau Stadium',
-      location: 'Thu Dau Mot, Binh Duong',
-      image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg',
-      pitchReady: [
-        { name: 'Empty Football Pitch', price: '120k/h' },
-        { name: '5-a-side Pitch', price: '100k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water',
-        'Private changing rooms'
-      ]
-    },
-    {
-      id: 2,
-      name: 'Pickleball Vuon Lan',
-      location: 'District 7, Ho Chi Minh City',
-      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
-      pitchReady: [
-        { name: 'Pickleball Court', price: '80k/h' },
-        { name: 'Tennis Court', price: '150k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water',
-        'Private changing rooms'
-      ]
-    },
-    {
-      id: 3,
-      name: 'Pickleball Vuon Lan',
-      location: 'District 7, Ho Chi Minh City',
-      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
-      pitchReady: [
-        { name: 'Pickleball Court', price: '80k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water'
-      ]
-    }
-
-  ];
-
-  const nearestPlayfields: Playfield[] = [
-    {
-      id: 1,
-      name: 'Go Dau Stadium',
-      location: 'Thu Dau Mot, Binh Duong',
-      image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg',
-      pitchReady: [
-        { name: 'Empty Football Pitch', price: '120k/h' },
-        { name: '5-a-side Pitch', price: '100k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water',
-        'Private changing rooms'
-      ]
-    },
-    {
-      id: 2,
-      name: 'Pickleball Vuon Lan',
-      location: 'District 7, Ho Chi Minh City',
-      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
-      pitchReady: [
-        { name: 'Pickleball Court', price: '80k/h' },
-        { name: 'Tennis Court', price: '150k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water',
-        'Private changing rooms'
-      ]
-    },
-    {
-      id: 3,
-      name: 'Pickleball Vuon Lan',
-      location: 'District 7, Ho Chi Minh City',
-      image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg',
-      pitchReady: [
-        { name: 'Pickleball Court', price: '80k/h' }
-      ],
-      services: [
-        'Free parking',
-        'Free water'
-      ]
-    }
-  ];
-
-  const renderPlayfields = (playfields: Playfield[]) => (
+  const recentPlayfields = playfields.slice(0, 3);
+  const bestPlayfields = playfields
+    .sort((a, b) => a.price - b.price)
+    .slice(0, 3);
+  const nearestPlayfields = playfields.filter(playfield => playfield.address.includes("Hanoi"));
+  const renderPlayfields = (playfields: PlayField[]) => (
     <FlatList
       data={playfields}
       renderItem={({ item }) => (
         <TouchableOpacity
-          key={item.id}
+          key={item.playFieldId}
           style={styles.playfieldCard}
-          onPress={() => navigation.navigate('(routes)/bookingDetail', { playfield: item })}
+          onPress={() => navigation.navigate('DetailBookingPage', { playFieldId: item.playFieldId })}
         >
-          <Image source={{ uri: item.image }} style={styles.playfieldImage} />
-          <Text style={styles.playfieldName}>{item.name}</Text>
-          <Text style={styles.playfieldLocation}>{item.location}</Text>
+          <Image source={{ uri: item.avatarImage }} style={styles.playfieldImage} />
+          <Text style={styles.playfieldName}>{item.playFieldName}</Text>
+          <Text style={styles.playfieldLocation}>{item.address}</Text>
         </TouchableOpacity>
       )}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={item => item.playFieldId.toString()}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.playfieldContainer}
@@ -185,7 +73,14 @@ const BookingScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Sidebar/>
+      <View style={{ flex: 1 }}>
+        <TouchableOpacity onPress={toggleSidebar} style={styles.iconButton}>
+          <Text>
+            <Ionicons name="menu-outline" size={24} color="#000" />
+          </Text>
+        </TouchableOpacity>
+        <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
+      </View>
       <View style={styles.searchContainer}>
         <SearchBar />
       </View>
@@ -211,6 +106,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 30,
     backgroundColor: '#fff',
+    marginBottom: 50
   },
   searchContainer: {
     flexDirection: 'row',
