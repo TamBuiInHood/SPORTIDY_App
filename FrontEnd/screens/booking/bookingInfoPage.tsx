@@ -20,7 +20,7 @@ const BookingInformationPage: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState('1');
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
 
-  const totalPrice = 120000 * parseInt(selectedTime);
+  const totalPrice = 2000 * parseInt(selectedTime);
   const navigation = useNavigation<PaymentScreenNavigationProp>();
 
   const timeOptions = [
@@ -37,7 +37,7 @@ const BookingInformationPage: React.FC = () => {
   const handlePlaceOrder = async () => {
     const bookingCode = `BOOK-${new Date().getTime()}`;
     const customerId = 1;
-    const playFieldId = 1; // Replace with actual playfield ID
+    const playFieldId = 1;
     // const bookingData = {
     //   bookingCode: bookingCode, // Provide the booking code
     //   price: totalPrice, // Pass the price
@@ -59,13 +59,14 @@ const BookingInformationPage: React.FC = () => {
 
       // Step 2: After booking, generate payment link
       const paymentData = {
+        bookingCode: bookingCode,
         amount: totalPrice,
         description: "Booking Football Field",
         buyerName: "John Doe",
         buyerPhone: "0123456789",
         userId: "user123",
         playfieldName: "Football playfields",
-        playfieldId: 1, // Use the actual playfield ID from the booking
+        playfieldId: 1, 
         hour: parseInt(selectedTime),
       };
 
@@ -84,11 +85,13 @@ const BookingInformationPage: React.FC = () => {
         await Linking.openURL(checkoutUrl);
 
         // Step 4: Navigate to PaymentBookingPage with booking details
-        navigation.navigate('PaymentBooking', {
-          bookingCode: bookingResponse.data.bookingCode,
-          price: bookingResponse.data.price,
-          barCode: bookingResponse.data.barCode,
-        });
+        navigation.navigate('PaymentBooking', { bookingCode: bookingCode,
+          totalPrice: totalPrice,
+          dateStart: date.toISOString(),
+          dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(),
+          playfieldName: "Football playfields",
+          location: "30 Tháng 4, Phú Thọ, Thủ Dầu Một, Bình Dương",
+          time: selectedTime,});
       } else {
         Alert.alert('Error', 'Failed to retrieve payment URL.');
       }

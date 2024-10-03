@@ -1,72 +1,73 @@
-import api from '@/config/api';
 import { Comment } from '@/types/types';
+import { format } from 'date-fns';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Button, Image } from 'react-native';
 
-const Discussion: React.FC = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
+interface DiscussionProps {
+  meetingId: number; // Accept meetingId as a prop
+}
+
+const Discussion: React.FC<DiscussionProps> = ({ meetingId }) => {
+  const [comments, setComments] = useState<Comment[]>([
+    {
+      commentId: 1,
+      user: ' Tanas',
+      content: "Thật là tuyệt vời!",
+      commentDate: "2024-10-02T14:56:30.147",
+      image: null,
+      meetingId: meetingId,
+    },
+    {
+      commentId: 2,
+      user: 'YenH',
+      content: "Tôi cũng nghĩ như vậy!",
+      commentDate: "2024-10-02T14:56:35.903",
+      image: null,
+      meetingId: meetingId,
+    },
+    // Thêm nhiều bình luận khác nếu cần
+  ]);
+
   const [input, setInput] = useState<string>('');
-  const [ws, setWs] = useState<WebSocket | null>(null);
-  
-  // Lấy meetingId từ localStorage
-  const meetingId = localStorage.getItem('meetingId');
-  
-  useEffect(() => {
-    if (meetingId) {
-      const fetchComments = async () => {
-        try {
-          const response = await api.getComments(parseInt(meetingId)); // Chuyển đổi sang số
-          const result: Comment = response.data;
-          setComments(result.list);
-        } catch (error) {
-          console.error('Error fetching comments:', error);
-        }
-      };
 
-      fetchComments();
-
-      // Kết nối WebSocket
-      const socket = new WebSocket(`wss://localhost:7102/api/sportidywebsocket`);
-      setWs(socket);
-
-      // Nhận bình luận mới từ WebSocket
-      socket.onmessage = (event) => {
-        const newComment = JSON.parse(event.data);
-        setComments((prevComments) => [...prevComments, newComment]);
-      };
-
-      // Đóng kết nối khi component bị hủy
-      return () => {
-        socket.close();
-      };
-    }
-  }, [meetingId]);
-
-  // Gửi bình luận mới
+  // Hàm gửi bình luận mới
   const sendComment = async () => {
-    if (input.trim() && ws && ws.readyState === WebSocket.OPEN && meetingId) {
-      const userId = 1; // Lấy userId từ trạng thái người dùng hoặc props nếu cần
-      const image = ''; // Thêm image nếu cần
-      try {
-        await api.createComment(userId, input, image, meetingId);
-        setInput(''); // Xóa ô nhập sau khi gửi
-      } catch (error) {
-        console.error('Error creating comment:', error);
-      }
+    if (!input.trim()) {
+      alert('Vui lòng nhập nội dung bình luận.');
+      return;
     }
+
+    const newComment: Comment = {
+      commentId: comments.length + 1, // Tạo ID mới cho bình luận
+      user: 'Bảo', // Thay thế bằng ID người dùng thực tế
+      content: input,
+      commentDate: new Date().toISOString(),
+      image: null,
+      meetingId: meetingId,
+    };
+
+    setComments([...comments, newComment]); // Thêm bình luận mới vào danh sách
+    setInput(''); // Xóa nội dung bình luận sau khi gửi
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Discussion</Text>
       <ScrollView style={styles.scroll}>
-        {comments.map((comment, index) => (
-          <View key={index} style={styles.comment}>
-            <Text style={styles.userId}>User ID: {comment.userId}</Text>
+        {comments.map((comment) => (
+          <View key={comment.commentId} style={styles.comment}>
+            <Text style={styles.userId}>{comment.user}</Text>
             <Text style={styles.content}>{comment.content}</Text>
+            <Text style={styles.commentDate}>
+              {format(new Date(comment.commentDate), 'dd/MM/yyyy HH:mm:ss')}
+            </Text>
+            {comment.image && (
+              <Image source={{ uri: comment.image }} style={styles.image} />
+            )}
           </View>
         ))}
       </ScrollView>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}

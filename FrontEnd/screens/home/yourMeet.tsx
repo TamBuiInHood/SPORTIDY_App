@@ -51,10 +51,6 @@ const YourMeeting = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <SearchBar />
-        <ActionButtons />
-      </View>
 
       {mockData.map((event) => (
         <View key={event.id} style={styles.card}>
@@ -117,7 +113,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#f9f9f9',
-    paddingTop: 40
+    marginBottom: 100
   },
   header: {
     flexDirection: 'row',

@@ -127,7 +127,7 @@ const EventDetailScreen = () => {
                     )}
                 </View>
             )}
-            {activeTab === 'discussion' && <Discussion />}
+            {activeTab === 'discussion' && <Discussion meetingId={meetingId} />}
         </ScrollView>
     );
 };

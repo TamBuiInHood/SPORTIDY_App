@@ -142,13 +142,13 @@ const CreateMeetScreen = () => {
             <Text style={styles.formUnit}>hour(s)</Text>
           </View>
 
-          <View style={styles.formItem}>
+          <View style={styles.formItemMeeting}>
             <View style={styles.formLabelContainer}>
               <Ionicons name="location-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Set location</Text>
             </View>
             <TextInput
-              style={styles.formInput}
+              style={styles.formInputMeeting}
               value={location}
               onChangeText={setLocation}
               placeholder="Enter location"
