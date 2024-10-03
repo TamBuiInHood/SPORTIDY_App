@@ -8,7 +8,6 @@ namespace FSU.SPORTIDY.API.Payloads.Request.BookingRequest
     {
         [Required]
         public string bookingCode { get; set; }
-        
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
         public double? price { get; set; }
