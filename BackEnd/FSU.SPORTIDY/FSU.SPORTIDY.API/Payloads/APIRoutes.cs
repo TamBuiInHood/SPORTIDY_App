@@ -48,7 +48,7 @@
 
             public const string EngageToMeeting = Base + "/meetings/engage-to-meeting";
 
-            public const string getAllUserInMeeting  = Base + "/meetings/get-all-user-in-meeting";
+            public const string getAllUserInMeeting  = Base + "/meetings/get-all-user-in-meeting/{meetingId}";
 
 
 
