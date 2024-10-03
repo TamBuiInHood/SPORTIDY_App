@@ -87,11 +87,19 @@ namespace FSU.SPORTIDY.Service.Services
     .OrderByDescending(o => o.UserMeetings.OrderBy(um => um.Meeting.StartDate).FirstOrDefault()!.Meeting.StartDate);
 
             string includeProperties = "UserMeetings";
-            string thenIncludeProperties = "Meeting";
+            //string thenIncludeProperties = "Meeting";
             var meetingOfUser = await _unitOfWork.MeetingRepository.GetAllNoPaging(filter: conditionGetMeeting,
                 orderBy: orderBy,
-                includeProperties: includeProperties,
-                thenIncludeProperties: thenIncludeProperties);
+                includeProperties: includeProperties
+                );
+
+            foreach (var meeting in meetingOfUser)
+            {
+                foreach (var userMeeting in meeting.UserMeetings)
+                {
+                    userMeeting.Meeting = null; // Break circular reference
+                }
+            }
             var mapDTO = _mapper.Map<IEnumerable<MeetingModel>>(meetingOfUser);
             return mapDTO;
         }
