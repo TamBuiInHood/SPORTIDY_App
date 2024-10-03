@@ -6,7 +6,7 @@ namespace FSU.SPORTIDY.API.Payloads.Request.BookingRequest
     public class UpdateBookingStatusRequest
     {
         [Required]
-        public int bookingId {  get; set; }
+        public string bookingCode {  get; set; }
         [Required] 
         public BookingStatusEnum status { get; set; }
     }

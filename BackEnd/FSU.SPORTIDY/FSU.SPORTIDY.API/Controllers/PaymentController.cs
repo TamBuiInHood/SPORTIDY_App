@@ -37,8 +37,8 @@ namespace FSU.SPORTIDY.API.Controllers
                 }) ;
             }
             var orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
-            var returnUrl = $"payment/payment-success/userid={reqObj.userId}&order-code={orderCode}";
-            var cancelUrl = $"payment/payment-cancel/userid={reqObj.userId}&order-code={orderCode}";
+            var returnUrl = $"payment/payment-success?userId={reqObj.userId}&orderCode={reqObj.bookingCode}&playfieldId={reqObj.playfieldId}&price={reqObj.amount}";
+            var cancelUrl = $"payment/payment-cancel?userId={reqObj.userId}&orderCode={reqObj.bookingCode}&playfieldId={reqObj.playfieldId}&price={reqObj.amount}";
             var paymentReponse = await _payOSService.createPaymentLink(orderCode, amount:reqObj.amount, returnUrl: returnUrl, cancelUrl: cancelUrl, buyerName: reqObj.buyerName, buyerPhone: reqObj.buyerPhone, fieldName: reqObj.playfieldName, hour: reqObj.hour, description: reqObj.description);
             return Ok(new BaseResponse
             {
