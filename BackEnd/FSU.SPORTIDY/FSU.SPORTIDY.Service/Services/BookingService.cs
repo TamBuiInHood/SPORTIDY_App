@@ -228,18 +228,21 @@ namespace FSU.SPORTIDY.Service.Services
 
                 _mapper.Map(entityInsert, booking);
                 // upload barcode to firebase
+                booking.BookingCode = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() ;
+
                 if (barCode != null)
                 {
-                    string fileName = Path.GetFileName(entityInsert.BookingCode)!;
+                    string fileName = Path.GetFileName(booking.BookingCode)!;
                     var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                     await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).PutAsync(barCode.OpenReadStream());
                     booking.BarCode = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
                 }
-                booking.BookingCode = entityInsert.BookingCode;
                 booking.PaymentMethod = entityInsert.PaymentMethod ?? "VietQR";
                 booking.BookingDate = DateTime.Now;
                 booking.Status = BookingStatusID.BOOKING_PENDING_ID;
+                
                 // add payment here
+
                 var payment = new Payment
                 {
                     OrderCode = booking.BookingCode,
