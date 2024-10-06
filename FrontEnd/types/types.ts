@@ -27,7 +27,8 @@ export type RootStackParamList = {
   PaymentBooking: any;
   YourMeeting: any;
   MyHistory: any;
-  
+  HistoryDetail: any; 
+  FeedBack: any
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
 export type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;

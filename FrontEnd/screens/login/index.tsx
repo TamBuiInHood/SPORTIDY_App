@@ -26,7 +26,7 @@ const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const handleLogin = async () => {
-    if (email == 'admin@gmail.com' && password == '123456') {
+    if (email == 'user@gmail.com' && password == '123456') {
       try {
         // Save email to AsyncStorage
         await AsyncStorage.setItem("userEmail", email);
@@ -71,14 +71,14 @@ const LoginScreen = () => {
             onChangeText={setPassword}
             secureTextEntry
           />
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               navigation.navigate("ForgotPassword");
             }}
             style={styles.forgotPassword}
           >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
