@@ -20,7 +20,7 @@ const BookingInformationPage: React.FC = () => {
   const [selectedTime, setSelectedTime] = useState('1');
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
 
-  const totalPrice = 2000 * parseInt(selectedTime);
+  const totalPrice = 120000 * parseInt(selectedTime);
   const navigation = useNavigation<PaymentScreenNavigationProp>();
 
   const timeOptions = [
