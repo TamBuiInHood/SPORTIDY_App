@@ -4,15 +4,25 @@ import { useNavigation } from '@react-navigation/native'; // Import the useNavig
 import { RootStackParamList } from "@/types/types";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
+type YourClubNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "YourClub"
+>;
 
-const ActionButtons: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available'); // Default tab is 'available'
-  const navigation = useNavigation<HomeScreenNavigationProp>(); // Ensure the correct type for navigation
+const ActionButtonClub: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'available' | 'your club'>('available'); // Default tab is 'available'
+  const navigation = useNavigation<YourClubNavigationProp>();
 
   const handleMeetButtonPress = () => {
-    setActiveTab('meet');
-    navigation.navigate('YourMeeting'); // Navigate to YourMeeting screen
+    setActiveTab('your club');
+    navigation.navigate('YourClub', { 
+      clubName: "Sportidy Night Club", 
+      playerCount: 12, 
+      mainSport: "Football", 
+      secondarySport: "Badminton", 
+      location: "Thu Duc", 
+      district: "District 9" 
+    }); 
   };
 
   return (
@@ -28,12 +38,12 @@ const ActionButtons: React.FC = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.meetButton, activeTab === 'meet' && styles.activeTabButton]} // Apply active style
+          style={[styles.meetButton, activeTab === 'your club' && styles.activeTabButton]} // Apply active style
           onPress={() => {
             handleMeetButtonPress(); // Navigate to YourMeetScreen
           }}
         >
-          <Text style={[styles.meetButtonText, activeTab === 'meet' && styles.activeTabText]}>
+          <Text style={[styles.meetButtonText, activeTab === 'your club' && styles.activeTabText]}>
             Your Meet
           </Text>
         </TouchableOpacity>
@@ -88,4 +98,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ActionButtons;
+export default ActionButtonClub;

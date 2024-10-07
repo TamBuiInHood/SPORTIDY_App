@@ -27,7 +27,7 @@ import PlayFieldDetailCard from '@/screens/playFieldDetail';
 import PlayfieldList from '@/screens/playField';
 import CreatePlayfield from '@/screens/createPlayField';
 import UpdatePlayField from '@/screens/updatePlayField';
-
+import YourClub from '@/screens/yourclub';
 SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -58,6 +58,7 @@ export default function RootLayout() {
           <Stack.Screen name="Verification" component={VerificationScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="(tabs)" component={TabLayout} options={{ headerShown: false }} />
+          <Stack.Screen name ="YourClub" component ={YourClub} />
           <Stack.Screen name="EventDetail" component={EventDetailScreen} />
           <Stack.Screen name="DetailBookingPage" component={DetailBookingPage} />
           <Stack.Screen name="BookingInformationPage" component={BookingInformationPage} />

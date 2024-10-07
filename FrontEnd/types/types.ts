@@ -13,6 +13,14 @@ export type RootStackParamList = {
       screen: any;
     };
   };
+  YourClub: { 
+    clubName: string;
+    playerCount: number;
+    mainSport: string;
+    secondarySport: string;
+    location: string;
+    district: string;
+  };
   PlayField: any;
   EventDetail: {meetingId: number},
   HomeScreen: any;
