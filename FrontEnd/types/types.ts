@@ -13,6 +13,7 @@ export type RootStackParamList = {
       screen: any;
     };
   };
+  PlayField: any;
   EventDetail: {meetingId: number},
   HomeScreen: any;
   BookingScreen: any;
@@ -27,16 +28,11 @@ export type RootStackParamList = {
   YourMeeting: any;
   MyHistory: any;
   HistoryDetail: any; 
-  FeedBack: any;
-  '(ownertabs)': {
-    params: {
-      screen: any;
-    };
-  };
-  PlayFieldList: any;
-  PlayfieldDetailCard:any,
-  CreatePlayfield: any,
+  FeedBack: any,
+  PlayFieldDetail: any,
   UpdatePlayfield: any,
+  CreatePlayfield: any,
+
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
 export type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
@@ -147,11 +143,4 @@ export interface Sport {
   sportCode: string;
   sportName: string;
   sportImage: string;
-};
-export type OwnerTabParamList = {
-  home: undefined;
-  scan: undefined;
-  create: undefined;
-  history: undefined;
-  statistic: undefined;
-};
+}

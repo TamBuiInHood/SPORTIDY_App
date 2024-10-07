@@ -50,7 +50,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true} >
-        <Stack.Navigator initialRouteName="(ownertabs)" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Splash" component={SplashScreenComponent} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
