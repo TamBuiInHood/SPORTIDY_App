@@ -95,7 +95,7 @@ const BookingInformationPage: React.FC = () => {
       } else {
         Alert.alert('Error', 'Failed to retrieve payment URL.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during booking or payment:', error.response?.data || error.message);
       Alert.alert('Error', 'Failed to process your request. Please try again.');
     }

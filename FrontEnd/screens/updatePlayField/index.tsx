@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 
 const UpdatePlayField = () => {
   const [name, setName] = useState('');
@@ -13,10 +15,20 @@ const UpdatePlayField = () => {
   const [creditCard, setCreditCard] = useState('');
   const [expDate, setExpDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [image, setImage] = useState(null);
 
-  const handleAddPhoto = () => {
-    // Logic to open the image picker and add the photo to the `photos` state
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.uri);
+    }
   };
+
 
   const handleSubmit = () => {
     // Logic to handle the form submission
@@ -35,114 +47,116 @@ const UpdatePlayField = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Playfield's name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="My Dinh National stadium"
-        value={name}
-        onChangeText={setName}
-      />
 
-      <Text style={styles.title}>Main currency</Text>
-      <TextInput
-        style={styles.input}
-        placeholder={currency}
-        editable={false}
-      />
-
-      <Text style={styles.title}>Address</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nam Từ Liêm, Hà Nội"
-        value={address}
-        onChangeText={setAddress}
-      />
-
-      <View style={styles.checkinContainer}>
-        <View style={styles.checkin}>
-          <Text style={styles.title}>Check-in</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="14:00"
-            value={checkIn}
-            onChangeText={setCheckIn}
-          />
-        </View>
-        <View style={styles.checkout}>
-          <Text style={styles.title}>Check-out</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="12:00"
-            value={checkOut}
-            onChangeText={setCheckOut}
-          />
-        </View>
+    <ScrollView style={styles.scrollcontainer}>
+      <View style={styles.header}>
+        <LinearGradient colors={["#76B852", "#A0B853"]} style={styles.gradient}>
+          <Text style={styles.headerTitle}>Update PlayField</Text>
+        </LinearGradient>
       </View>
-
-      <Text style={styles.title}>Photos</Text>
-      <View style={styles.photoContainer}>
-        {photos.map((photo, index) => (
-          <Image key={index} source={{ uri: photo }} style={styles.photo} />
-        ))}
-        <TouchableOpacity style={styles.addPhotoButton} onPress={handleAddPhoto}>
-          <Ionicons name="add" size={24} color="#888" />
-          <Text style={styles.addPhotoText}>Add photo</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.title}>Bank Cards</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Full Name"
-        value={fullName}
-        onChangeText={setFullName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Credit Card Number"
-        value={creditCard}
-        onChangeText={setCreditCard}
-        keyboardType="numeric"
-      />
-      <View style={styles.expiryContainer}>
+      <View style={styles.infor}>
+        <Text style={styles.title}>Playfield's name</Text>
         <TextInput
-          style={styles.expiryInput}
-          placeholder="MM/YY"
-          value={expDate}
-          onChangeText={setExpDate}
+          style={styles.input}
+          placeholder="My Dinh National stadium"
+          value={name}
+          onChangeText={setName}
+        />
+
+        <Text style={styles.title}>Main currency</Text>
+        <TextInput
+          style={styles.input}
+          placeholder={currency}
+          editable={false}
+        />
+
+        <Text style={styles.title}>Address</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nam Từ Liêm, Hà Nội"
+          value={address}
+          onChangeText={setAddress}
+        />
+
+        <View style={styles.checkinContainer}>
+          <View style={styles.checkin}>
+            <Text style={styles.title}>Check-in</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="14:00"
+              value={checkIn}
+              onChangeText={setCheckIn}
+            />
+          </View>
+          <View style={styles.checkout}>
+            <Text style={styles.title}>Check-out</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="12:00"
+              value={checkOut}
+              onChangeText={setCheckOut}
+            />
+          </View>
+        </View>
+
+        <Text style={styles.title}>Photos</Text>
+        <View style={styles.uploadContainer}>
+          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+            <Ionicons name="image-outline" size={24} color="#ff951d" />
+            <Text>Add photo</Text>
+          </TouchableOpacity>
+        </View>
+        {image && <Image source={{ uri: image }} style={styles.mediaPreview} />}
+
+        <Text style={styles.title}>Bank Cards</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Full Name"
+          value={fullName}
+          onChangeText={setFullName}
         />
         <TextInput
-          style={styles.cvvInput}
-          placeholder="CVV"
-          value={cvv}
-          onChangeText={setCvv}
+          style={styles.input}
+          placeholder="Credit Card Number"
+          value={creditCard}
+          onChangeText={setCreditCard}
           keyboardType="numeric"
         />
-      </View>
-      <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>ADD</Text>
-      </TouchableOpacity>
+        <View style={styles.expiryContainer}>
+          <TextInput
+            style={styles.expiryInput}
+            placeholder="MM/YY"
+            value={expDate}
+            onChangeText={setExpDate}
+          />
+          <TextInput
+            style={styles.cvvInput}
+            placeholder="CVV"
+            value={cvv}
+            onChangeText={setCvv}
+            keyboardType="numeric"
+          />
+        </View>
+        <TouchableOpacity style={styles.addButton}>
+          <Text style={styles.addButtonText}>ADD</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.title}>Online payment system</Text>
-      <View style={styles.paymentMethods}>
-        {/* Placeholder for payment method icons */}
-        <Text>Zalo Pay</Text>
-        <Text>PayPal</Text>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleSubmit}>
+          <Text style={styles.confirmButtonText}>CONFIRM</Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.confirmButton} onPress={handleSubmit}>
-        <Text style={styles.confirmButtonText}>CONFIRM</Text>
-      </TouchableOpacity>
     </ScrollView>
+
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollcontainer: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#fff',
+  },
+  infor: {
+    padding: 15,
   },
   title: {
     fontSize: 16,
@@ -210,10 +224,11 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: '#48C9B0',
-    borderRadius: 8,
+    borderRadius: 20,
     paddingVertical: 10,
     alignItems: 'center',
     marginBottom: 16,
+    marginHorizontal: 140
   },
   addButtonText: {
     color: '#fff',
@@ -233,6 +248,37 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  header: {
+    marginTop: 40,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    paddingVertical: 40
+  },
+  gradient: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  uploadContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 20,
+  },
+  uploadButton: {
+    alignItems: 'center',
+    backgroundColor: '#FFF5E0',
+    padding: 10,
+    borderRadius: 8,
+    width: '45%',
+  },
+  mediaPreview: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginTop: 10,
   },
 });
 

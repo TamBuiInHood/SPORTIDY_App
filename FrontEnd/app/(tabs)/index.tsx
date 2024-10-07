@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row', 
     justifyContent: 'space-around', 
-    marginTop: 80
+    marginTop: 100
   },
   meetButton: {
     backgroundColor: '#fff',

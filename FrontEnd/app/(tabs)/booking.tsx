@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 15,
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 20,
     marginHorizontal: 80
   },
   bookingButtonText: {
