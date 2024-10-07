@@ -18,7 +18,7 @@ const SearchBar: React.FC = () => {
 const styles = StyleSheet.create({
     searchBar: {
         position: 'absolute',
-        top: 10,
+        top: 30,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

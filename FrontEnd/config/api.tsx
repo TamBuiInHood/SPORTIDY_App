@@ -20,20 +20,10 @@ const api = {
       meetingId: meetingId
     })
   },
-  createMeeting: (meetingName: string, meetingImage: string, address: string, startDate: string, endDate: string, totalMember: number, isPublic: boolean,note: string, cancelBefore: number, currentIdLogin: number, sportId:number) => {
+  createMeeting:  (meetingData:any) => {
     const url = `/sportidy/meetings`;
     return axiosClient.post(url, {
-      meetingName: meetingName,
-      meetingImage: meetingImage,
-      address: address,
-      startDate: startDate,
-      endDate: endDate,
-      totalMember: totalMember,
-      isPublic: isPublic,
-      note: note,
-      cancelBefore: cancelBefore,
-      currentIdLogin: currentIdLogin,
-      sportId:sportId
+     meetingData
     })
   },
   //COMMENTS

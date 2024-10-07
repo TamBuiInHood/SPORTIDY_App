@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
 const styles = StyleSheet.create({
   sidebar: {
     position: 'absolute',
-    top: 0,
+    top: 10,
     left: 0,
     height: '100%',
     width: '80%',

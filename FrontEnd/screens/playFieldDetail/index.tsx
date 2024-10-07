@@ -1,6 +1,10 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { RootStackParamList } from '@/types/types';
+import { useNavigation } from '@react-navigation/native';
 
 interface PlayfieldDetailProps {
   playfield: {
@@ -16,19 +20,40 @@ interface PlayfieldDetailProps {
     price: string;
   };
 }
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
 const PlayfieldDetail = ({ playfield }: PlayfieldDetailProps) => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Ionicons
+          key={i}
+          name={i <= rating ? 'star' : 'star-outline'}
+          size={20}
+          color={i <= rating ? '#FFD700' : '#ccc'} // Màu vàng cho rating, xám cho không rating
+        />
+      );
+    }
+    return stars;
+  };
+
   return (
     <View style={styles.container}>
       <Image source={{ uri: playfield.image }} style={styles.image} />
       <View style={styles.infoContainer}>
-        <Text style={styles.name}>{playfield.name}</Text>
-        <Text style={styles.location}>{playfield.location}</Text>
+        <View style={styles.locationContainer}>
+          <Ionicons name='location-outline' size={30} />
+          <Text style={styles.location}>{playfield.location}</Text>
+        </View>
         <View style={styles.ratingContainer}>
-          <Text style={styles.rating}>{playfield.rating} ★</Text>
+          <View style={styles.stars}>
+            {renderStars(playfield.rating)}
+          </View>
           <Text style={styles.reviews}>({playfield.reviews} reviews)</Text>
         </View>
-        <Text style={styles.detailsTitle}>Details:</Text>
         <Text style={styles.details}>Open: {playfield.openingHours}</Text>
         <Text style={styles.details}>Capacity: {playfield.capacity}</Text>
         <Text style={styles.details}>Surface: {playfield.surface}</Text>
@@ -38,7 +63,7 @@ const PlayfieldDetail = ({ playfield }: PlayfieldDetailProps) => {
           <Text style={styles.price}>{playfield.price}</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.updateButton}>
+      <TouchableOpacity style={styles.updateButton}onPress={()=>navigation.navigate("UpdatePlayfield")}>
         <Text style={styles.updateButtonText}>Update</Text>
       </TouchableOpacity>
     </View>
@@ -55,14 +80,21 @@ const samplePlayfield = {
   owner: 'Vietnamese government',
   rating: 4.0,
   reviews: 480,
-  image: 'https://yourimageurl.com/stadium.jpg', // Replace with actual image URL
+  image: 'https://babolat.com.vn/wp-content/uploads/2023/12/san-cau-long-chat-luong-4.jpg', // Replace with actual image URL
   price: '500,000,000 VND',
 };
 
 const PlayFieldDetailCard = () => {
   return (
-    <View style={{ flex: 1 }}>
-      <PlayfieldDetail playfield={samplePlayfield} />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <LinearGradient colors={["#76B852", "#A0B853"]} style={styles.gradient}>
+          <Text style={styles.headerTitle}>{samplePlayfield.name}</Text>
+        </LinearGradient>
+      </View>
+      <ScrollView>
+        <PlayfieldDetail playfield={samplePlayfield} />
+      </ScrollView>
     </View>
   );
 };
@@ -72,14 +104,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
-    margin: 16,
     elevation: 2,
   },
   image: {
     width: '100%',
     height: 200,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+
   },
   infoContainer: {
     padding: 16,
@@ -90,13 +120,19 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   location: {
-    fontSize: 16,
-    color: '#888',
+    fontSize: 20,
+    color: 'black',
     marginBottom: 8,
+    marginLeft: 8,
+    fontWeight: 'bold'
+  },
+  stars: {
+    flexDirection: 'row',
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 12,
   },
   rating: {
@@ -115,7 +151,7 @@ const styles = StyleSheet.create({
   },
   details: {
     fontSize: 16,
-    marginBottom: 4,
+    marginBottom: 10,
   },
   priceContainer: {
     flexDirection: 'row',
@@ -144,6 +180,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  header: {
+    marginTop: 40,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    paddingVertical: 55
+  },
+  gradient: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
 });
 
 export default PlayFieldDetailCard;
