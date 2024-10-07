@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Image, Dimensions, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -9,6 +9,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import { RootStackParamList } from '@/types/types';
 import { Ionicons } from '@expo/vector-icons';
+import QRCode from 'react-native-qrcode-svg';
 
 type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
 
@@ -19,7 +20,8 @@ const BookingInformationPage: React.FC = () => {
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState('1');
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
-
+  const [bookingCode, setBookingCode] = useState<string | null>(null); // Initialize bookingCode in state
+  const qrCodeRef = useRef<QRCode | null>(null);
   const totalPrice = 120000 * parseInt(selectedTime);
   const navigation = useNavigation<PaymentScreenNavigationProp>();
 
@@ -35,29 +37,45 @@ const BookingInformationPage: React.FC = () => {
   };
 
   const handlePlaceOrder = async () => {
-    const bookingCode = `BOOK-${new Date().getTime()}`;
-    const customerId = 1;
-    const playFieldId = 1;
-    // const bookingData = {
-    //   bookingCode: bookingCode, // Provide the booking code
-    //   price: totalPrice, // Pass the price
-    //   dateStart: date.toISOString(), // Convert start date to ISO string
-    //   dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(), // Calculate and pass end date
-    //   barCode: "GeneratedBarcodeHere", // Ensure to provide a valid barcode
-    //   playFieldId: playFieldId, // Ensure playFieldId is a valid positive number
-    //   customerId: customerId, // Provide valid customer ID
-    // };
-
+    const generatedBookingCode = `BOOK-${new Date().getTime()}`;
+    setBookingCode(generatedBookingCode); // Set bookingCode to state
+   
+    const qrCodeData = await new Promise<string>((resolve, reject) => {
+      qrCodeRef.current?.toDataURL((dataURL: any) => {
+        if (dataURL) {
+          resolve(dataURL); // QR code as a base64 string
+        } else {
+          reject(new Error('Failed to generate QR code'));
+        }
+      });
+    });
     try {
       // Step 1: Create booking
-      // const bookingResponse = await axios.post(
-      //   'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings',
-      //   bookingData
-      // );
+      const bookingData = {
+        price: totalPrice, // Pass the price
+        dateStart: date.toISOString(), // Convert start date to ISO string
+        dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(), // Calculate and pass end date
+        barCode: qrCodeData, // Ensure to provide a valid barcode
+        playFieldId: 1, // Ensure playFieldId is a valid positive number
+        customerId: 1, // Provide valid customer ID
+      };
 
-      // console.log('Booking API Response:', bookingResponse.data);
+      const bookingResponse = await axios.post(
+        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings',
+        bookingData
+      );
 
-      // Step 2: After booking, generate payment link
+      console.log('Booking API Response:', bookingResponse.data);
+
+      // Step 2: Get booking by booking ID
+      const bookingId = bookingResponse.data.id;
+      const getBookingResponse = await axios.get(
+        `https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings/${bookingId}`
+      );
+
+      console.log('Get Booking API Response:', getBookingResponse.data);
+
+      // Step 3: Create payment link
       const paymentData = {
         bookingCode: bookingCode,
         amount: totalPrice,
@@ -66,7 +84,7 @@ const BookingInformationPage: React.FC = () => {
         buyerPhone: "0123456789",
         userId: "user123",
         playfieldName: "Football playfields",
-        playfieldId: 1, 
+        playfieldId: 1,
         hour: parseInt(selectedTime),
       };
 
@@ -77,21 +95,23 @@ const BookingInformationPage: React.FC = () => {
 
       console.log('Payment API Response:', paymentResponse.data);
 
-      // Step 3: Check and open payment link
+      // Step 4: Check and open payment link
       if (paymentResponse.data?.data?.checkoutUrl) {
         const checkoutUrl = paymentResponse.data.data.checkoutUrl;
 
         // Open payment link in the default browser
         await Linking.openURL(checkoutUrl);
 
-        // Step 4: Navigate to PaymentBookingPage with booking details
-        navigation.navigate('PaymentBooking', { bookingCode: bookingCode,
+        // Step 5: Navigate to PaymentBookingPage with booking details
+        navigation.navigate('PaymentBooking', {
+          bookingCode: getBookingResponse.data.bookingCode,
           totalPrice: totalPrice,
           dateStart: date.toISOString(),
           dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(),
           playfieldName: "Football playfields",
           location: "30 Tháng 4, Phú Thọ, Thủ Dầu Một, Bình Dương",
-          time: selectedTime,});
+          time: selectedTime,
+        });
       } else {
         Alert.alert('Error', 'Failed to retrieve payment URL.');
       }
@@ -100,7 +120,6 @@ const BookingInformationPage: React.FC = () => {
       Alert.alert('Error', 'Failed to process your request. Please try again.');
     }
   };
-
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Booking Information</Text>
@@ -158,6 +177,14 @@ const BookingInformationPage: React.FC = () => {
       <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder}>
         <Text style={styles.orderButtonText}>Place Order</Text>
       </TouchableOpacity>
+      {bookingCode ? (
+        <QRCode
+          value={bookingCode}
+          getRef={(ref) => (qrCodeRef.current = ref)}  // Store the reference to QRCode component
+        />
+      ) : (
+        <Text style={styles.qrPlaceholder}>QR code will be generated after placing the order.</Text>
+      )}
     </ScrollView>
   );
 };
@@ -255,8 +282,8 @@ const styles = StyleSheet.create({
     marginRight: 10, // Adjust space between icon and text
   },
   datePicker: {
-    marginRight: 120, 
-    marginTop: 5, 
+    marginRight: 120,
+    marginTop: 5,
     color: 'white'
   },
 });

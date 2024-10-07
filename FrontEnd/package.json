@@ -42,7 +42,6 @@
     "react-native-confirmation-code-field": "^7.4.0",
     "react-native-datetime-picker": "^1.1.2",
     "react-native-deck-swiper": "^2.0.17",
-    "react-native-dotenv": "^3.4.11",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-maps": "^1.18.0",

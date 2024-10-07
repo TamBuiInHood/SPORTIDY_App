@@ -4,6 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 
+interface Playfield {
+  id: number;
+  name: string;
+  location: string;
+  price: string;
+  image: string;
+}
+
 const UpdatePlayField = () => {
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('500,000,000 VND');

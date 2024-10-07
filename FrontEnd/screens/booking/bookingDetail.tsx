@@ -3,7 +3,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {  PlayField, RootStackParamList } from '@/types/types';
+import { PlayField, RootStackParamList } from '@/types/types';
 import api from '@/config/api';
 
 type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
@@ -11,23 +11,27 @@ type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>
 const DetailBookingPage: React.FC = () => {
   const route = useRoute<DetailBookingRouteProp>();
   const navigation = useNavigation();
-
-  const playId = route.params?.playFieldId; 
+  const formatTime = (time: any) => {
+    if (!time) return '--';
+    const [hours, minutes] = time.split(':');
+    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  };
+  const playId = route.params?.playFieldId;
 
   const [playfields, setPlayFields] = useState<PlayField | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Loading state to manage API call state
   const handlePress = () => {
     if (playfields) {
-        navigation.navigate('BookingInformationPage', {
-            playFieldId: playfields.playFieldId, 
-            playFieldName: playfields.playFieldName,
-            price: 120000,
-            address: playfields.address,
-        });
+      navigation.navigate('BookingInformationPage', {
+        playFieldId: playfields.playFieldId,
+        playFieldName: playfields.playFieldName,
+        price: 120000,
+        address: playfields.address,
+      });
     } else {
-        console.error('Playfields data is not available');
+      console.error('Playfields data is not available');
     }
-};
+  };
   useEffect(() => {
     const fetchPlayField = async () => {
       if (!playId) {
@@ -59,7 +63,9 @@ const DetailBookingPage: React.FC = () => {
 
         <View style={styles.headerTitleContainer}>
           <Text style={styles.title}>{playfields?.playFieldName}</Text>
-          <Text style={styles.date}>{playfields?.openTime} -{playfields?.closeTime} </Text>
+          <Text style={styles.date}>
+            {formatTime(playfields?.openTime)} - {formatTime(playfields?.closeTime)}
+          </Text>
         </View>
 
         <View style={styles.buttonContainer}>
