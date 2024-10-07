@@ -24,6 +24,15 @@ namespace FSU.SPORTIDY.Repository.Repositories
             await context.SaveChangesAsync();
         }
 
+        public async Task<List<User>> GetAllUsersByRole(string roleName)
+        {
+            var result = await _context.Users.Include(x => x.Role)
+                                        .Where(x => x.Role.RoleName.ToLower() == roleName.ToLower())
+                                        .ToListAsync();    
+            return result;
+
+        }
+
         public async Task<User?> GetUserByEmailAsync(string email)
         {
            return await context.Users.FirstOrDefaultAsync(x => x.Email.Equals(email));  
@@ -37,6 +46,17 @@ namespace FSU.SPORTIDY.Repository.Repositories
                 return user;    
             }
             return null;
+        }
+
+        public async Task<List<User>> GetUsersByYear(int year)
+        {
+            var users = await _context.Users
+                            .Where(u => u.CreateDate.HasValue)  
+                            .ToListAsync();
+
+            return users
+                .Where(u => u.CreateDate.Value.Year == year)  
+                .ToList();
         }
 
         public async Task<int> SoftDeleteUserAsync(int userId)

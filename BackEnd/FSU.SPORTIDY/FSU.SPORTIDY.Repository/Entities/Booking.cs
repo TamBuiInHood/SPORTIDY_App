@@ -32,5 +32,6 @@ public partial class Booking
     public virtual PlayField PlayField { get; set; } = null!;
 
     public virtual ICollection<PlayFieldFeedback> PlayFieldFeedbacks { get; set; } = new List<PlayFieldFeedback>();
+
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

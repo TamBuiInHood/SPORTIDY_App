@@ -1,4 +1,7 @@
 ﻿using FSU.SPORTIDY.Repository.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Asn1.X509;
 using System.ComponentModel.DataAnnotations;
 
 namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
@@ -6,20 +9,28 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
     public class AddPlayfiedRequest
     {
         [Required]
-        public string? PlayFieldName { get; set; }
+        public int? currentIdLogin { get; set; }
         [Required]
-        public int? Price { get; set; }
+        public string? playfieldName { get; set; }
         [Required]
-        public string? Address { get; set; }
+        public int? price { get; set; }
         [Required]
-        public TimeOnly? OpenTime { get; set; }
+        public string? address { get; set; }
         [Required]
-        public TimeOnly? CloseTime { get; set; }
+        public DateTime? openTime { get; set; }
         [Required]
-        [FileFormat(".jpg", ".jpeg", ".png")]
-        public IFormFile? AvatarImage { get; set; }
+        public DateTime? closeTime { get; set; }
 
-        public  List<AddImageFieldRequest> ImageFields { get; set; } = new List<AddImageFieldRequest>();
+        [Required]
+        public List<string> subPlayfieds { get; set; } = new List<string>();
+        [Required]
+        public int sportId { get; set; }
+        [Required]
+        [FromForm]
+        [FileFormat(".jpg", ".jpeg", ".png")]
+        public IFormFile? avatarImage { get; set; }
+        [FromForm]
+        public List<AddImageFieldRequest> addImageField { get; set; } = new List<AddImageFieldRequest>();
 
     }
 }

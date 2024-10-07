@@ -31,7 +31,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var addFriend = await _friendshipService.Insert(currentLoginID: reqObj.currentIDLogin, UserID2: reqObj.userId2);
+                var addFriend = await _friendshipService.Insert(currentLoginID: reqObj.currentIdLogin, UserID2: reqObj.userId2);
                 if (addFriend == null)
                 {
                     return NotFound(new BaseResponse
@@ -66,11 +66,11 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
         [HttpDelete(APIRoutes.Friendship.Delete, Name = "DeleteFriendshipAsync")]
-        public async Task<IActionResult> DeleteAsynce([FromQuery] int FrinedshipId)
+        public async Task<IActionResult> DeleteAsynce([FromQuery] int frinedshipId)
         {
             try
             {
-                var result = await _friendshipService.Delete(FrinedshipId);
+                var result = await _friendshipService.Delete(frinedshipId);
                 if (!result)
                 {
                     return NotFound(new BaseResponse
@@ -107,7 +107,7 @@ namespace FSU.SPORTIDY.API.Controllers
         {
             try
             {
-                var result = await _friendshipService.updateStatus(reqObj.currentIDLogin, reqObj.userId2, (int)reqObj.status);
+                var result = await _friendshipService.updateStatus(reqObj.currentIdLogin, reqObj.userId2, (int)reqObj.status);
                 if (result != null)
                 {
                     return NotFound(new BaseResponse
@@ -140,10 +140,10 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
         [HttpGet(APIRoutes.Friendship.GetAll, Name = "GetFriendshipAsync")]
-        public async Task<IActionResult> GetAllAsync([FromQuery(Name = "curr-id-login")] int currIdLoginID
-           , [FromQuery(Name = "search-key")] string? searchKey
-           , [FromQuery(Name = "page-number")] int pageNumber = Page.DEFAULT_PAGE_INDEX
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
+        public async Task<IActionResult> GetAllAsync([FromQuery(Name = "currIdLogin")] int currIdLoginID
+           , [FromQuery(Name = "searchKey")] string? searchKey
+           , [FromQuery(Name = "pageNumber")] int pageNumber = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "pageSize")] int PageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
@@ -170,8 +170,8 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoleConst.PLAYER)]
-        [HttpGet(APIRoutes.Friendship.GetBy2UserId, Name = "GetBy2UserID")]
-        public async Task<IActionResult> GetAsync([FromRoute(Name = "user-id-1")] int userId1, [FromRoute(Name = "user-id-2")] int userId2)
+        [HttpGet(APIRoutes.Friendship.GetBy2UserId, Name = "GetBy2UserId")]
+        public async Task<IActionResult> GetAsync([FromRoute(Name = "userId1")] int userId1, [FromRoute(Name = "userid2")] int userId2)
         {
             try
             {
@@ -208,8 +208,8 @@ namespace FSU.SPORTIDY.API.Controllers
         }
 
         //[Authorize(Roles = UserRoles.Admin)]
-        [HttpGet(APIRoutes.Friendship.GetByID, Name = "GetFriendByID")]
-        public async Task<IActionResult> GetAsync([FromRoute(Name = "friendship-id")] int friendshipId)
+        [HttpGet(APIRoutes.Friendship.GetByID, Name = "GetFriendById")]
+        public async Task<IActionResult> GetAsync([FromRoute(Name = "friendshipId")] int friendshipId)
         {
             try
             {

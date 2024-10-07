@@ -45,6 +45,7 @@ public partial class SportidyContext : DbContext
     public virtual DbSet<UserMeeting> UserMeetings { get; set; }
     public virtual DbSet<UserToken> UserTokens { get; set; }
     public virtual DbSet<SystemFeedback> SystemFeedbacks { get; set; }
+    public virtual DbSet<Payment> Payments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -252,6 +253,15 @@ public partial class SportidyContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.PlayFields)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_PlayField_User");
+
+            entity.HasOne(c => c.PlayFieldContainer)
+                    .WithMany(c => c.ListSubPlayFields)
+                    .HasForeignKey(c => c.IsDependency);
+
+            entity.HasOne(d => d.Sport).WithMany(p => p.PlayFields)
+                .HasForeignKey(d => d.SportId)
+                .HasConstraintName("FK_PlayField_Sport");
+
         });
 
         modelBuilder.Entity<PlayFieldFeedback>(entity =>
@@ -359,6 +369,8 @@ public partial class SportidyContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.FullName)
                 .HasMaxLength(80)
+                .IsUnicode(false);
+            entity.Property(e => e.DeviceCode)
                 .IsUnicode(false);
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

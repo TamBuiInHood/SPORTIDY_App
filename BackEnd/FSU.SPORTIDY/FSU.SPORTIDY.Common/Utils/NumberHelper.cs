@@ -17,5 +17,11 @@
             return number;
         }
 
+        public static long GenerateRandomLong()
+        {
+            Guid guid = Guid.NewGuid();
+            byte[] bytes = guid.ToByteArray();
+            return BitConverter.ToInt64(bytes, 0);
+        }
     }
 }

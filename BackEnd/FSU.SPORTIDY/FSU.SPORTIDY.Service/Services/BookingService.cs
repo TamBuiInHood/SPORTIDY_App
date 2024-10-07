@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.WebSockets;
 
 namespace FSU.SPORTIDY.Service.Services
 {
@@ -42,7 +43,8 @@ namespace FSU.SPORTIDY.Service.Services
                 {
                     throw new Exception("This booking is not found");
                 }
-                _unitOfWork.BookingRepository.Delete(booking);
+                booking.Status = BookingStatusID.BOOKING_DELETED_ID;
+                _unitOfWork.BookingRepository.Update(booking);
                 var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
                 return result;
             }
@@ -160,30 +162,87 @@ namespace FSU.SPORTIDY.Service.Services
             }
         }
 
+        public async Task<PlayFieldRevenueForAdmin> GetAnnualRevenueForAdminAsync(int year)
+        {
+            var bookings = await _unitOfWork.BookingRepository.GetBookingsByYearAsync(year);
+
+            var monthlyRevenues = Enumerable.Range(1, 12)
+                .Select(month => new MonthlyRevenue
+                {
+                    Month = month,
+                    Revenue = bookings
+                        .Where(b => b.BookingDate.Value.Month == month)
+                        .Sum(b => b.Price)
+                }).ToList();
+
+            var totalRevenue = monthlyRevenues.Sum(m => m.Revenue);
+
+            return new PlayFieldRevenueForAdmin
+            {
+                Year = year,
+                MonthlyRevenues = monthlyRevenues,
+                TotalRevenue = totalRevenue
+            };
+        }
+
+        public async Task<PlayFieldRevenueResponse> GetPlayFieldRevenueAsync(int playFieldId, int year)
+        {
+            var revenues = await _unitOfWork.BookingRepository.GetRevenuesByPlayFieldAndYearAsync(playFieldId, year);
+
+            var monthlyRevenueList = Enumerable.Range(1, 12)
+                .Select(month => new MonthlyRevenue
+                {
+                    Month = month,
+                    Revenue = revenues
+                        .Where(r => (r.BookingDate ?? DateTime.Now).Month == month)
+                        .Sum(r => r.Price)
+                })
+                .ToList();
+
+            var totalRevenue = monthlyRevenueList.Sum(m => m.Revenue);
+
+            return new PlayFieldRevenueResponse
+            {
+                MonthlyRevenues = monthlyRevenueList,
+                TotalRevenue = totalRevenue
+            };
+        }
+
         public async Task<BookingModel> Insert(BookingModel entityInsert, IFormFile barCode)
         {
             try
             {
                 var booking = new Booking();
                 if (entityInsert.DateStart <= DateTime.Now ||
-                    entityInsert.DateEnd < booking.DateStart
+                    entityInsert.DateEnd < entityInsert.DateStart
                     )
                 {
                     throw new Exception("Check your booking about booking date, time starting and time endding");
                 }
+                Expression<Func<Booking, bool>> checkDuplication = x => x.DateStart >= entityInsert.DateStart && x.DateEnd >= entityInsert.DateEnd && x.PlayFieldId == entityInsert.PlayFieldId;
+                var checkExist = await _unitOfWork.BookingRepository.GetByCondition(checkDuplication);
+                if (checkExist != null)
+                {
+                    throw new Exception("This time of this playfield has booking");
+                }
+
                 _mapper.Map(entityInsert, booking);
                 // upload barcode to firebase
+                booking.BookingCode = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() ;
+
                 if (barCode != null)
                 {
-                    string fileName = Path.GetFileName(entityInsert.BookingCode);
+                    string fileName = Path.GetFileName(booking.BookingCode)!;
                     var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
                     await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).PutAsync(barCode.OpenReadStream());
                     booking.BarCode = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
                 }
-                booking.BookingCode = entityInsert.BookingCode;
                 booking.PaymentMethod = entityInsert.PaymentMethod ?? "VietQR";
                 booking.BookingDate = DateTime.Now;
                 booking.Status = BookingStatusID.BOOKING_PENDING_ID;
+                
+                // add payment here
+
                 var payment = new Payment
                 {
                     OrderCode = booking.BookingCode,
@@ -193,14 +252,6 @@ namespace FSU.SPORTIDY.Service.Services
                 };
                 booking.Payments.Add(payment);
 
-                //booking.BookingCode = entityInsert.BookingCode;
-                //booking.Price = entityInsert.Price;
-                //booking.DateStart = entityInsert.DateStart;
-                //booking.DateStart = entityInsert.DateStart;
-                //booking.BarCode = entityInsert.BarCode;
-                //booking.Description = entityInsert.Description;
-
-                // add payment here
 
                 await _unitOfWork.BookingRepository.Insert(booking);
                 var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
@@ -222,7 +273,7 @@ namespace FSU.SPORTIDY.Service.Services
             var booking = await _unitOfWork.BookingRepository.GetByCondition(x => x.BookingId == entityUpdate.BookingId);
             if (booking == null)
             {
-                return null;
+                return null!;
             }
             if (barCode != null)
             {
@@ -233,8 +284,8 @@ namespace FSU.SPORTIDY.Service.Services
 
             if (DateHelper.ValidateDates(entityUpdate.DateStart, entityUpdate.DateEnd))
             {
-                booking.DateStart = entityUpdate.DateStart.Value;
-                booking.DateEnd = entityUpdate.DateEnd.Value;
+                booking.DateStart = entityUpdate.DateStart!.Value;
+                booking.DateEnd = entityUpdate.DateEnd!.Value;
             }
             if (!entityUpdate.Description.IsNullOrEmpty())
             {
@@ -253,17 +304,48 @@ namespace FSU.SPORTIDY.Service.Services
             return null!;
         }
 
-        public async Task<BookingModel> UpdateStatus(int bookingId, int status)
+        public async Task<BookingModel> UpdateStatus(string bookingCode, int status)
         {
-            Expression<Func<Booking, bool>> filter = x => x.BookingId == bookingId;
-            var booking = await _unitOfWork.BookingRepository.GetByID(bookingId);
+            Expression<Func<Booking, bool>> filter = x => x.BookingCode == bookingCode;
+            string includeProperties = "Payments";
+            var booking = await _unitOfWork.BookingRepository.GetByCondition(filter, includeProperties);
             if (booking == null)
             {
-                return null;
+                return null!;
             }
             booking.Status = status;
-            var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
+            foreach (var item in booking.Payments.ToList())
+            {
+                item.Status = status;
+            }
+            //var payment = await _unitOfWork.PaymentRepository.GetByCondition(x => x.BookingId == bookingId);
+            _unitOfWork.BookingRepository.Update(booking);
+            var result = (await _unitOfWork.SaveAsync()) > 0 ? true : false;
             return _mapper.Map<BookingModel>(booking);
+        }
+
+        public async Task<FieldTypeResponse> GetFieldTypePercentageAsync(int year)
+        {
+            var bookings = await _unitOfWork.BookingRepository.GetPlayFieldRateInBookingByYearAsync(year);
+
+            var totalBookings = bookings.Count;
+            var totalPlayField = await _unitOfWork.PlayFieldRepository.GetAllNoPaging();
+
+            var fieldTypePercentages = bookings
+                .GroupBy(b => b.PlayField.Sport.SportName)
+                .Select(g => new FieldTypePercentage
+                {
+                    FieldTypeName = g.Key,
+                    Percentage = (g.Count() * 100.0) / totalBookings
+                })
+                .ToList();
+
+            return new FieldTypeResponse
+            {
+                TotalPlayField = totalPlayField.Count(),
+                TotalBooking = totalBookings,
+                FieldPercentages = fieldTypePercentages
+            };
         }
     }
 }

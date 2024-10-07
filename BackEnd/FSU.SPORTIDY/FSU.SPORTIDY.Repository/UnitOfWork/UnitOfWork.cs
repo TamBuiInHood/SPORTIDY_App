@@ -26,6 +26,10 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
         private PlayFieldRepository _PlayFieldRepository;
         private BookingRepository _BookingRepo;
         private PaymentRepository _PaymentRepo;
+        private NotificationRepository _NotficationRepo;
+        private CommentInMeetingRepository _CommentRepo;
+        private UserMeetingRepository _UserMeetingRepo;
+        private ImageFeldReposiotory _ImageFieldRepo;
         public UnitOfWork(SportidyContext context, IConfiguration configuration)
         {
             _context = context;
@@ -39,6 +43,7 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
             _PlayFieldRepository = new PlayFieldRepository(context);
             _PlayFieldFeedbackRepository = new PlayFieldFeedbackRepository(context);
             _SystemFeedbackRepository = new SystemFeedbackRepository(context);
+            _NotficationRepo = new NotificationRepository(context);
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync()
@@ -230,6 +235,52 @@ namespace FSU.SPORTIDY.Repository.UnitOfWork
                     this._PaymentRepo= new PaymentRepository(_context);
                 }
                 return _PaymentRepo;
+            }
+        }
+
+        public NotificationRepository NotificationRepository
+        {
+            get
+            {
+                if (_NotficationRepo == null)
+                {
+                    this._NotficationRepo = new NotificationRepository(_context);
+                }
+                return _NotficationRepo;
+            }
+        }
+        public CommentInMeetingRepository CommentRepository
+        {
+            get
+            {
+                if (_CommentRepo == null)
+                {
+                    this._CommentRepo = new CommentInMeetingRepository(_context);
+                }
+                return _CommentRepo;
+            }
+        }
+        public UserMeetingRepository UserMeetingRepository
+        {
+            get
+            {
+                if (_UserMeetingRepo == null)
+                {
+                    this._UserMeetingRepo = new UserMeetingRepository(_context);
+                }
+                return _UserMeetingRepo;
+            }
+        }
+
+        public ImageFeldReposiotory ImageFieldRepository
+        {
+            get
+            {
+                if (_ImageFieldRepo == null)
+                {
+                    this._ImageFieldRepo = new ImageFeldReposiotory(_context);
+                }
+                return _ImageFieldRepo;
             }
         }
     }
