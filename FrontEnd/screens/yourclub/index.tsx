@@ -1,4 +1,5 @@
 import React from 'react';
+import SearchBar from '@/components/SearchBar';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList   
