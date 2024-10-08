@@ -1,45 +1,64 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
+interface Club {
+  clubId: number;
+  clubName: string;
+  avatarClub: string;
+  totalMember: number;
+  mainSport: string;
+  location: string;
+  // ...thêm các thuộc tính khác nếu cần
+}
 
-const ClubItem = ({ club }: {club: any}) => { //  Đảm bảo đúng kiểu dữ liệu cho club
+const ClubItem: React.FC<{ club: Club; onPress: () => void }> = ({ club, onPress }) => {
     return (
-        <View style={styles.container}>
-            <Image source={{ uri: club.image }} style={styles.image} />
-            <View style = {styles.clubInfo}>
-              <Text style={styles.name}>{club.name}</Text>
-              <Text >Members: {club.members}</Text> {/* Hiển thị số lượng thành viên */}
-              <Text>Main Sport: {club.mainSport}</Text> {/* Hiển thị môn thể thao chính */}
-              <Text >Location: {club.location}</Text> {/* Hiển thị địa điểm */}
-              {/* Hiển thị các thông tin khác của club */}
-             </View>
+      <TouchableOpacity onPress={onPress} style={styles.container}>
+        <Image
+          source={{ uri: club.avatarClub }}
+          style={styles.image}
+          onError={(error) => console.error('Error loading image:', error)} // Xử lý lỗi ảnh
+          defaultSource={require('../assets/images/placehoder.png')} // Hiển thị placeholder
+        />
+        <View style={styles.info}>
+          <Text style={styles.name}>{club.clubName}</Text>
+          {/* ... other club details */}
         </View>
+      </TouchableOpacity>
     );
-};
-
-const styles = StyleSheet.create({
-    container:{
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
-
+  };
+  
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: 'white',
+      marginBottom: 8,
+      borderRadius: 8,
+      // ... other styles
     },
     image: {
-        width: 50,
-        height: 50,
-        marginRight: 10,
-        borderRadius: 25,
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      marginRight: 12,
     },
-    clubInfo: {
-       flex: 1,
+    info: {
+        justifyContent: 'center'
+  
+  
     },
+    name: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+  
+  infoText: {
+    fontSize: 14,
+    color: '#666',
+  },
+});
 
-    name:{
-        fontSize: 16,
-        fontWeight: 'bold',
 
-    },
-})
 export default ClubItem;

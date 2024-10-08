@@ -27,22 +27,10 @@ import PlayFieldDetailCard from '@/screens/playFieldDetail';
 import PlayfieldList from '@/screens/playField';
 import CreatePlayfield from '@/screens/createPlayField';
 import UpdatePlayField from '@/screens/updatePlayField';
-import ViewAllClubsScreen from '@/screens/Club/ViewAllClubsScreen';
-import YourClubScreen from '@/screens/Club/YourClubScreen';
-import ClubDetailScreen from '@/screens/Club//ClubDetailScreen';
-SplashScreen.preventAutoHideAsync();
-const ClubStack = createNativeStackNavigator();
+import ClubStackScreens from '@/components/navigation/ClubStackScreen'; 
 
-// Component ClubStack
-function ClubStackScreens() {
-    return (
-        <ClubStack.Navigator>
-            <ClubStack.Screen name="ViewAllClubs" component={ViewAllClubsScreen} options={{ title: "All Club" }} />
-            <ClubStack.Screen name="YourClub" component={YourClubScreen} options={{ title: "Your Club" }} />
-            <ClubStack.Screen name="ClubDetail" component={ClubDetailScreen} options={{ title: "Club Detail" }} />
-        </ClubStack.Navigator>
-    );
-}
+
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -64,7 +52,7 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true} >
+      <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true}>
         <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Splash" component={SplashScreenComponent} />
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -82,11 +70,11 @@ export default function RootLayout() {
           <Stack.Screen name="HistoryDetail" component={BookingDetail} />
           <Stack.Screen name="FeedBack" component={FeedbackPage} />
           <Stack.Screen name="(ownertabs)" component={OwnerTabLayout} options={{ headerShown: false }} />
-          <Stack.Screen name= "PlayfieldDetailCard" component={PlayFieldDetailCard}/>
-          <Stack.Screen name= "PlayFieldList" component={PlayfieldList}/>
-          <Stack.Screen name= "CreatePlayfield" component={CreatePlayfield}/>
-          <Stack.Screen name= "UpdatePlayfield" component={UpdatePlayField}/>
-
+          <Stack.Screen name="PlayfieldDetailCard" component={PlayFieldDetailCard} />
+          <Stack.Screen name="PlayFieldList" component={PlayfieldList} />
+          <Stack.Screen name="CreatePlayfield" component={CreatePlayfield} />
+          <Stack.Screen name="UpdatePlayfield" component={UpdatePlayField} />
+          <Stack.Screen name="Club" component={ClubStackScreens} options={{ headerShown: false }} /> {/* Thêm màn hình ClubStack */}
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>

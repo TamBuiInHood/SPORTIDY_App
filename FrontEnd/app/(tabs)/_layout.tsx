@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import account from './account';
-import YourMeeting from './club';
+import ClubTabs from './club';
 import CreateMeetScreen from './create';
 import BookingScreen from './booking';
 import HomeScreen from '.';
@@ -73,7 +73,7 @@ const TabLayout: React.FC = () => {
       />
       <Tab.Screen
         name="club"
-        component={YourMeeting}
+        component={ClubTabs}
         options={{
           title: 'Club',
           tabBarIcon: ({ color, focused, size }) => (

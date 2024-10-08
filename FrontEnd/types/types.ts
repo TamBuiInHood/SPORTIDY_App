@@ -113,20 +113,6 @@ export interface MeetingDetail {
   commentInMeetings?: any[]; // Thay đổi kiểu nếu cần
 }
 
-export interface Club {
-  clubId: number,
-  clubName: string,
-  clubCode: string,
-  regulation: string,
-  information: string,
-  slogan: string,
-  mainSport: string,
-  createDate: string,
-  location: string,
-  totalMember: number,
-  avatarClub: string,
-  coverImageClub: string
-}
 
 export interface Comment{
   commentId: number,
@@ -143,4 +129,19 @@ export interface Sport {
   sportCode: string;
   sportName: string;
   sportImage: string;
+}
+interface Club {
+  clubId: number;
+  clubCode: string;
+  clubName: string;
+  regulation: string;
+  information: string;
+  slogan: string;
+  mainSport: string;
+  createDate: string;
+  location: string;
+  totalMember: number;
+  avatarClub: string;
+  coverImageClub: string;
+  listMember: any[]; 
 }
