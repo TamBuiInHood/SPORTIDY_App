@@ -27,8 +27,23 @@ import PlayFieldDetailCard from '@/screens/playFieldDetail';
 import PlayfieldList from '@/screens/playField';
 import CreatePlayfield from '@/screens/createPlayField';
 import UpdatePlayField from '@/screens/updatePlayField';
-
+import ViewAllClubsScreen from '@/screens/Club/ViewAllClubsScreen';
+import YourClubScreen from '@/screens/Club/YourClubScreen';
+import ClubDetailScreen from '@/screens/Club//ClubDetailScreen';
 SplashScreen.preventAutoHideAsync();
+const ClubStack = createNativeStackNavigator();
+
+// Component ClubStack
+function ClubStackScreens() {
+    return (
+        <ClubStack.Navigator>
+            <ClubStack.Screen name="ViewAllClubs" component={ViewAllClubsScreen} options={{ title: "All Club" }} />
+            <ClubStack.Screen name="YourClub" component={YourClubScreen} options={{ title: "Your Club" }} />
+            <ClubStack.Screen name="ClubDetail" component={ClubDetailScreen} options={{ title: "Club Detail" }} />
+        </ClubStack.Navigator>
+    );
+}
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootLayout() {
