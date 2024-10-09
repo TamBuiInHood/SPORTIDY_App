@@ -27,6 +27,7 @@ import PlayFieldDetailCard from '@/screens/playFieldDetail';
 import PlayfieldList from '@/screens/playField';
 import CreatePlayfield from '@/screens/createPlayField';
 import UpdatePlayField from '@/screens/updatePlayField';
+import HomeScreen from './(tabs)';
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -72,6 +73,7 @@ export default function RootLayout() {
           <Stack.Screen name= "CreatePlayfield" component={CreatePlayfield}/>
           <Stack.Screen name= "UpdatePlayfield" component={UpdatePlayField}/>
           <Stack.Screen name= "BookingDetail" component={BookingDetail}/>
+          <Stack.Screen name= "HomeScreen" component={HomeScreen}/>
 
         </Stack.Navigator>
       </NavigationContainer>

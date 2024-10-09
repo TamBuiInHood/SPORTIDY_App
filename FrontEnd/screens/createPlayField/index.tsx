@@ -25,10 +25,15 @@ const UpdatePlayField = () => {
       quality: 1,
     });
     if (!result.canceled) {
-      setImage(result.uri);
+      console.log('Người dùng đã chọn hình ảnh:', result);
+      if (result.assets && result.assets.length > 0) {
+        console.log('Hình ảnh đã được upload:', result.assets[0].uri);
+        setPhotos([...photos, result.assets[0].uri]);
+      } else {
+        console.log('Người dùng không chọn hình ảnh');
+      }
     }
   };
-
 
   const handleSubmit = () => {
     // Logic to handle the form submission
@@ -105,8 +110,10 @@ const UpdatePlayField = () => {
             <Ionicons name="image-outline" size={24} color="#ff951d" />
             <Text>Add photo</Text>
           </TouchableOpacity>
+          {photos.map((photo, index) => (
+            <Image key={index} source={{ uri: photo }} style={styles.mediaPreview} />
+          ))}
         </View>
-        {image && <Image source={{ uri: image }} style={styles.mediaPreview} />}
 
         <Text style={styles.title}>Bank Cards</Text>
         <TextInput
@@ -154,6 +161,7 @@ const styles = StyleSheet.create({
   scrollcontainer: {
     flex: 1,
     backgroundColor: '#fff',
+    marginBottom: 70
   },
   infor: {
     padding: 15,

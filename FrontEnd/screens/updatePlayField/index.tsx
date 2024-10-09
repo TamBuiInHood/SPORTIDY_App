@@ -116,7 +116,8 @@ const UpdatePlayField = () => {
         <TextInput
           style={styles.input}
           placeholder={currency}
-          editable={false}
+          value={currency}
+          editable={true}
         />
 
         {/* Hiển thị địa chỉ */}
@@ -228,6 +229,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  header: {
+    paddingTop: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
+    padding: 10
+  },
+  gradient: {
+    width: '100%',
+    alignItems: 'center',
   },
 });
 

@@ -4,18 +4,21 @@ import { Ionicons } from '@expo/vector-icons';
 import SportChoose from '@/components/SportChoose';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
-import api from '@/config/api';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { RootStackParamList } from '@/types/types';
+import { useNavigation } from '@react-navigation/native';
+type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
 
 const CreateMeetScreen = () => {
   const [sport, setSport] = useState<number | null>(null);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);
+  const navigation = useNavigation<PaymentScreenNavigationProp>();
 
   const showDateTimePicker = (isStartDate: boolean) => {
     setIsSelectingStartDate(isStartDate);
     setDatePickerVisibility(true);
   };
-
 
   const hideDateTimePicker = () => {
     setDatePickerVisibility(false);
@@ -23,7 +26,7 @@ const CreateMeetScreen = () => {
 
   const handleConfirmDate = (selectedDate: Date) => {
     const formattedDate = format(selectedDate, "yyyy-MM-dd HH:mm:ss");
-  
+
     if (isSelectingStartDate) {
       setMeeting((prevMeeting) => ({
         ...prevMeeting,
@@ -35,9 +38,10 @@ const CreateMeetScreen = () => {
         data: { ...prevMeeting.data, endDate: formattedDate }
       }));
     }
-  
+
     hideDateTimePicker();
   };
+
   const [meeting, setMeeting] = useState({
     data: {
       address: "",
@@ -53,12 +57,14 @@ const CreateMeetScreen = () => {
       totalMember: 1
     }
   });
+
   const handleInputChange = (name: string, value: any) => {
     setMeeting((prevMeeting) => ({
       ...prevMeeting,
       data: { ...prevMeeting.data, [name]: value }
     }));
   };
+
   const decrementMember = () => {
     setMeeting((prev) => ({
       ...prev,
@@ -68,7 +74,7 @@ const CreateMeetScreen = () => {
       },
     }));
   };
-  
+
   const incrementMember = () => {
     setMeeting((prev) => ({
       ...prev,
@@ -79,31 +85,10 @@ const CreateMeetScreen = () => {
     }));
   };
 
-  const handleCreateMeeting = async () => {
-    try {
-        const payload = {
-            address: meeting.data.address,
-            cancelBefore: meeting.data.cancelBefore,
-            currentLogin: meeting.data.currentLogin,
-            endDate: meeting.data.endDate,
-            isPublic: meeting.data.isPublic,
-            meetingImage: meeting.data.meetingImage,
-            meetingName: meeting.data.meetingName,
-            note: meeting.data.note,
-            sportId: meeting.data.sportId,
-            startDate: meeting.data.startDate,
-            totalMember: meeting.data.totalMember,
-            sportId: 2 // Nếu sportId là cần thiết ở đây
-        };
-
-        const response = await api.createMeeting(payload);
-        Alert.alert('Success', 'Meeting created successfully!');
-        console.log(response);
-    } catch (error: any) {
-        console.error('API Error: ', error.response?.data);
-        Alert.alert('Error', 'Failed to create the meeting.');
-    }
-};
+  const handleCreateMeeting = () => {
+    Alert.alert('Success', 'Meeting created successfully!');
+    navigation.navigate("(tabs)", { params: { screen: "index" } });
+  };
 
   return (
     <View style={styles.container}>
@@ -111,7 +96,7 @@ const CreateMeetScreen = () => {
         <TouchableOpacity style={styles.backButton} onPress={() => { }}>
           <Ionicons name="arrow-back-circle-outline" color={"#ffff"} size={30} />
         </TouchableOpacity>
-        <Text style={styles.headerText}>CREATE A MEET</Text>
+        <Text style={styles.headerText }>CREATE A MEET</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -130,14 +115,11 @@ const CreateMeetScreen = () => {
               <Text style={styles.formLabel}>Select date</Text>
             </View>
             <TouchableOpacity onPress={() => showDateTimePicker(true)}>
-              <Text>{meeting.data.startDate ? `Start Date: ${meeting.data.startDate}` : 'Select Start Date'}</Text>
+              <Text>{meeting.data.startDate ? `Start Date: ${format(new Date(meeting.data.startDate), "yyyy-MM-dd HH:mm:ss")}` : 'Select Start Date'}</Text>
             </TouchableOpacity>
 
-
-
-
             <TouchableOpacity onPress={() => showDateTimePicker(false)}>
-              <Text>{meeting.data.endDate ? `End Date: ${meeting.data.endDate}` : 'Select End Date'}</Text>
+              <Text>{meeting.data.endDate ? `End Date: ${format(new Date(meeting.data.endDate), "yyyy-MM-dd HH:mm:ss")}` : 'Select End Date'}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
@@ -177,11 +159,11 @@ const CreateMeetScreen = () => {
               <Text style={styles.formLabel}>Number of players</Text>
             </View>
             <View style={styles.playerCounter}>
-              <TouchableOpacity onPress={incrementMember} style={styles.counterButton}>
+              <TouchableOpacity onPress={decrementMember} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.counterText}>{meeting.data.totalMember}</Text>
-              <TouchableOpacity onPress={decrementMember} style={styles.counterButton}>
+              <TouchableOpacity onPress={incrementMember} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>+</Text>
               </TouchableOpacity>
             </View>

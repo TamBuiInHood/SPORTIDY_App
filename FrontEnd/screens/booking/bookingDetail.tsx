@@ -24,10 +24,11 @@ const DetailBookingPage: React.FC = () => {
     if (playfields) {
       navigation.navigate('BookingInformationPage', {
         playFieldId: playfields.playFieldId,
-        playFieldName: playfields.playFieldName,
-        price: 120000,
-        address: playfields.address,
-      });
+        playfieldName: playfields.playFieldName,  // Pass playfieldName
+        address: playfields.address,              // Pass address
+        price: playfields.price,
+        image: playfields.avatarImage,
+      })
     } else {
       console.error('Playfields data is not available');
     }

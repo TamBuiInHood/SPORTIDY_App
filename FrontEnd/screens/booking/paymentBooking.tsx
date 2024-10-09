@@ -41,7 +41,7 @@ const PaymentSuccessPage: React.FC = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={{ uri: 'https://i.pinimg.com/originals/a2/f4/70/a2f4707d5c9f54e1d67be007d25ff3a4.png' }}
+        source={{ uri: 'https://cdn-icons-png.flaticon.com/512/5290/5290058.png' }}
         style={styles.checkmark}
       />
       <Text style={styles.successText}>Your payment was successful!</Text>
@@ -85,18 +85,23 @@ const PaymentSuccessPage: React.FC = () => {
           bookings: [
             {
               invoiceNumber: bookingCode,
-              playfieldName: "Football playfields",
-              address: "30 Tháng 4, Phú Thọ, Thủ Dầu Một, Bình Dương",
+              playfieldName,
+              location,
               time: time,
               status: 'Not yet', // Initially set as 'Not yet'
-              date: dateStart-dateEnd, // You can format it as needed
               price: totalPrice,
+              dateStart: dateStart,  // Pass dateStart
+              dateEnd: dateEnd,
             },
             // Add more booking items as needed
           ],
         })
         }>
         <Text style={styles.returnButtonText}>My Booking</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.returnButton}
+      onPress={() => navigation.navigate('HomeScreen')}>
+        <Text style={styles.returnButtonText}>Return</Text>
       </TouchableOpacity>
     </View>
   );
@@ -108,6 +113,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     alignItems: 'center',
+    paddingTop: 40
   },
   checkmark: {
     width: 100,

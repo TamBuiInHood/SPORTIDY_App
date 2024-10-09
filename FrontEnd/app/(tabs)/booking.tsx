@@ -49,7 +49,7 @@ const BookingScreen: React.FC = () => {
   const bestPlayfields = playfields
     .sort((a, b) => a.price - b.price)
     .slice(0, 3);
-  const nearestPlayfields = playfields.filter(playfield => playfield.address.includes("Hanoi"));
+  const nearestPlayfields = playfields.filter(playfield => playfield.address.includes("Phú Giáo"));
   const renderPlayfields = (playfields: PlayField[]) => (
     <FlatList
       data={playfields}

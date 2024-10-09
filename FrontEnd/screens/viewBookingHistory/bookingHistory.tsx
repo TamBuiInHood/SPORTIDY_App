@@ -3,32 +3,40 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
 import { RootStackParamList } from '@/types/types';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "MyHistory">;
 
-const MyHistory: React.FC = ({ route }) => {
+const MyHistory: React.FC = ({ route: any }) => {
     const navigation = useNavigation<PaymentScreenNavigationProp>();
-
+    const route = useRoute();
+    const formatTime = (date: string) => {
+        const parsedDate = new Date(date);
+        return parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      };
+    // Access bookings from route params and safely handle undefined
+    const passedBookings = route.params?.bookings || [];
     const fakeBookings = [
         {
-            playfieldName: 'Stadium A',
-            invoiceNumber: 'INV001',
-            address: '123 Main St, City',
-            time: '10:00 AM - 12:00 PM',
+            playfieldName: 'Sân cầu lông Hòa Bình',
+            invoiceNumber: '4327878',
+            address: 'Dĩ An, Bình Dương',
+            dateStart: "2024-09-20T15:30:00",
+            dateEnd: "2024-09-20T16:30:00",
             price: 100000,
             status: 'Used',
         },
         {
-            playfieldName: 'Stadium B',
-            invoiceNumber: 'INV002',
-            address: '456 Another St, City',
-            time: '01:00 PM - 03:00 PM',
+            playfieldName: 'Bóng chuyền Xuân Thủy',
+            invoiceNumber: '843948',
+            address: '123 Linh Trung, Thủ Đức',
+            dateStart: "2024-10-09T10:30:00",
+            dateEnd: "2024-10-09T11:30:00",
             price: 200000,
             status: 'Cancel',
         },
     ];
-    const allBookings = [...fakeBookings];
+    const allBookings = [...passedBookings, ...fakeBookings];
 
     const renderBookingItem = ({ item }: { item: any }) => { // Sửa ở đây
         let statusColor;
@@ -52,7 +60,7 @@ const MyHistory: React.FC = ({ route }) => {
                 <Text style={styles.playfieldName}>{item.playfieldName}</Text>
                 <Text>Invoice Number: {item.invoiceNumber}</Text>
                 <Text>Address: {item.address}</Text>
-                <Text>Time: {item.time}</Text>
+                <Text>Time: {formatTime(item.dateStart)} - {formatTime(item.dateEnd)}</Text>
                 <View style={styles.priceContainer}>
                     <Text style={styles.price}>Price: {item.price.toLocaleString()} VND</Text>
                 </View>

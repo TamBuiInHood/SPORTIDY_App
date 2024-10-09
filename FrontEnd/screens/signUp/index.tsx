@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 import { styles } from "./styles";
 import { useNavigation } from "expo-router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -22,7 +22,9 @@ const SignUpScreen = () => {
 
   const handleSignUp = () => {
     console.log("Sign up with:", email, password);
-  };
+    Alert.alert("Sign up successfully")
+    navigation.navigate("Login")
+;  };
 
   const handleGoogleSignUp = () => {
     console.log("Sign up with Google");

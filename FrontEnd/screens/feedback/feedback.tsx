@@ -3,6 +3,10 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Switch, Image, Ale
 import { Ionicons } from '@expo/vector-icons';
 import { AirbnbRating } from 'react-native-ratings';
 import * as ImagePicker from 'expo-image-picker'; // Thư viện tải ảnh/video
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { RootStackParamList } from '@/types/types';
+type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
 
 const FeedbackPage: React.FC = ({ route }) => {
     const { booking } = route.params;
@@ -13,6 +17,7 @@ const FeedbackPage: React.FC = ({ route }) => {
     const [showAccountName, setShowAccountName] = useState(true);
     const [image, setImage] = useState(null);
     const [video, setVideo] = useState(null);
+    const navigation = useNavigation<PaymentScreenNavigationProp>();
 
 
     // Hàm tải hình ảnh
@@ -43,7 +48,7 @@ const FeedbackPage: React.FC = ({ route }) => {
     // Hàm xử lý gửi feedback
     const handleSubmitFeedback = () => {
         Alert.alert('Feedback Sent!', 'Thank you for your feedback.');
-        // Logic gửi feedback lên server...
+        navigation.navigate("(tabs)", { params: { screen: "index" } });
     };
 
     return (
@@ -61,7 +66,7 @@ const FeedbackPage: React.FC = ({ route }) => {
                 </View>
 
                 <Text style={styles.invoiceNumber}>Invoice Number: {booking.invoiceNumber}</Text>
-                <Text style={styles.address}>Address: {booking.address}</Text>
+                <Text style={styles.address}>Address: {booking.location}</Text>
                 <Text style={styles.price}>Price: {booking.price.toLocaleString()} VND</Text>
             </View>
 

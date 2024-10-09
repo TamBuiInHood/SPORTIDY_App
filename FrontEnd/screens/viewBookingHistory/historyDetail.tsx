@@ -18,6 +18,10 @@ const BookingDetail: React.FC = ({ route }) => {
   Price: ${booking.price.toLocaleString()} VND
   Status: ${booking.status}
 `;
+const formatTime = (date: string) => {
+  const parsedDate = new Date(date);
+  return parsedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
 const handleFeedbackPress = () => {
   navigation.navigate('FeedBack',{booking}); // Điều hướng đến FeedbackPage
 };
@@ -37,12 +41,12 @@ const handleFeedbackPress = () => {
 
       <View style={styles.detailItem}>
         <Text style={styles.detailLabel}>Address:</Text>
-        <Text style={styles.detailValue}>{booking.address}</Text>
+        <Text style={styles.detailValue}>{booking.location}</Text>
       </View>
 
       <View style={styles.detailItem}>
         <Text style={styles.detailLabel}>Time:</Text>
-        <Text style={styles.detailValue}>{booking.time}</Text>
+        <Text style={styles.detailValue}> {formatTime(booking.dateStart)} - {formatTime(booking.dateEnd)}</Text>
       </View>
 
       <View style={styles.detailItem}>

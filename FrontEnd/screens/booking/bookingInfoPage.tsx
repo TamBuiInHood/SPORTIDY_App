@@ -4,18 +4,18 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ProgressBar from '@/components/ProgressBar';
 import { RadioButton } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import { RootStackParamList } from '@/types/types';
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
-
 type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
 
 const { width } = Dimensions.get('window');
 
 const BookingInformationPage: React.FC = () => {
+  const route = useRoute();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Transfer');
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState('1');
@@ -24,7 +24,7 @@ const BookingInformationPage: React.FC = () => {
   const qrCodeRef = useRef<QRCode | null>(null);
   const totalPrice = 120000 * parseInt(selectedTime);
   const navigation = useNavigation<PaymentScreenNavigationProp>();
-
+  const { playfieldName, address, image, price } = route.params;  
   const timeOptions = [
     { label: '1h', value: '1' },
     { label: '2h', value: '2' },
@@ -36,84 +36,56 @@ const BookingInformationPage: React.FC = () => {
     setDate(currentDate);
   };
 
+ 
   const handlePlaceOrder = async () => {
-    const generatedBookingCode = `BOOK-${new Date().getTime()}`;
-    setBookingCode(generatedBookingCode); // Set bookingCode to state
-   
-    const qrCodeData = await new Promise<string>((resolve, reject) => {
-      qrCodeRef.current?.toDataURL((dataURL: any) => {
-        if (dataURL) {
-          resolve(dataURL); // QR code as a base64 string
-        } else {
-          reject(new Error('Failed to generate QR code'));
-        }
-      });
-    });
     try {
-      // Step 1: Create booking
-      const bookingData = {
-        price: totalPrice, // Pass the price
-        dateStart: date.toISOString(), // Convert start date to ISO string
-        dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(), // Calculate and pass end date
-        barCode: qrCodeData, // Ensure to provide a valid barcode
-        playFieldId: 1, // Ensure playFieldId is a valid positive number
-        customerId: 1, // Provide valid customer ID
-      };
-
-      const bookingResponse = await axios.post(
-        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings',
-        bookingData
-      );
-
-      console.log('Booking API Response:', bookingResponse.data);
-
-      // Step 2: Get booking by booking ID
-      const bookingId = bookingResponse.data.id;
-      const getBookingResponse = await axios.get(
-        `https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings/${bookingId}`
-      );
-
-      console.log('Get Booking API Response:', getBookingResponse.data);
-
-      // Step 3: Create payment link
-      const paymentData = {
-        bookingCode: bookingCode,
-        amount: totalPrice,
-        description: "Booking Football Field",
-        buyerName: "John Doe",
-        buyerPhone: "0123456789",
-        userId: "user123",
-        playfieldName: "Football playfields",
-        playfieldId: 1,
-        hour: parseInt(selectedTime),
-      };
-
-      const paymentResponse = await axios.post(
-        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/payment/create-payment-link',
-        paymentData
-      );
-
-      console.log('Payment API Response:', paymentResponse.data);
-
-      // Step 4: Check and open payment link
-      if (paymentResponse.data?.data?.checkoutUrl) {
-        const checkoutUrl = paymentResponse.data.data.checkoutUrl;
-
-        // Open payment link in the default browser
-        await Linking.openURL(checkoutUrl);
-
-        // Step 5: Navigate to PaymentBookingPage with booking details
-        navigation.navigate('PaymentBooking', {
-          bookingCode: getBookingResponse.data.bookingCode,
-          totalPrice: totalPrice,
-          dateStart: date.toISOString(),
-          dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(),
-          playfieldName: "Football playfields",
-          location: "30 Tháng 4, Phú Thọ, Thủ Dầu Một, Bình Dương",
-          time: selectedTime,
-        });
-      } else {
-        Alert.alert('Error', 'Failed to retrieve payment URL.');
+      // Step 1: Generate a booking code
+      const randomCode = Math.floor(100000000 + Math.random() * 900000000).toString();
+      setBookingCode(randomCode);
+  
+      // Wait for bookingCode to update in state
+      if (randomCode) {
+        // Step 2: Create payment link
+        const paymentData = {
+          bookingCode: randomCode, // Use the generated randomCode
+          amount: price,
+          description: "Booking Football Field",
+          buyerName: "User",
+          buyerPhone: "0123456789",
+          userId: "user123",
+          playfieldName,
+          playfieldId: 1,
+          address,
+          hour: parseInt(selectedTime),
+        };
+  
+        const paymentResponse = await axios.post(
+          'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/payment/create-payment-link',
+          paymentData
+        );
+  
+        console.log('Payment API Response:', paymentResponse.data);
+  
+        // Step 3: Check and open payment link
+        if (paymentResponse.data?.data?.checkoutUrl) {
+          const checkoutUrl = paymentResponse.data.data.checkoutUrl;
+  
+          // Open payment link in the default browser
+          await Linking.openURL(checkoutUrl);
+  
+          // Step 4: Navigate to PaymentBookingPage with booking details
+          navigation.navigate('PaymentBooking', {
+            bookingCode: randomCode, // Pass the correct booking code
+            totalPrice: price,
+            dateStart: date.toISOString(),
+            dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(),
+            playfieldName ,// Pass here
+            location: address,
+            time: selectedTime,
+          });
+        } else {
+          Alert.alert('Error', 'Failed to retrieve payment URL.');
+        }
       }
     } catch (error: any) {
       console.error('Error during booking or payment:', error.response?.data || error.message);
@@ -124,10 +96,10 @@ const BookingInformationPage: React.FC = () => {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Booking Information</Text>
       <ProgressBar currentStep={2} />
-      <Image source={{ uri: 'https://i.pinimg.com/564x/c0/1d/86/c01d86793f036692c821472575d16809.jpg' }} style={styles.fieldImage} />
-      <Text style={styles.fieldName}>Football playfields</Text>
-      <Text style={styles.price}>120,000đ / hour</Text>
-      <Text style={styles.location}>Location: 30 Tháng 4, Phú Thọ, Thủ Dầu Một, Bình Dương</Text>
+      <Image source={{uri: image}} style={styles.fieldImage} />
+      <Text style={styles.fieldName}>{playfieldName}</Text>
+      <Text style={styles.price}>{price}/hours</Text>
+      <Text style={styles.location}>{address}</Text>
 
       <View style={styles.inputContainer}>
         <View style={styles.row}>
@@ -172,19 +144,11 @@ const BookingInformationPage: React.FC = () => {
         />
       </View>
 
-      <Text style={styles.totalPrice}>Total price: {totalPrice.toLocaleString()} VND</Text>
+      <Text style={styles.totalPrice}>Total price: {price.toLocaleString()} VND</Text>
 
       <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder}>
         <Text style={styles.orderButtonText}>Place Order</Text>
       </TouchableOpacity>
-      {bookingCode ? (
-        <QRCode
-          value={bookingCode}
-          getRef={(ref) => (qrCodeRef.current = ref)}  // Store the reference to QRCode component
-        />
-      ) : (
-        <Text style={styles.qrPlaceholder}>QR code will be generated after placing the order.</Text>
-      )}
     </ScrollView>
   );
 };

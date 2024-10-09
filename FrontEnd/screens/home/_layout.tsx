@@ -15,7 +15,7 @@ const EventDetailScreen = () => {
     const [activeTab, setActiveTab] = useState<'details' | 'discussion'>('details');
     const [meeting, setMeeting] = useState<Card | null>(null);
     const [club, setClub] = useState<Club | null>(null);
-    const [userId, setUserId] = useState(3);
+    const [userId, setUserId] = useState(6);
 
     useEffect(() => {
         const fetchMeeting = async () => {
@@ -41,7 +41,7 @@ const EventDetailScreen = () => {
             return;
         }
         try {
-            const response = await api.joinMeeting(userId, meeting.clubId, meeting.meetingId);
+            const response = await api.joinMeeting(7, meeting.clubId, meeting.meetingId);
             console.log('Successfully joined the meeting:', response.data);
             setJoined(true); 
         } catch (error) {
