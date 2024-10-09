@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { styles } from "./styles";
 import { useNavigation } from "expo-router";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -79,6 +79,10 @@ const SignUpScreen = () => {
           style={styles.googleButton}
           onPress={handleGoogleSignUp}
         >
+           <Image
+            source={{ uri: 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png' }}
+            style={styles.googleIcon}
+          />
           <Text style={styles.googleButtonText}>Google</Text>
         </TouchableOpacity>
 

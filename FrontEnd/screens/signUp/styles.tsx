@@ -84,6 +84,9 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     marginVertical: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+
   },
   googleButtonText: {
     color: "black",
@@ -92,4 +95,10 @@ export const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+
 });

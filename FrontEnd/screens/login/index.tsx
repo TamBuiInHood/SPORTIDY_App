@@ -14,6 +14,7 @@ import { RootStackParamList } from "../../types/types";
 import { styles } from "./style";
 import Divider from "@/components/Divider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import frameImage from '../../assets/images/frame.png'
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -32,14 +33,14 @@ const LoginScreen = () => {
     const foundUser = users.find(
       (user) => user.email === email && user.password === password
     );
-  
+
     if (foundUser) {
       try {
         await AsyncStorage.setItem("userEmail", email);
         await AsyncStorage.setItem("userRole", foundUser.role);
-  
+
         console.log("User role:", foundUser.role);
-  
+
         if (foundUser.role === "user") {
           navigation.navigate("(tabs)", { params: { screen: "index" } });
         } else if (foundUser.role === "owner") {
@@ -61,9 +62,7 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={{
-          uri: "https://s3-alpha-sig.figma.com/img/a57f/2358/7f201ed585301973b901bcaafac36cf3?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=NhxKsVxUY48dy6g8cHwviS~qvuV~cRLj06pqPxDrahzQYxwQ-5V4Jn4i4PaFWhmMhNB1QpRLFF~BjHvyQSEFcilmj1UxMC--8yJizzeLRQXBLWtO69Eq2FQ6wne4zxKRkgArl2M2XOilZ~17S5YVsHQ~DX-E2NQuooPlCJmulNqw7lJcZHNkXPSBs3GB6GFt8BrKA-r64wFA4Gc8qIial2OQ~pk-h~XR1ZgZrw5s2aWNubXUI9ER5-80FhAmxSxFRls8W9Rs5cgpnXe~ZgDLWytEpNgOiuekiFWzwYUuYgRK7Ox6w6pyQ00DQ40FuFeSH6scAMoMZEHCmCseU-LrpQ__",
-        }}
+        source={frameImage}
         style={styles.logo}
       />
       <LinearGradient colors={["#F9BC2C", "#F74c06"]} style={styles.form}>
@@ -103,7 +102,10 @@ const LoginScreen = () => {
           style={styles.googleButton}
           onPress={handleGoogleLogin}
         >
-          {/* <Image source={} style={styles.googleIcon}/>*/}
+          <Image
+            source={{ uri: 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png' }}
+            style={styles.googleIcon}
+          />
           <Text style={styles.googleButtonText}>Google</Text>
         </TouchableOpacity>
 
