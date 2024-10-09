@@ -88,9 +88,9 @@ const PaymentSuccessPage: React.FC = () => {
               playfieldName,
               location,
               time: time,
-              status: 'Not yet', // Initially set as 'Not yet'
+              status: 'Not yet', 
               price: totalPrice,
-              dateStart: dateStart,  // Pass dateStart
+              dateStart: dateStart,  
               dateEnd: dateEnd,
             },
             // Add more booking items as needed
@@ -100,7 +100,7 @@ const PaymentSuccessPage: React.FC = () => {
         <Text style={styles.returnButtonText}>My Booking</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.returnButton}
-      onPress={() => navigation.navigate('HomeScreen')}>
+      onPress={() => navigation.navigate('(tabs)')}>
         <Text style={styles.returnButtonText}>Return</Text>
       </TouchableOpacity>
     </View>

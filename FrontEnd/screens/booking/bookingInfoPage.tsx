@@ -98,7 +98,7 @@ const BookingInformationPage: React.FC = () => {
       <ProgressBar currentStep={2} />
       <Image source={{uri: image}} style={styles.fieldImage} />
       <Text style={styles.fieldName}>{playfieldName}</Text>
-      <Text style={styles.price}>{price}/hours</Text>
+      <Text style={styles.price}>{price  * parseInt(selectedTime)}/hours</Text>
       <Text style={styles.location}>{address}</Text>
 
       <View style={styles.inputContainer}>
