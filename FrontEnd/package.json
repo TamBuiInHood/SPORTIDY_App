@@ -1,5 +1,45 @@
 {
-  "name": "newapp",
+  "expo": {
+    "name": "SPORTIDY",
+    "slug": "SPORTIDY",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.sportidy.play",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "20ff2221-4189-4ccf-8204-c871fe041897"
+      }
+    }
+  },
+  "name": "SPORTIDY",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -36,11 +76,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
-    "react-native-camera": "^4.2.1",
     "react-native-chart-kit": "^6.12.0",
     "react-native-config": "^1.5.3",
     "react-native-confirmation-code-field": "^7.4.0",
-    "react-native-datetime-picker": "^1.1.2",
     "react-native-deck-swiper": "^2.0.17",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "~2.16.1",

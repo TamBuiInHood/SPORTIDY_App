@@ -13,6 +13,12 @@ interface Playfield {
   location: string;
   price: string;
   image: string;
+  openingHours: string;
+  capacity: string;
+  surface: string;
+  owner: string;
+  rating: number;
+  reviews: number;
 }
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -32,7 +38,7 @@ export const PlayfieldCard = ({ playfield }: { playfield: Playfield }) => {
           <Ionicons name="cash-outline" size={16} color="#888" />
           <Text style={styles.price}>{playfield.price}</Text>
         </View>
-        <TouchableOpacity onPress={()=>navigation.navigate("PlayfieldDetailCard")}>
+        <TouchableOpacity onPress={()=>navigation.navigate("PlayfieldDetailCard",  { playfield })}>
           <Text style={styles.viewMore}>View more →</Text>
         </TouchableOpacity>
       </View>
@@ -50,6 +56,12 @@ export const fetchPlayfields = async (): Promise<Playfield[]> => {
           location: 'Nam Từ Liêm, Hà Nội',
           price: '500,000,000 VND',
           image: 'https://i.pinimg.com/564x/6c/7a/e8/6c7ae8588a36b4b392c0824f17fcf2cc.jpg',
+          openingHours: '5:00 - 22:00',
+          capacity: '40,000 people',
+          surface: 'Grass',
+          owner: 'Vietnamese government',
+          rating: 4.0,
+          reviews: 480,
         },
         {
           id: 2,
@@ -57,6 +69,12 @@ export const fetchPlayfields = async (): Promise<Playfield[]> => {
           location: 'Đống Đa, Hà Nội',
           price: '300,000,000 VND',
           image: 'https://i.pinimg.com/564x/4f/42/97/4f42976671d69d284f63fd8ace21576b.jpg',
+          openingHours: '6:00 - 23:00',
+          capacity: '25,000 people',
+          surface: 'Artificial turf',
+          owner: 'Hà Nội FC',
+          rating: 4.5,
+          reviews: 350,
         },
         {
           id: 3,
@@ -64,6 +82,12 @@ export const fetchPlayfields = async (): Promise<Playfield[]> => {
           location: 'Quận 10, TP.HCM',
           price: '200,000,000 VND',
           image: 'https://i.pinimg.com/564x/ee/94/c1/ee94c15a09ea8ade6ca1f46cdfb65412.jpg',
+          openingHours: '6:00 - 23:00',
+          capacity: '25,000 people',
+          surface: 'Artificial turf',
+          owner: 'Hà Nội FC',
+          rating: 4.5,
+          reviews: 350,
         },
         {
           id: 4,
@@ -71,6 +95,12 @@ export const fetchPlayfields = async (): Promise<Playfield[]> => {
           location: 'Ngô Quyền, Hải Phòng',
           price: '150,000,000 VND',
           image: 'https://i.pinimg.com/564x/0e/90/27/0e9027444818e9f846d46de954f55b7e.jpg',
+          openingHours: '6:00 - 23:00',
+          capacity: '25,000 people',
+          surface: 'Artificial turf',
+          owner: 'Hà Nội FC',
+          rating: 4.5,
+          reviews: 350,
         },
       ]);
     }, 1000);

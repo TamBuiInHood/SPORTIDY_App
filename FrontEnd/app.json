@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "newapp",
-    "slug": "newapp",
+    "name": "SPORTIDY",
+    "slug": "SPORTIDY",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,6 +16,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.sportidy.play",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -31,6 +32,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "20ff2221-4189-4ccf-8204-c871fe041897"
+      }
     }
   }
 }

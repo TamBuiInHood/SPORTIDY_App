@@ -29,9 +29,10 @@ export type RootStackParamList = {
   MyHistory: any;
   HistoryDetail: any; 
   FeedBack: any,
-  PlayFieldDetail: any,
+  PlayFieldDetail: { playfield: PlayField },
   UpdatePlayfield: any,
   CreatePlayfield: any,
+  BookingDetail: any,
 
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
@@ -83,17 +84,17 @@ export interface Booking{
 }
 
 export interface PlayField {
-  id: never;
-  playFieldId: number,
-  playFieldName: string,
-  playFieldCode: string,
-  price: number,
-  address: string,
-  openTime: string,
-  closeTime: string,
-  avatarImage: string,
-  status: number,
-  sportId: number,
+  id: number;
+  name: string;
+  location: string;
+  price: string;
+  image: string;
+  openingHours: string;
+  capacity: string;
+  surface: string;
+  owner: string;
+  rating: number;
+  reviews: number;
 }
 export interface MeetingDetail {
   meetingId: number;

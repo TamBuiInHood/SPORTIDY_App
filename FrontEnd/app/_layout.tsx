@@ -71,6 +71,7 @@ export default function RootLayout() {
           <Stack.Screen name= "PlayFieldList" component={PlayfieldList}/>
           <Stack.Screen name= "CreatePlayfield" component={CreatePlayfield}/>
           <Stack.Screen name= "UpdatePlayfield" component={UpdatePlayField}/>
+          <Stack.Screen name= "BookingDetail" component={BookingDetail}/>
 
         </Stack.Navigator>
       </NavigationContainer>

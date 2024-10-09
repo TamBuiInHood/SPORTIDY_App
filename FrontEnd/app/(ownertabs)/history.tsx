@@ -1,8 +1,11 @@
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Card } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from 'expo-router';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+import { RootStackParamList } from '@/types/types';
 interface Booking {
   id: string;
   field: string;
@@ -13,8 +16,9 @@ interface Booking {
   phone: string;
   status: 'Success' | 'Cancel';
 }
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
-const bookings: Booking[] = [
+const initialBookings: Booking[] = [
   {
     id: '67899',
     field: 'Field 1',
@@ -47,8 +51,15 @@ const bookings: Booking[] = [
   },
 ];
 const history = () => {
+  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
+  const navigation = useNavigation();
+
   const renderBooking = ({ item }: { item: Booking }) => {
-    const statusColor = item.status === 'Success' ? '#4CAF50' : '#E74C3C';
+    const statusColor = item.status === 'Success' ? '#4CAF50' : item.status === 'Cancel' ? '#E74C3C' : '#F39C12';
+
+    const handleViewDetails = () => {
+      navigation.navigate('BookingDetail', { bookingId: id });
+    };
 
     return (
       <Card style={styles.card}>
@@ -62,17 +73,16 @@ const history = () => {
             Check-in & Check-out: {item.checkIn} - {item.checkOut}
           </Text>
           <Text style={styles.label}>Price: {item.price}</Text>
-          <Text style={styles.label}>Name customer: {item.customer}</Text>
+          <Text style={styles.label}>Customer: {item.customer}</Text>
           <Text style={styles.label}>Phone: {item.phone}</Text>
-          {item.status === 'Success' && (
-            <TouchableOpacity>
-              <Text style={styles.manageText}>Manage</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={handleViewDetails}>
+            <Text style={styles.manageText}>View Details</Text>
+          </TouchableOpacity>
         </View>
       </Card>
     );
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -80,14 +90,13 @@ const history = () => {
           <Text style={styles.headerTitle}>Your PlayFields</Text>
         </LinearGradient>
       </View>
-       <FlatList
-      data={bookings}
-      renderItem={renderBooking}
-      keyExtractor={(item) => item.id}
-      contentContainerStyle={styles.listContent}
-    />
+      <FlatList
+        data={bookings}
+        renderItem={renderBooking}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContent}
+      />
     </View>
-   
   );
 };
 const styles = StyleSheet.create({

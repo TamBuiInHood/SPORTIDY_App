@@ -40,14 +40,14 @@ const CreateMeetScreen = () => {
   };
   const [meeting, setMeeting] = useState({
     data: {
-      address: "Gcctc",
+      address: "",
       cancelBefore: 1,
       currentLogin: 2,
       endDate: "2024-10-06T22:46:18",
       isPublic: true,
       meetingImage: "",
-      meetingName: "Ctcyf",
-      note: " G gv g",
+      meetingName: "",
+      note: "",
       sportId: 1,
       startDate: "2024-10-07T21:46:18",
       totalMember: 1
