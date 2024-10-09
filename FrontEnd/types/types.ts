@@ -32,8 +32,14 @@ export type RootStackParamList = {
   PlayFieldDetail: any,
   UpdatePlayfield: any,
   CreatePlayfield: any,
-
+  Club: undefined; 
+  YourClub: undefined; 
+  ViewAllClubs: undefined; 
+  ClubDetail: { club: Club }; 
+  Introduction: undefined;
+  
 };
+
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
 export type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
 
@@ -130,7 +136,7 @@ export interface Sport {
   sportName: string;
   sportImage: string;
 }
-interface Club {
+export interface Club {
   clubId: number;
   clubCode: string;
   clubName: string;

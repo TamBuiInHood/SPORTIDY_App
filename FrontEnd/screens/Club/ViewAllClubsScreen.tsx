@@ -28,36 +28,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F8F8',
-    paddingHorizontal: 16, // Padding ngang
+    paddingHorizontal: 16, 
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 16, 
+    paddingHorizontal: 16,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-    // fontFamily: 'YOUR_FONT_FAMILY', 
+    textAlign: 'center', // Căn giữa title
+    flex: 1, // Cho phép title chiếm hết chỗ trống còn lại
   },
   yourClubButton: {
-     backgroundColor: '#FFCC00',
-     borderRadius: 8,
-     paddingVertical: 8,
-     paddingHorizontal: 16,
-
-
+    backgroundColor: '#FFCC00',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   yourClubButtonText: {
     color: 'white',
     fontWeight: 'bold',
-
-
   },
-  // ... other styles
-
   clubItemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -81,48 +77,77 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    // fontFamily: 'YOUR_FONT_FAMILY' 
   },
   clubDetail: {
     fontSize: 14,
     color: '#666',
-    // fontFamily: 'YOUR_FONT_FAMILY'
   },
 });
 
 
 const ViewAllClubsHeader = ({ navigation }) => (
- <View style={styles.header}>
+  <View style={styles.header}>
     <Text style={styles.headerTitle}>View All Club</Text>
     <TouchableOpacity style={styles.yourClubButton}
-    onPress={() => navigation.navigate('YourClub')}
+      onPress={() => navigation.navigate('YourClub')}
     >
-
       <Text style={styles.yourClubButtonText}>Your Club</Text>
     </TouchableOpacity>
-
-
- </View>
+  </View>
 );
-
 const ViewAllClubsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const fetchClubs = async () => {
-      try {
-        const response = await api.get(`/clubs`);
-        setClubs(response.data.data.list);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchClubs();
+    // const fetchClubs = async () => { // Không cần fetch nữa
+    //   try {
+    //     const response = await api.get(`/clubs`);
+    //     setClubs(response.data.data.list);
+    //   } catch (error) {
+    //     setError(error);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // fetchClubs();
+    const mockClubs: Club[] = [
+        {
+          clubId: 1,
+          clubCode: "PSG-FC",
+          clubName: "Paris Saint-Germain FC",
+          regulation: "Chưa có thông tin",
+          information: "Thông tin về câu lạc bộ Paris Saint-Germain FC.",
+          slogan: "Chơi cùng đam mê, chiến thắng rực rỡ!",
+          mainSport: "Football",
+          createDate: "2024-01-01T00:00:00Z", 
+          location: "Thủ Đức, Quận 9",
+          totalMember: 100,
+          avatarClub: "https://example.com/images/avatar-paris-sg.jpg", 
+          coverImageClub: "https://example.com/images/cover-paris-sg.jpg", 
+          listMember: [] 
+        },
+        {
+          clubId: 2,
+          clubCode: "MUFC",
+          clubName: "Manchester United FC",
+          regulation: "Chưa có thông tin",
+          information: "Thông tin về câu lạc bộ Manchester United FC.",
+          slogan: "Giai điệu chiến thắng!",
+          mainSport: "Football",
+          createDate: "2024-02-15T00:00:00Z",
+          location: "Tân Bình, Quận 8",
+          totalMember: 50,
+          avatarClub: "https://example.com/images/avatar-man-utd.jpg",
+          coverImageClub: "https://example.com/images/cover-man-utd.jpg",
+          listMember: []
+        }
+      ];
+      setClubs(mockClubs);
+      setLoading(false);
   }, []);
+
 
   if (loading) {
     return <ActivityIndicator size="large" color="#007bff" />;

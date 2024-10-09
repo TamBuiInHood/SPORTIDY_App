@@ -11,20 +11,41 @@ const YourClubScreen = ({ navigation }) => {
 
 
   useEffect(() => {
-    const fetchYourClubs = async () => {
-      try {
-        const response = await api.get('/me/clubs'); // Thay thế bằng endpoint của bạn
-        setYourClubs(response.data); // Điều chỉnh theo cấu trúc dữ liệu từ API
-      } catch (err) {
-        setError(err);
-        console.error("Error fetching your clubs:", err); // Log lỗi ra console để dễ debug
-      } finally {
-        setLoading(false);
-      }
-    };
+    // const fetchYourClubs = async () => { // Không cần fetch nữa
+    //   try {
+    //     const response = await api.get('/me/clubs'); // Thay thế bằng endpoint của bạn
+    //     setYourClubs(response.data); // Điều chỉnh theo cấu trúc dữ liệu từ API
+    //   } catch (err) {
+    //     setError(err);
+    //     console.error("Error fetching your clubs:", err); // Log lỗi ra console để dễ debug
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
 
 
-    fetchYourClubs();
+    // fetchYourClubs();
+    const mockClubs = [
+      {
+        clubId: 1,
+        clubName: "Paris Saint-Germain FC",
+        avatarClub: "https://example.com/images/avatar-paris-sg.jpg",
+        totalMember: 100,
+        mainSport: "Football",
+        location: "Thủ Đức, Quận 9",
+      },
+      {
+        clubId: 2,
+        clubName: "Manchester United FC",
+        avatarClub: "https://example.com/images/avatar-man-utd.jpg",
+        totalMember: 50,
+        mainSport: "Football",
+        location: "Tân Bình, Quận 8",
+      },
+    ];
+
+    setYourClubs(mockClubs);
+    setLoading(false);
   }, []);
 
 
@@ -111,7 +132,6 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flex: 1,
-
 
   },
 });

@@ -8,7 +8,8 @@ import CreateMeetScreen from './create';
 import BookingScreen from './booking';
 import HomeScreen from '.';
 import { TabParamList } from '@/types/types';
-
+import ClubStackScreens from '@/components/navigation/ClubStackScreen';
+import ClubScreen from '@/screens/Club/ClubScreen';
 const Tab = createBottomTabNavigator<TabParamList>();
 
 const TabLayout: React.FC = () => {
@@ -73,7 +74,7 @@ const TabLayout: React.FC = () => {
       />
       <Tab.Screen
         name="club"
-        component={ClubTabs}
+        component={ClubStackScreens}
         options={{
           title: 'Club',
           tabBarIcon: ({ color, focused, size }) => (
