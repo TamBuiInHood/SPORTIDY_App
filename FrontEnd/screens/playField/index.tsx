@@ -14,11 +14,9 @@ interface Playfield {
   price: string;
   image: string;
   openingHours: string;
-  capacity: string;
-  surface: string;
-  owner: string;
   rating: number;
   reviews: number;
+  owner: string;
 }
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -38,7 +36,7 @@ export const PlayfieldCard = ({ playfield }: { playfield: Playfield }) => {
           <Ionicons name="cash-outline" size={16} color="#888" />
           <Text style={styles.price}>{playfield.price}</Text>
         </View>
-        <TouchableOpacity onPress={()=>navigation.navigate("PlayfieldDetailCard",  { playfield })}>
+        <TouchableOpacity onPress={() => navigation.navigate("PlayfieldDetailCard", { playfield })}>
           <Text style={styles.viewMore}>View more →</Text>
         </TouchableOpacity>
       </View>
@@ -52,53 +50,45 @@ export const fetchPlayfields = async (): Promise<Playfield[]> => {
       resolve([
         {
           id: 1,
-          name: 'My Dinh National Stadium',
-          location: 'Nam Từ Liêm, Hà Nội',
-          price: '500,000,000 VND',
+          name: 'Cầu Lông Bảo Thy',
+          location: '32/17 Ðuờng DT741, Ấp Vinh Tiến, Xã Vinh Hoà , Phú Giáo',
+          price: '200,000 VND',
           image: 'https://i.pinimg.com/564x/6c/7a/e8/6c7ae8588a36b4b392c0824f17fcf2cc.jpg',
-          openingHours: '5:00 - 22:00',
-          capacity: '40,000 people',
-          surface: 'Grass',
-          owner: 'Vietnamese government',
+          openingHours: '7:00 - 21:00',
           rating: 4.0,
           reviews: 480,
+          owner: "Trần Thị B"
         },
         {
           id: 2,
-          name: 'Hang Day Stadium',
-          location: 'Đống Đa, Hà Nội',
-          price: '300,000,000 VND',
+          name: 'Sân Banh Thủ Ðức',
+          location: '35/11 Ð. Số 4, Truờng Thạnh, Thủ Ðức, Hồ Chí Minh, Vietnam',
+          price: '15,000 VND',
           image: 'https://i.pinimg.com/564x/4f/42/97/4f42976671d69d284f63fd8ace21576b.jpg',
-          openingHours: '6:00 - 23:00',
-          capacity: '25,000 people',
-          surface: 'Artificial turf',
-          owner: 'Hà Nội FC',
+          openingHours: '9:00 - 22:00',
           rating: 4.5,
           reviews: 350,
+          owner: "Nguyễn Văn A"
         },
         {
           id: 3,
-          name: 'Thống Nhất Stadium',
-          location: 'Quận 10, TP.HCM',
-          price: '200,000,000 VND',
+          name: 'Cầu Lông Bảo Thy - Sub 2',
+          location: '32/17 Ðuờng DT741, Ấp Vinh Tiến, Xã Vinh Hoà , Phú Giáo',
+          price: '100,000 VND',
           image: 'https://i.pinimg.com/564x/ee/94/c1/ee94c15a09ea8ade6ca1f46cdfb65412.jpg',
-          openingHours: '6:00 - 23:00',
-          capacity: '25,000 people',
-          surface: 'Artificial turf',
-          owner: 'Hà Nội FC',
-          rating: 4.5,
-          reviews: 350,
+          openingHours: '7:00 - 21:00',
+          rating: 4.8,
+          reviews: 400,
+          owner: "Trần Thị B"
         },
         {
           id: 4,
-          name: 'Lạch Tray Stadium',
-          location: 'Ngô Quyền, Hải Phòng',
-          price: '150,000,000 VND',
+          name: 'Sân Banh Thủ Ðức',
+          location: '35/11 Ð. Số 4, Truờng Thạnh, Thủ Ðức, Hồ Chí Minh, Vietnam',
+          price: '300,000 VND',
           image: 'https://i.pinimg.com/564x/0e/90/27/0e9027444818e9f846d46de954f55b7e.jpg',
-          openingHours: '6:00 - 23:00',
-          capacity: '25,000 people',
-          surface: 'Artificial turf',
-          owner: 'Hà Nội FC',
+          openingHours: '6:00 - 22:00',
+          owner: 'Nguyễn Văn A',
           rating: 4.5,
           reviews: 350,
         },
@@ -145,18 +135,18 @@ const PlayfieldList = () => {
 
   return (
     <View style={styles.container}>
-    <SearchBar />
-    <View style={styles.header}>
-      <LinearGradient colors={["#76B852", "#A0B853"]} style={styles.gradient}>
-        <Text style={styles.headerTitle}>View Your Playfields</Text>
-      </LinearGradient>
+      <SearchBar />
+      <View style={styles.header}>
+        <LinearGradient colors={["#76B852", "#A0B853"]} style={styles.gradient}>
+          <Text style={styles.headerTitle}>View Your Playfields</Text>
+        </LinearGradient>
+      </View>
+      <ScrollView contentContainerStyle={styles.list}>
+        {playfields.map((playfield) => (
+          <PlayfieldCard key={playfield.id} playfield={playfield} />
+        ))}
+      </ScrollView>
     </View>
-    <ScrollView contentContainerStyle={styles.list}>
-      {playfields.map((playfield) => (
-        <PlayfieldCard key={playfield.id} playfield={playfield} />
-      ))}
-    </ScrollView>
-  </View>
   );
 };
 
@@ -242,7 +232,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   gradient: {
-    width: '100%',  
+    width: '100%',
     paddingVertical: 10,
     alignItems: 'center',
     borderRadius: 30

@@ -1,3 +1,5 @@
+import { RootStackParamList } from "@/types/types";
+import { useNavigation, useNavigationBuilder } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
   View,
@@ -7,14 +9,20 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-
+import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+type SplashScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Splash"
+>;
 const NewPasswordScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigation = useNavigation<SplashScreenNavigationProp>();
 
   const handlePasswordChange = () => {
     if (password === confirmPassword) {
       Alert.alert("Success", "Password updated successfully!");
+      navigation.navigate("Login");
     } else {
       Alert.alert("Error", "Passwords do not match!");
     }

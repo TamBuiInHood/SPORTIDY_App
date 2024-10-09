@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Platform, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/types/types";
@@ -89,9 +89,17 @@ const VerificationScreen = () => {
         <Text style={styles.orText}>or</Text>
         <View style={styles.socialButtons}>
           <TouchableOpacity style={styles.socialButton}>
+          <Image
+            source={{ uri: 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png' }}
+            style={styles.googleIcon}
+          />
             <Text style={styles.socialButtonText}>Google</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
+          <Image
+            source={{ uri: 'https://static.vecteezy.com/system/resources/previews/018/930/476/non_2x/facebook-logo-facebook-icon-transparent-free-png.png' }}
+            style={styles.googleIcon}
+          />
             <Text style={styles.socialButtonText}>Facebook</Text>
           </TouchableOpacity>
         </View>

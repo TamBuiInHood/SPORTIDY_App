@@ -22,12 +22,8 @@ const SportChoose: React.FC<SportChooseProps> = ({ setSport }) => {
       }
     };
     getAllSports();
-  }, []);
+  }, [sports]);
 
-  const handleSportSelect = (sportId: number) => {
-    setSelectedSport(sportId);
-    setSport(sportId);
-  };
 
   return (
     <View>
@@ -41,7 +37,7 @@ const SportChoose: React.FC<SportChooseProps> = ({ setSport }) => {
               styles.sportOption,
               selectedSport === sport.sportId && styles.sportOptionSelected,
             ]}
-            onPress={() => handleSportSelect(sport.sportId)}
+            
           >
             <Ionicons
               name={

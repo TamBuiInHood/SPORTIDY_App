@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, Image, Dimensions, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ProgressBar from '@/components/ProgressBar';
 import { RadioButton } from 'react-native-paper';
@@ -10,6 +9,8 @@ import axios from 'axios';
 import { RootStackParamList } from '@/types/types';
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
 type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
 
 const { width } = Dimensions.get('window');
@@ -22,20 +23,22 @@ const BookingInformationPage: React.FC = () => {
   const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
   const [bookingCode, setBookingCode] = useState<string | null>(null); // Initialize bookingCode in state
   const qrCodeRef = useRef<QRCode | null>(null);
-  const totalPrice = 120000 * parseInt(selectedTime);
   const navigation = useNavigation<PaymentScreenNavigationProp>();
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const { playfieldName, address, image, price } = route.params;  
   const timeOptions = [
     { label: '1h', value: '1' },
     { label: '2h', value: '2' },
     { label: '3h', value: '3' },
   ];
+  const totalPrice = price * parseInt(selectedTime);
 
-  const onChangeDate = (event: any, selectedDate?: Date) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+  const handleConfirmDate = (selectedDate: any) => {
+    setDate(selectedDate);
+    hideDatePicker();
   };
-
  
   const handlePlaceOrder = async () => {
     try {
@@ -48,7 +51,7 @@ const BookingInformationPage: React.FC = () => {
         // Step 2: Create payment link
         const paymentData = {
           bookingCode: randomCode, // Use the generated randomCode
-          amount: price,
+          amount: totalPrice,
           description: "Booking Football Field",
           buyerName: "User",
           buyerPhone: "0123456789",
@@ -76,7 +79,7 @@ const BookingInformationPage: React.FC = () => {
           // Step 4: Navigate to PaymentBookingPage with booking details
           navigation.navigate('PaymentBooking', {
             bookingCode: randomCode, // Pass the correct booking code
-            totalPrice: price,
+            totalPrice: totalPrice,
             dateStart: date.toISOString(),
             dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(),
             playfieldName ,// Pass here
@@ -98,7 +101,7 @@ const BookingInformationPage: React.FC = () => {
       <ProgressBar currentStep={2} />
       <Image source={{uri: image}} style={styles.fieldImage} />
       <Text style={styles.fieldName}>{playfieldName}</Text>
-      <Text style={styles.price}>{price  * parseInt(selectedTime)}/hours</Text>
+      <Text style={styles.price}>{totalPrice.toLocaleString()}/hours</Text>
       <Text style={styles.location}>{address}</Text>
 
       <View style={styles.inputContainer}>
@@ -118,14 +121,16 @@ const BookingInformationPage: React.FC = () => {
         <View style={styles.row}>
           <Ionicons name='calendar-outline' size={25} style={styles.icon} />
           <Text style={styles.label}>Date</Text>
+          <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
+              <Text style={styles.dateText}>{date.toDateString()}</Text>
+            </TouchableOpacity>
         </View>
-        <DateTimePicker
-          value={date}
-          mode="datetime"
-          display="default"
-          onChange={onChangeDate}
-          style={styles.datePicker}
-        />
+        <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirmDate}
+              onCancel={hideDatePicker}
+            />
       </View>
 
       <View style={styles.inputContainer}>
@@ -144,7 +149,7 @@ const BookingInformationPage: React.FC = () => {
         />
       </View>
 
-      <Text style={styles.totalPrice}>Total price: {price.toLocaleString()} VND</Text>
+      <Text style={styles.totalPrice}>Total price:  {totalPrice.toLocaleString()} VND</Text>
 
       <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder}>
         <Text style={styles.orderButtonText}>Place Order</Text>
@@ -249,6 +254,19 @@ const styles = StyleSheet.create({
     marginRight: 120,
     marginTop: 5,
     color: 'white'
+  },
+  dateButton: {
+    backgroundColor: '#f1f1f1',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 

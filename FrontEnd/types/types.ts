@@ -13,6 +13,11 @@ export type RootStackParamList = {
       screen: any;
     };
   };
+  '(ownertabs)': {
+    params: {
+      screen: any;
+    };
+  };
   PlayField: any;
   EventDetail: {meetingId: number},
   HomeScreen: any;
@@ -33,6 +38,8 @@ export type RootStackParamList = {
   UpdatePlayfield: any,
   CreatePlayfield: any,
   BookingDetail: any,
+  PlayFieldList:any,
+  PlayfieldDetailCard: any;
 
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;

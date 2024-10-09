@@ -1,61 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
+import { PlayField, RootStackParamList } from '@/types/types';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
+type PlayfieldDetailScreenRouteProp = RouteProp<RootStackParamList, 'PlayFieldDetail'>;
+type PlayfieldDetailScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'PlayFieldDetail'>;
 
-// Interface cho Playfield
-interface Playfield {
-  id: number;
-  name: string;
-  location: string;
-  price: string;
-  image: string | null;
-  openingHours: string;
-  capacity: string;
-  surface: string;
-  owner: string;
-  rating: number;
-  reviews: number;
+interface PlayfieldDetailScreenProps {
+  route: PlayfieldDetailScreenRouteProp;
 }
 
-const UpdatePlayField = () => {
+
+
+const UpdatePlayField = ({ route }: PlayfieldDetailScreenProps) => {
   const [name, setName] = useState('');
-  const [currency, setCurrency] = useState('500,000,000 VND');
+  const [currency, setCurrency] = useState('');
   const [address, setAddress] = useState('');
-  const [checkIn, setCheckIn] = useState('14:00');
-  const [checkOut, setCheckOut] = useState('12:00');
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
   const [image, setImage] = useState<string | null>(null);
-  const [playfields, setPlayfields] = useState<Playfield[]>([]); // State cho danh sách playfields
+  const { playfield } = route.params;
 
   // Giả sử bạn có một playfield cụ thể để cập nhật từ API hoặc từ props.
-  const playfieldIdToUpdate = 1; // Giả sử ID của playfield bạn muốn update
-  const playfieldData = {
-    id: 1,
-    name: 'My Dinh National Stadium',
-    location: 'Nam Từ Liêm, Hà Nội',
-    price: '500,000,000 VND',
-    image: null,
-    openingHours: '14:00 - 12:00',
-    capacity: '40,000 people',
-    surface: 'Grass',
-    owner: 'Vietnamese government',
-    rating: 4.0,
-    reviews: 480,
-  };
-
-  // Sử dụng useEffect để load dữ liệu cũ khi component mount
-  useEffect(() => {
-    const playfieldToEdit = playfieldData; // Giả sử bạn nhận được dữ liệu từ API hoặc từ props
-
-    // Cập nhật state với dữ liệu hiện tại của playfield
+ useEffect(() => {
+  const playfieldToEdit = route.params.playfield; // Lấy dữ liệu từ route
+  if (playfieldToEdit) {
     setName(playfieldToEdit.name);
     setCurrency(playfieldToEdit.price);
     setAddress(playfieldToEdit.location);
     setCheckIn(playfieldToEdit.openingHours.split(' - ')[0]);
     setCheckOut(playfieldToEdit.openingHours.split(' - ')[1]);
     setImage(playfieldToEdit.image);
-  }, []); // Chạy một lần khi component mount
+  }
+}, [route.params.playfield]); // Chạy một lần khi component mount
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -68,10 +48,13 @@ const UpdatePlayField = () => {
       setImage(result.uri);
     }
   };
+  const navigation = useNavigation<PlayfieldDetailScreenNavigationProp>();
 
   const handleSubmit = () => {
+    Alert.alert ("Updated playfield!");
+    navigation.navigate("(ownertabs)", { params: { screen: "home" } });
+    
     const updatedPlayfield = {
-      id: playfieldIdToUpdate,  // ID của playfield cần cập nhật
       name,
       location: address,
       price: currency,
@@ -83,13 +66,6 @@ const UpdatePlayField = () => {
       rating: 4.0,
       reviews: 480,
     };
-
-    // Cập nhật playfield trong state
-    setPlayfields((prevPlayfields) =>
-      prevPlayfields.map((playfield) =>
-        playfield.id === updatedPlayfield.id ? updatedPlayfield : playfield
-      )
-    );
 
     console.log('Updated playfield:', updatedPlayfield);
   };

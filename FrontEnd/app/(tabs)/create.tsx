@@ -1,94 +1,44 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SportChoose from '@/components/SportChoose';
+import axios from 'axios';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
-import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types';
-import { RootStackParamList } from '@/types/types';
-import { useNavigation } from '@react-navigation/native';
-type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
+import { Sport } from '@/types/types';
+import api from '@/config/api';
 
 const CreateMeetScreen = () => {
+  const [club, setClub] = useState(null);
   const [sport, setSport] = useState<number | null>(null);
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+  const [duration, setDuration] = useState(1);
+  const [location, setLocation] = useState('');
+  const [cancelTime, setCancelTime] = useState(4);
+  const [numPlayers, setNumPlayers] = useState(12);
+  const [meetName, setMeetName] = useState('');
+  const [notes, setNotes] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);
-  const navigation = useNavigation<PaymentScreenNavigationProp>();
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  const showDateTimePicker = (isStartDate: boolean) => {
-    setIsSelectingStartDate(isStartDate);
-    setDatePickerVisibility(true);
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+  const handleConfirmDate = (selectedDate: any) => {
+    setDate(selectedDate);
+    hideDatePicker();
   };
 
-  const hideDateTimePicker = () => {
-    setDatePickerVisibility(false);
+  const showTimePicker = () => setTimePickerVisibility(true);
+  const hideTimePicker = () => setTimePickerVisibility(false);
+  const handleConfirmTime = (selectedTime: any) => {
+    setTime(selectedTime);
+    hideTimePicker();
   };
 
-  const handleConfirmDate = (selectedDate: Date) => {
-    const formattedDate = format(selectedDate, "yyyy-MM-dd HH:mm:ss");
-
-    if (isSelectingStartDate) {
-      setMeeting((prevMeeting) => ({
-        ...prevMeeting,
-        data: { ...prevMeeting.data, startDate: formattedDate }
-      }));
-    } else {
-      setMeeting((prevMeeting) => ({
-        ...prevMeeting,
-        data: { ...prevMeeting.data, endDate: formattedDate }
-      }));
-    }
-
-    hideDateTimePicker();
-  };
-
-  const [meeting, setMeeting] = useState({
-    data: {
-      address: "",
-      cancelBefore: 1,
-      currentLogin: 2,
-      endDate: "2024-10-06T22:46:18",
-      isPublic: true,
-      meetingImage: "",
-      meetingName: "",
-      note: "",
-      sportId: 1,
-      startDate: "2024-10-07T21:46:18",
-      totalMember: 1
-    }
-  });
-
-  const handleInputChange = (name: string, value: any) => {
-    setMeeting((prevMeeting) => ({
-      ...prevMeeting,
-      data: { ...prevMeeting.data, [name]: value }
-    }));
-  };
-
-  const decrementMember = () => {
-    setMeeting((prev) => ({
-      ...prev,
-      data: {
-        ...prev.data,
-        totalMember: Math.max(prev.data.totalMember - 1, 1),
-      },
-    }));
-  };
-
-  const incrementMember = () => {
-    setMeeting((prev) => ({
-      ...prev,
-      data: {
-        ...prev.data,
-        totalMember: prev.data.totalMember + 1,
-      },
-    }));
-  };
-
-  const handleCreateMeeting = () => {
-    Alert.alert('Success', 'Meeting created successfully!');
-    navigation.navigate("(tabs)", { params: { screen: "index" } });
-  };
+  const handleCreateMeet = async () => {
+    Alert.alert("Create meeting successfully!");
+  }
 
   return (
     <View style={styles.container}>
@@ -96,16 +46,10 @@ const CreateMeetScreen = () => {
         <TouchableOpacity style={styles.backButton} onPress={() => { }}>
           <Ionicons name="arrow-back-circle-outline" color={"#ffff"} size={30} />
         </TouchableOpacity>
-        <Text style={styles.headerText }>CREATE A MEET</Text>
+        <Text style={styles.headerText}>CREATE A MEET</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.sportOptions}>
-          <SportChoose setSport={(sportId) => {
-            setSport(sportId);
-            setMeeting((prevMeeting) => ({ ...prevMeeting, sportId }));
-          }} />
-        </View>
 
         <Text style={styles.sectionTitle}>MEET</Text>
         <View style={styles.form}>
@@ -114,40 +58,64 @@ const CreateMeetScreen = () => {
               <Ionicons name="calendar-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Select date</Text>
             </View>
-            <TouchableOpacity onPress={() => showDateTimePicker(true)}>
-              <Text>{meeting.data.startDate ? `Start Date: ${format(new Date(meeting.data.startDate), "yyyy-MM-dd HH:mm:ss")}` : 'Select Start Date'}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => showDateTimePicker(false)}>
-              <Text>{meeting.data.endDate ? `End Date: ${format(new Date(meeting.data.endDate), "yyyy-MM-dd HH:mm:ss")}` : 'Select End Date'}</Text>
+            <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
+              <Text style={styles.dateText}>{date.toDateString()}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
-              mode="datetime"
+              mode="date"
               onConfirm={handleConfirmDate}
-              onCancel={hideDateTimePicker}
+              onCancel={hideDatePicker}
             />
           </View>
 
-          <View style={styles.formItemMeeting}>
+          <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
+              <Ionicons name="timer-outline" color={"#ff951d"} size={20} />
+              <Text style={styles.formLabel}>Select time</Text>
+            </View>
+            <TouchableOpacity onPress={showTimePicker} style={styles.dateButton}>
+              <Text>{time.toLocaleTimeString()}</Text>
+            </TouchableOpacity>
+            <DateTimePickerModal
+              isVisible={isTimePickerVisible}
+              mode="time"
+              onConfirm={handleConfirmTime}
+              onCancel={hideTimePicker}
+            />
+          </View>
+
+          <View style={styles.formItem}>
+            <View style={styles.formLabelContainer}>
+              <Ionicons name="time-outline" color={"#ff951d"} size={20} />
+              <Text style={styles.formLabel}>Duration</Text>
+            </View>
+            <TextInput
+              style={styles.formInput}
+              value={duration.toString()}
+              onChangeText={(text) => setDuration(parseInt(text) || 1)}
+              keyboardType="numeric"
+            />
+            <Text style={styles.formUnit}>hour(s)</Text>
+          </View>
+
+            <View style={styles.formItemMeeting}>
               <Ionicons name="location-outline" color={"#ff951d"} size={20} />
-              <Text style={styles.formLabel}>Set location</Text>
+              <Text style={styles.formLabelMeeting}>Set location</Text>
             </View>
             <TextInput
               style={styles.formInputMeeting}
-              value={meeting.data.address}
-              onChangeText={(value) => handleInputChange('address', value)}
+              value={location}
+              onChangeText={setLocation}
               placeholder="Enter location"
             />
-          </View>
 
           <View style={styles.formItem}>
             <Text style={styles.formLabel}>Set time to cancel</Text>
             <TextInput
               style={styles.formInput}
-              value={meeting.data.cancelBefore.toString()}
-              onChangeText={(value) => handleInputChange('cancelBefore', value)}
+              value={cancelTime.toString()}
+              onChangeText={(text) => setCancelTime(parseInt(text) || 4)}
               keyboardType="numeric"
             />
             <Text style={styles.formUnit}>hour(s)</Text>
@@ -159,11 +127,11 @@ const CreateMeetScreen = () => {
               <Text style={styles.formLabel}>Number of players</Text>
             </View>
             <View style={styles.playerCounter}>
-              <TouchableOpacity onPress={decrementMember} style={styles.counterButton}>
+              <TouchableOpacity onPress={() => setNumPlayers(Math.max(numPlayers - 1, 1))} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>-</Text>
               </TouchableOpacity>
-              <Text style={styles.counterText}>{meeting.data.totalMember}</Text>
-              <TouchableOpacity onPress={incrementMember} style={styles.counterButton}>
+              <Text style={styles.counterText}>{numPlayers}</Text>
+              <TouchableOpacity onPress={() => setNumPlayers(numPlayers + 1)} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>+</Text>
               </TouchableOpacity>
             </View>
@@ -173,21 +141,22 @@ const CreateMeetScreen = () => {
             <Text style={styles.formLabelMeeting}>Meet Name</Text>
             <TextInput
               style={styles.formInputMeeting}
-              value={meeting.data.meetingName}
-              onChangeText={(value) => handleInputChange('meetingName', value)}
+              value={meetName}
+              onChangeText={setMeetName}
               placeholder="Enter meet name"
             />
             <TextInput
               style={styles.formInputMeeting}
-              value={meeting.data.note}
-              onChangeText={(value) => handleInputChange('note', value)}
+              value={notes}
+              onChangeText={setNotes}
               multiline={true}
               placeholder="Add notes"
             />
           </View>
         </View>
+
         <View style={styles.buttonContainer}>
-          <Button title="Create Meet" onPress={handleCreateMeeting} color="#f9ca24" />
+          <Button title="Create Meet" onPress={handleCreateMeet} color="#f9ca24" />
         </View>
       </ScrollView>
     </View>

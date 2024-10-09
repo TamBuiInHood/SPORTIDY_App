@@ -82,11 +82,13 @@ export const styles = StyleSheet.create({
   },
   socialButton: {
     backgroundColor: "#F8931E",
-    borderRadius: 10,
+    borderRadius: 30,
     padding: 15,
     width: "48%",
     alignItems: "center",
     marginBottom: 30,
+    flexDirection: "row",
+    justifyContent: "center"
   },
   socialButtonText: {
     color: "#fff",
@@ -107,5 +109,10 @@ export const styles = StyleSheet.create({
   preSignUpText: {
     fontSize: 16,
     marginBottom: 5,
+  },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
   },
 });
