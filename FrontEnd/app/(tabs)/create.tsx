@@ -2,88 +2,113 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SportChoose from '@/components/SportChoose';
-import axios from 'axios';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { format } from 'date-fns';
+import api from '@/config/api';
 
 const CreateMeetScreen = () => {
-  const [club, setClub] = useState(null);
   const [sport, setSport] = useState<number | null>(null);
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
-  const [duration, setDuration] = useState(1);
-  const [location, setLocation] = useState('');
-  const [cancelTime, setCancelTime] = useState(4);
-  const [numPlayers, setNumPlayers] = useState(12);
-  const [meetName, setMeetName] = useState('');
-  const [notes, setNotes] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);
 
-  const showDatePicker = () => setDatePickerVisibility(true);
-  const hideDatePicker = () => setDatePickerVisibility(false);
-  const handleConfirmDate = (selectedDate: any) => {
-    setDate(selectedDate);
-    hideDatePicker();
+  const showDateTimePicker = (isStartDate: boolean) => {
+    setIsSelectingStartDate(isStartDate);
+    setDatePickerVisibility(true);
   };
 
-  const showTimePicker = () => setTimePickerVisibility(true);
-  const hideTimePicker = () => setTimePickerVisibility(false);
-  const handleConfirmTime = (selectedTime: any) => {
-    setTime(selectedTime);
-    hideTimePicker();
+
+  const hideDateTimePicker = () => {
+    setDatePickerVisibility(false);
   };
 
-  const handleCreateMeet = async () => {
-    if (!meetName || !sport || !location) {
-      Alert.alert("Missing fields", "Please fill in all required fields.");
-      return;
+  const handleConfirmDate = (selectedDate: Date) => {
+    const formattedDate = format(selectedDate, "yyyy-MM-dd HH:mm:ss");
+  
+    if (isSelectingStartDate) {
+      setMeeting((prevMeeting) => ({
+        ...prevMeeting,
+        data: { ...prevMeeting.data, startDate: formattedDate }
+      }));
+    } else {
+      setMeeting((prevMeeting) => ({
+        ...prevMeeting,
+        data: { ...prevMeeting.data, endDate: formattedDate }
+      }));
     }
   
-    // Formatting the startDate and endDate properly
-    const formattedStartDate = format(date, 'dd-MM-yyyy HH:mm'); // Format date using date-fns
-    const endDateTime = new Date(date.getTime() + duration * 60 * 60 * 1000); // Add duration hours to the start date
-    const formattedEndDate = format(endDateTime, 'dd-MM-yyyy HH:mm'); // Format end date
+    hideDateTimePicker();
+  };
+  const [meeting, setMeeting] = useState({
+    data: {
+      address: "Gcctc",
+      cancelBefore: 1,
+      currentLogin: 2,
+      endDate: "2024-10-06T22:46:18",
+      isPublic: true,
+      meetingImage: "",
+      meetingName: "Ctcyf",
+      note: " G gv g",
+      sportId: 1,
+      startDate: "2024-10-07T21:46:18",
+      totalMember: 1
+    }
+  });
+  const handleInputChange = (name: string, value: any) => {
+    setMeeting((prevMeeting) => ({
+      ...prevMeeting,
+      data: { ...prevMeeting.data, [name]: value }
+    }));
+  };
+  const decrementMember = () => {
+    setMeeting((prev) => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        totalMember: Math.max(prev.data.totalMember - 1, 1),
+      },
+    }));
+  };
   
-    const formData = new FormData();
-    formData.append('meetingImage', ''); // Add image if available
-    formData.append('meetingName', meetName || "Test Meeting");
-    formData.append('endDate', formattedEndDate);
-    formData.append('sportId', sport.toString()); // Ensure this is a string
-    formData.append('startDate', formattedStartDate);
-    formData.append('address', location || "Location");
-    formData.append('cancelBefore', cancelTime.toString()); // Ensure this is a string
-    formData.append('totalMember', numPlayers.toString()); // Ensure this is a string
-    formData.append('currentIdLogin', '2'); // Assuming this is the logged-in user
-    formData.append('isPublic', true);
-    formData.append('clubId', '');
-    formData.append('note', '');
-    console.log("FormData: ", formData);
-  
+  const incrementMember = () => {
+    setMeeting((prev) => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        totalMember: prev.data.totalMember + 1,
+      },
+    }));
+  };
+
+  const handleCreateMeeting = async () => {
     try {
-      const response = await axios.post(
-        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/meetings',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      Alert.alert("Success", "Meeting created successfully!");
-      console.log(response.data);
+        const payload = {
+            address: meeting.data.address,
+            cancelBefore: meeting.data.cancelBefore,
+            currentLogin: meeting.data.currentLogin,
+            endDate: meeting.data.endDate,
+            isPublic: meeting.data.isPublic,
+            meetingImage: meeting.data.meetingImage,
+            meetingName: meeting.data.meetingName,
+            note: meeting.data.note,
+            sportId: meeting.data.sportId,
+            startDate: meeting.data.startDate,
+            totalMember: meeting.data.totalMember,
+            sportId: 2 // Nếu sportId là cần thiết ở đây
+        };
+
+        const response = await api.createMeeting(payload);
+        Alert.alert('Success', 'Meeting created successfully!');
+        console.log(response);
     } catch (error: any) {
-      console.error("Request error:", error.response?.data || error.message);
-  console.error("Response Status:", error.response?.status);
-  console.error("Response Headers:", error.response?.headers);
-  Alert.alert("Error", "Failed to create meeting. Please try again.");
+        console.error('API Error: ', error.response?.data);
+        Alert.alert('Error', 'Failed to create the meeting.');
     }
-  };
-  
+};
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => {}}>
+        <TouchableOpacity style={styles.backButton} onPress={() => { }}>
           <Ionicons name="arrow-back-circle-outline" color={"#ffff"} size={30} />
         </TouchableOpacity>
         <Text style={styles.headerText}>CREATE A MEET</Text>
@@ -91,7 +116,10 @@ const CreateMeetScreen = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.sportOptions}>
-          <SportChoose setSport={setSport} />
+          <SportChoose setSport={(sportId) => {
+            setSport(sportId);
+            setMeeting((prevMeeting) => ({ ...prevMeeting, sportId }));
+          }} />
         </View>
 
         <Text style={styles.sectionTitle}>MEET</Text>
@@ -101,45 +129,22 @@ const CreateMeetScreen = () => {
               <Ionicons name="calendar-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Select date</Text>
             </View>
-            <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
-              <Text style={styles.dateText}>{date.toDateString()}</Text>
+            <TouchableOpacity onPress={() => showDateTimePicker(true)}>
+              <Text>{meeting.data.startDate ? `Start Date: ${meeting.data.startDate}` : 'Select Start Date'}</Text>
+            </TouchableOpacity>
+
+
+
+
+            <TouchableOpacity onPress={() => showDateTimePicker(false)}>
+              <Text>{meeting.data.endDate ? `End Date: ${meeting.data.endDate}` : 'Select End Date'}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
-              mode="date"
+              mode="datetime"
               onConfirm={handleConfirmDate}
-              onCancel={hideDatePicker}
+              onCancel={hideDateTimePicker}
             />
-          </View>
-
-          <View style={styles.formItem}>
-            <View style={styles.formLabelContainer}>
-              <Ionicons name="timer-outline" color={"#ff951d"} size={20} />
-              <Text style={styles.formLabel}>Select time</Text>
-            </View>
-            <TouchableOpacity onPress={showTimePicker} style={styles.dateButton}>
-              <Text>{time.toLocaleTimeString()}</Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={isTimePickerVisible}
-              mode="time"
-              onConfirm={handleConfirmTime}
-              onCancel={hideTimePicker}
-            />
-          </View>
-
-          <View style={styles.formItem}>
-            <View style={styles.formLabelContainer}>
-              <Ionicons name="time-outline" color={"#ff951d"} size={20} />
-              <Text style={styles.formLabel}>Duration</Text>
-            </View>
-            <TextInput
-              style={styles.formInput}
-              value={duration.toString()}
-              onChangeText={(text) => setDuration(parseInt(text) || 1)}
-              keyboardType="numeric"
-            />
-            <Text style={styles.formUnit}>hour(s)</Text>
           </View>
 
           <View style={styles.formItemMeeting}>
@@ -149,8 +154,8 @@ const CreateMeetScreen = () => {
             </View>
             <TextInput
               style={styles.formInputMeeting}
-              value={location}
-              onChangeText={setLocation}
+              value={meeting.data.address}
+              onChangeText={(value) => handleInputChange('address', value)}
               placeholder="Enter location"
             />
           </View>
@@ -159,8 +164,8 @@ const CreateMeetScreen = () => {
             <Text style={styles.formLabel}>Set time to cancel</Text>
             <TextInput
               style={styles.formInput}
-              value={cancelTime.toString()}
-              onChangeText={(text) => setCancelTime(parseInt(text) || 4)}
+              value={meeting.data.cancelBefore.toString()}
+              onChangeText={(value) => handleInputChange('cancelBefore', value)}
               keyboardType="numeric"
             />
             <Text style={styles.formUnit}>hour(s)</Text>
@@ -172,11 +177,11 @@ const CreateMeetScreen = () => {
               <Text style={styles.formLabel}>Number of players</Text>
             </View>
             <View style={styles.playerCounter}>
-              <TouchableOpacity onPress={() => setNumPlayers(Math.max(numPlayers - 1, 1))} style={styles.counterButton}>
+              <TouchableOpacity onPress={incrementMember} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>-</Text>
               </TouchableOpacity>
-              <Text style={styles.counterText}>{numPlayers}</Text>
-              <TouchableOpacity onPress={() => setNumPlayers(numPlayers + 1)} style={styles.counterButton}>
+              <Text style={styles.counterText}>{meeting.data.totalMember}</Text>
+              <TouchableOpacity onPress={decrementMember} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>+</Text>
               </TouchableOpacity>
             </View>
@@ -186,22 +191,21 @@ const CreateMeetScreen = () => {
             <Text style={styles.formLabelMeeting}>Meet Name</Text>
             <TextInput
               style={styles.formInputMeeting}
-              value={meetName}
-              onChangeText={setMeetName}
+              value={meeting.data.meetingName}
+              onChangeText={(value) => handleInputChange('meetingName', value)}
               placeholder="Enter meet name"
             />
             <TextInput
               style={styles.formInputMeeting}
-              value={notes}
-              onChangeText={setNotes}
+              value={meeting.data.note}
+              onChangeText={(value) => handleInputChange('note', value)}
               multiline={true}
               placeholder="Add notes"
             />
           </View>
         </View>
-
         <View style={styles.buttonContainer}>
-          <Button title="Create Meet" onPress={handleCreateMeet} color="#f9ca24" />
+          <Button title="Create Meet" onPress={handleCreateMeeting} color="#f9ca24" />
         </View>
       </ScrollView>
     </View>

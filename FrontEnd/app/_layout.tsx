@@ -20,6 +20,13 @@ import BookingInformationPage from '@/screens/booking/bookingInfoPage';
 import PaymentSuccessPage from '@/screens/booking/paymentBooking';
 import YourMeeting from './(tabs)/club';
 import MyHistory from '@/screens/viewBookingHistory/bookingHistory';
+import BookingDetail from '@/screens/viewBookingHistory/historyDetail';
+import FeedbackPage from '@/screens/feedback/feedback';
+import OwnerTabLayout from './(ownertabs)/_layout';
+import PlayFieldDetailCard from '@/screens/playFieldDetail';
+import PlayfieldList from '@/screens/playField';
+import CreatePlayfield from '@/screens/createPlayField';
+import UpdatePlayField from '@/screens/updatePlayField';
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,7 +50,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme} independent={true} >
-        <Stack.Navigator initialRouteName="(tabs)" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Splash" component={SplashScreenComponent} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="NewPassword" component={NewPasswordScreen} />
@@ -57,7 +64,13 @@ export default function RootLayout() {
           <Stack.Screen name="PaymentBooking" component={PaymentSuccessPage} />
           <Stack.Screen name="YourMeeting" component={YourMeeting} />
           <Stack.Screen name="MyHistory" component={MyHistory} />
-
+          <Stack.Screen name="HistoryDetail" component={BookingDetail} />
+          <Stack.Screen name="FeedBack" component={FeedbackPage} />
+          <Stack.Screen name="(ownertabs)" component={OwnerTabLayout} options={{ headerShown: false }} />
+          <Stack.Screen name= "PlayfieldDetailCard" component={PlayFieldDetailCard}/>
+          <Stack.Screen name= "PlayFieldList" component={PlayfieldList}/>
+          <Stack.Screen name= "CreatePlayfield" component={CreatePlayfield}/>
+          <Stack.Screen name= "UpdatePlayfield" component={UpdatePlayField}/>
 
         </Stack.Navigator>
       </NavigationContainer>

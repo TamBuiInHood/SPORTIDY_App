@@ -24,20 +24,32 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation<LoginScreenNavigationProp>();
-
+  const users = [
+    { email: "user@gmail.com", password: "123456", role: "user" },
+    { email: "owner@gmail.com", password: "123456", role: "owner" },
+  ];
   const handleLogin = async () => {
-    if (email == 'admin@gmail.com' && password == '123456') {
+    const foundUser = users.find(
+      (user) => user.email === email && user.password === password
+    );
+  
+    if (foundUser) {
       try {
-        // Save email to AsyncStorage
         await AsyncStorage.setItem("userEmail", email);
-
-        // Navigate to UserProfile after successful login
-        navigation.navigate('(tabs)', { params: { screen: 'index' } });
+        await AsyncStorage.setItem("userRole", foundUser.role);
+  
+        console.log("User role:", foundUser.role);
+  
+        if (foundUser.role === "user") {
+          navigation.navigate("(tabs)", { params: { screen: "index" } });
+        } else if (foundUser.role === "owner") {
+          navigation.navigate("(ownertabs)", { params: { screen: "home" } });
+        }
       } catch (error) {
-        console.error("Failed to save email", error);
+        console.error("Failed to save data", error);
       }
     } else {
-      Alert.alert("Error", "Please enter both email and password.");
+      Alert.alert("Error", "Invalid email or password.");
     }
   };
 
