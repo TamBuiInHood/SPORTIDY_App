@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Dimensions } from 'react-native';
 import { NativeBaseProvider, Button } from 'native-base';
 import api from '../../config/axios';
-import { RouteProp, NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/types/types';
+import { RouteProp } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -16,31 +17,29 @@ const ClubDetailScreen = ({ navigation, route }: { navigation: ClubScreenNavigat
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isJoined, setIsJoined] = useState(false);
+    const [activeTab, setActiveTab] = useState('Post');
 
     useEffect(() => {
         const fetchClubDetails = async () => {
             try {
-                // Không cần fetch nữa, thay bằng data mẫu
+                // Dữ liệu mẫu
                 const mockClubDetails = {
-                  clubId: 1,
-                  clubCode: "PSG-FC",
-                  clubName: "Paris Saint-Germain FC",
-                  regulation: "Chưa có thông tin",
-                  information: "Thông tin về câu lạc bộ Paris Saint-Germain FC.",
-                  slogan: "Chơi cùng đam mê, chiến thắng rực rỡ!",
-                  mainSport: "Football",
-                  createDate: "2024-01-01T00:00:00Z",
-                  location: "Thủ Đức, Quận 9",
-                  totalMember: 100,
-                  avatarClub: "https://example.com/images/avatar-paris-sg.jpg",
-                  coverImageClub: "https://example.com/images/cover-paris-sg.jpg",
-                  listMember: []
+                    clubId: 1,
+                    clubCode: "PSG-FC",
+                    clubName: "Paris Saint-Germain FC",
+                    regulation: "Quy định câu lạc bộ Paris Saint-Germain FC.",
+                    information: "Thông tin về câu lạc bộ Paris Saint-Germain FC.",
+                    slogan: "Chơi cùng đam mê, chiến thắng rực rỡ!",
+                    mainSport: "Football",
+                    createDate: "2024-01-01T00:00:00Z",
+                    location: "Thủ Đức, Quận 9",
+                    totalMember: 100,
+                    avatarClub: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngegg.com%2Fvi%2Fpng-vhrfs&psig=AOvVaw1cZe2DKfNtJw-0G9GQn_vl&ust=1728535326958000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIDH-YK-gIkDFQAAAAAdAAAAABAE",
+                    coverImageClub: "https://cdn.builder.io/api/v1/image/assets/TEMP/cac9029126bb52849507b53ea4ecb5f6ca3e31522c984956a2339b1c1931935b?placeholderIfAbsent=true&apiKey=f8ccf21cf8ce4053b555f169e17dcf6a",
+                    listMember: []
                 };
                 setClubDetails(mockClubDetails);
-
-                // Kiểm tra trạng thái tham gia (gọi API riêng nếu cần)
-                // setIsJoined(isMemberResponse.data.isMember);
-                setIsJoined(false); // Giả sử chưa tham gia
+                setIsJoined(false);
             } catch (err) {
                 setError(err);
                 console.error("Error fetching club details:", err);
@@ -55,15 +54,15 @@ const ClubDetailScreen = ({ navigation, route }: { navigation: ClubScreenNavigat
     const handleJoinClub = async () => {
         try {
             // Gọi API để tham gia club (nếu cần)
-            // const response = await api.post(`/Club/join/${club.clubId}`);
-            // if (response.status === 200) {
-            //   setIsJoined(true); // Cập nhật trạng thái isJoined
-            // }
-            setIsJoined(true); // Thay bằng cập nhật trực tiếp
+            setIsJoined(true);
         } catch (error) {
             setError(error);
             console.error('Lỗi khi tham gia câu lạc bộ', error);
         }
+    };
+
+    const handleTabPress = (tabName) => {
+        setActiveTab(tabName);
     };
 
     if (loading) {
@@ -78,53 +77,49 @@ const ClubDetailScreen = ({ navigation, route }: { navigation: ClubScreenNavigat
         );
     }
 
-    // Hiển thị chi tiết club
-    if (clubDetails) {
-        return (
+    return (
+        <NativeBaseProvider>
             <ScrollView style={styles.container}>
                 <Image source={{ uri: clubDetails.coverImageClub }} style={styles.coverImage} />
-                <Text style={styles.clubName}>{clubDetails.clubName}</Text>
-                {/* Hiển thị các thông tin khác của club */}
-
-                <View style={styles.clubInfo}>
-                    <Text style={styles.clubInfoText}>
-                        <Text style={styles.label}>Slogan:</Text> {clubDetails.slogan}
-                    </Text>
-                    <Text style={styles.clubInfoText}>
-                        <Text style={styles.label}>Mô tả:</Text> {clubDetails.information}
-                    </Text>
-                    <Text style={styles.clubInfoText}>
-                        <Text style={styles.label}>Thể thao chính:</Text> {clubDetails.mainSport}
-                    </Text>
-                    <Text style={styles.clubInfoText}>
-                        <Text style={styles.label}>Địa điểm:</Text> {clubDetails.location}
-                    </Text>
-                    <Text style={styles.clubInfoText}>
-                        <Text style={styles.label}>Số lượng thành viên:</Text> {clubDetails.totalMember}
-                    </Text>
-                    <Text style={styles.clubInfoText}>
-                        <Text style={styles.label}>Ngày thành lập:</Text> {clubDetails.createDate}
-                    </Text>
+                <View style={styles.header}>
+                    <Text style={styles.clubName}>{clubDetails.clubName}</Text>
+                    <View style={styles.headerRight}>
+                        <Text style={styles.memberCount}>{clubDetails.totalMember} thành viên</Text>
+                        {isJoined ? (
+                            <Button variant="outline" style={styles.memberButton} disabled>Member</Button>
+                        ) : (
+                            <Button variant="outline" style={styles.joinButton} onPress={handleJoinClub}>Join in</Button>
+                        )}
+                    </View>
                 </View>
 
-                {/* Danh sách các trận đấu sắp diễn ra (cần fetch từ API) */}
-                {/* ... match list */}
-
-                <View style={styles.buttonContainer}>
-                    {isJoined ? (
-                        <TouchableOpacity style={styles.joinedButton} disabled>
-                            <Text style={styles.joinedButtonText}>Member</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity style={styles.joinButton} onPress={handleJoinClub}>
-                            <Text style={styles.joinButtonText}>Join in</Text>
-                        </TouchableOpacity>
-                    )}
+                <View style={styles.tabsContainer}>
+                    <TouchableOpacity style={[styles.tab, activeTab === 'Post' && styles.activeTab]} onPress={() => handleTabPress('Post')}>
+                        <Text style={[styles.tabText, activeTab === 'Post' && styles.activeTabText]}>Post</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.tab, activeTab === 'Information' && styles.activeTab]} onPress={() => handleTabPress('Information')}>
+                        <Text style={[styles.tabText, activeTab === 'Information' && styles.activeTabText]}>Information</Text>
+                    </TouchableOpacity>
                 </View>
+
+                {activeTab === 'Post' && (
+                    <View>
+                        {/* ... Nội dung cho tab "Post" */}
+                    </View>
+                )}
+                {activeTab === 'Information' && (
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoText}>Members: {clubDetails.totalMember}</Text>
+                        <Text style={styles.infoText}>Main Sport: {clubDetails.mainSport}</Text>
+                        <Text style={styles.infoText}>Location: {clubDetails.location}</Text>
+                        <Text style={styles.regulationTitle}>Regulation</Text>
+                        <Text style={styles.infoText}>{clubDetails.regulation}</Text>
+                    </View>
+                )}
 
             </ScrollView>
-        );
-    }
+        </NativeBaseProvider>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -133,74 +128,75 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     coverImage: {
-        width,
+        width: width,
         height: 200,
     },
-    clubInfoContainer: {
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+    },
+    headerRight: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
-    },
-    avatarImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        marginRight: 16,
-    },
-    clubNameContainer: {
-        justifyContent: 'center'
     },
     clubName: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
+        flex:1
     },
-    sportInfoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        marginTop: 8,
-    },
-    locationInfoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        marginTop: 4,
-    },
-    icon: {
-        width: 20,
-        height: 20,
-        marginRight: 8,
-    },
-    sportInfoText: {
+    memberCount: {
         fontSize: 16,
-    },
-    locationInfoText: {
-        fontSize: 16,
-    },
-    buttonContainer: {
-        padding: 16,
+        color: '#888',
     },
     joinButton: {
         backgroundColor: '#FFCC00',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 16,
+        marginLeft: 16,
     },
-    joinButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    joinedButton: {
+    memberButton: {
         backgroundColor: '#ddd',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
+        marginLeft: 16,
+
+    },
+    tabsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        paddingVertical: 8,
         marginTop: 16,
     },
-    joinedButtonText: {
-        color: '#888',
+    tab: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    activeTab: {
+        borderBottomWidth: 2,
+        borderBottomColor: '#FFCC00',
+    },
+    tabText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    activeTabText: {
+        color: '#FFCC00',
         fontWeight: 'bold',
+    },
+    infoContainer: {
+        marginTop: 8,
+        paddingHorizontal: 16,
+    },
+    regulationTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 16,
+    },
+    infoText: {
+        fontSize: 14,
+        lineHeight: 20,
+        marginTop: 4,
     },
     loadingIndicator: {
         flex: 1,
@@ -214,27 +210,6 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
-    },
-    introduc: {
-        borderColor: 'black',
-        borderWidth: 1,
-        marginTop: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        padding: 10
-    },
-    membercount: {
-        color: 'gray'
-    },
-    clubInfo: {
-        paddingHorizontal: 16,
-    },
-    clubInfoText: {
-        fontSize: 16,
-        marginBottom: 8,
-    },
-    label: {
-        fontWeight: 'bold',
     },
 });
 

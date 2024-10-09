@@ -30,6 +30,7 @@ import UpdatePlayField from '@/screens/updatePlayField';
 import ClubStackScreens from '@/components/navigation/ClubStackScreen'; 
 
 
+
 SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
