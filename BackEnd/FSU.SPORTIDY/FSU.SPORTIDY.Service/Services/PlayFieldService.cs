@@ -124,7 +124,9 @@ namespace FSU.SPORTIDY.Service.Services
 
             Func<IQueryable<PlayField>, IOrderedQueryable<PlayField>> orderBy = q => q.OrderBy(x => x.PlayFieldName);
 
-            var entities = await _unitOfWork.PlayFieldRepository.Get(filter: filter, orderBy: orderBy, pageIndex: pageIndex, pageSize: pageSize);
+            string includePropoperties = "User,Sport";
+
+            var entities = await _unitOfWork.PlayFieldRepository.Get(filter: filter, orderBy: orderBy, pageIndex: pageIndex, pageSize: pageSize, includeProperties: includePropoperties);
             var pagin = new PageEntity<PlayFieldModel>();
             pagin.List = _mapper.Map<IEnumerable<PlayFieldModel>>(entities);
             pagin.TotalRecord = await _unitOfWork.PlayFieldRepository.Count();
@@ -180,7 +182,7 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 playfield.PlayFieldName = updateplayField.PlayFieldName;
             }
-            if (!updateplayField.Price.HasValue)
+            if (updateplayField.Price.HasValue)
             {
                 playfield.Price = updateplayField.Price;
                 playfield.ListSubPlayFields!.ToList().ForEach(x => x.Price = updateplayField.Price);
@@ -191,13 +193,13 @@ namespace FSU.SPORTIDY.Service.Services
                 playfield.ListSubPlayFields!.ToList().ForEach(x => x.Address = updateplayField.Address);
 
             }
-            if (!updateplayField.OpenTime.HasValue)
+            if (updateplayField.OpenTime.HasValue)
             {
                 playfield.OpenTime = updateplayField.OpenTime;
                 playfield.ListSubPlayFields!.ToList().ForEach(x => x.OpenTime = updateplayField.OpenTime);
 
             }
-            if (!updateplayField.CloseTime.HasValue)
+            if (updateplayField.CloseTime.HasValue)
             {
                 playfield.CloseTime = updateplayField.CloseTime;
                 playfield.ListSubPlayFields!.ToList().ForEach(x => x.CloseTime = updateplayField.CloseTime);
@@ -221,6 +223,39 @@ namespace FSU.SPORTIDY.Service.Services
             }
             playfield.Status = status;
             playfield.ListSubPlayFields.ToList().ForEach(x => x.Status = status);
+            _unitOfWork.PlayFieldRepository.Update(playfield);
+            var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
+            return result;
+        }
+
+        public async Task<bool> UpdatePlayFieldForAdmin(PlayFieldModel updateplayField)
+        {
+            Expression<Func<PlayField, bool>> filter = x => x.PlayFieldId == updateplayField.PlayFieldId;
+            string includeProperties = "ListSubPlayFields";
+            var playfield = await _unitOfWork.PlayFieldRepository.GetByCondition(filter, includeProperties);
+            if (playfield == null)
+            {
+                throw new Exception("This playfield is not exist");
+            }
+            if (!updateplayField.PlayFieldName.IsNullOrEmpty())
+            {
+                playfield.PlayFieldName = updateplayField.PlayFieldName;
+            }
+            if (updateplayField.Price.HasValue)
+            {
+                playfield.Price = updateplayField.Price;
+                playfield.ListSubPlayFields!.ToList().ForEach(x => x.Price = updateplayField.Price);
+            }
+            if (!updateplayField.Address.IsNullOrEmpty())
+            {
+                playfield.Address = updateplayField.Address;
+                playfield.ListSubPlayFields!.ToList().ForEach(x => x.Address = updateplayField.Address);
+
+            }
+            if(updateplayField.Status >= 0)
+            {
+                playfield.Status = updateplayField.Status;
+            }
             _unitOfWork.PlayFieldRepository.Update(playfield);
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
             return result;

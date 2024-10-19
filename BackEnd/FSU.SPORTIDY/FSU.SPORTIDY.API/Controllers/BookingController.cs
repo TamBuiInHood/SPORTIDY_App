@@ -25,7 +25,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost(APIRoutes.Booking.Add, Name = "AddBookingAsync")]
-        public async Task<IActionResult> AddAsync([FromForm] AddBookingRequest reqObj)
+        public async Task<IActionResult> AddAsync([FromBody] AddBookingRequest reqObj)
         {
             try
             {
@@ -39,14 +39,36 @@ namespace FSU.SPORTIDY.API.Controllers
                         IsSuccess = false
                     });
                 }
+                DateTime startDate = new DateTime(2024, 10, 19); 
+                DateTime endDate = new DateTime(2024, 10, 24);
                 var dto = new BookingModel();
                 //dto.BookingCode = reqObj.bookingCode;
                 dto.DateStart  = reqObj.dateStart;
                 dto.DateEnd = reqObj.dateEnd;
-                dto.Price = reqObj.price;
                 dto.PlayFieldId = reqObj.playFieldId;
                 dto.Description = reqObj.description;
                 dto.CustomerId = reqObj.customerId;
+                dto.Price = reqObj.price;
+               if(!string.IsNullOrEmpty(reqObj.voucher))
+                {
+                    dto.Voucher = reqObj.voucher;
+                    if (reqObj.dateStart >= startDate && reqObj.dateStart <= endDate)
+                    {
+                        if (reqObj.voucher.Equals("20/10PHUNUVIETNAM"))
+                        {
+                            dto.Price = reqObj.price * 0.9;
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest(new BaseResponse
+                        {
+                            StatusCode = StatusCodes.Status400BadRequest,
+                            Message = "Voucher is invalid",
+                            IsSuccess = false
+                        });
+                    }
+                }
 
                 var MeetingAdd = await _bookingService.Insert(dto, reqObj.barCode!);
                 if (MeetingAdd == null)

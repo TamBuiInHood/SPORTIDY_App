@@ -11,5 +11,7 @@
         public TimeOnly? openTime { get; set; }
 
         public TimeOnly? closeTime { get; set; }
+
+        public int status { get; set; }
     }
 }

@@ -320,5 +320,49 @@ namespace FSU.SPORTIDY.API.Controllers
                 });
             }
         }
+
+        //[Authorize(Roles = UserRoles.Admin)]
+        [HttpPut(APIRoutes.Playfields.UpdateForAdmin, Name = "UpdatePlayfieldForAdminAsync")]
+        public async Task<IActionResult> UpdatePlayfieldForAdminAsync([FromRoute(Name = "playfieldId")] int playfieldId, [FromBody] UpdatePlayfield reqObj)
+        {
+            try
+            {
+                var dto = new PlayFieldModel();
+                dto.PlayFieldId = playfieldId;
+                dto.PlayFieldName = reqObj.playfieldName;
+                dto.Status = reqObj.status;
+                dto.Price = reqObj.price;
+                dto.Address = reqObj.address;
+
+                var result = await _playFieldService.UpdatePlayFieldForAdmin(dto);
+                if (result == false)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Update fail",
+                        Data = null,
+                        IsSuccess = false
+                    });
+                }
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Update successfully",
+                    Data = result,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    Data = null,
+                    IsSuccess = false
+                });
+            }
+        }
     }
 }

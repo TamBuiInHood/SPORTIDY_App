@@ -105,6 +105,8 @@ namespace FSU.SPORTIDY.Service.Mapping
                 .ForMember(dest => dest.PlayFieldContainer, opt => opt.MapFrom(src => src.PlayFieldContainer))
                 .ForMember(dest => dest.Sport, opt => opt.MapFrom(src => src.Sport))
                 .ForMember(dest => dest.ListSubPlayFields, opt => opt.MapFrom(src => src.ListSubPlayFields))  // Nếu ListSubPlayFields là collection
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.SportName, opt => opt.MapFrom(src => src.Sport.SportName))
                 .ReverseMap();
             CreateMap<ImageField, ImageFieldModel>()
                 .ForMember(dest => dest.PlayField, opt => opt.Ignore())

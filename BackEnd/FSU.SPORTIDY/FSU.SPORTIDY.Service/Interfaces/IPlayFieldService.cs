@@ -23,5 +23,6 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<bool> UpdateAvatarImage(IFormFile avatarImage, int PlayFielId);
 
         public Task<bool> UpdateStatusPlayfield(int playfieldId, int status);
+        public Task<bool> UpdatePlayFieldForAdmin(PlayFieldModel updateplayField);
     }
 }
