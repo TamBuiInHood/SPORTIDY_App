@@ -39,8 +39,7 @@ namespace FSU.SPORTIDY.API.Controllers
                         IsSuccess = false
                     });
                 }
-                DateTime startDate = new DateTime(2024, 10, 19); 
-                DateTime endDate = new DateTime(2024, 10, 24);
+               
                 var dto = new BookingModel();
                 //dto.BookingCode = reqObj.bookingCode;
                 dto.DateStart  = reqObj.dateStart;
@@ -52,22 +51,26 @@ namespace FSU.SPORTIDY.API.Controllers
                if(!string.IsNullOrEmpty(reqObj.voucher))
                 {
                     dto.Voucher = reqObj.voucher;
-                    if (reqObj.dateStart >= startDate && reqObj.dateStart <= endDate)
+                    DateTime startDate = new DateTime(2024, 10, 19);
+                    DateTime endDate = new DateTime(2024, 10, 24);
+                    if (reqObj.voucher.Equals("20/10PHUNUVIETNAM"))
                     {
-                        if (reqObj.voucher.Equals("20/10PHUNUVIETNAM"))
+                        if (reqObj.dateStart >= startDate && reqObj.dateStart <= endDate)
                         {
                             dto.Price = reqObj.price * 0.9;
                         }
-                    }
-                    else
-                    {
-                        return BadRequest(new BaseResponse
+                        else
                         {
-                            StatusCode = StatusCodes.Status400BadRequest,
-                            Message = "Voucher is invalid",
-                            IsSuccess = false
-                        });
+                            return BadRequest(new BaseResponse
+                            {
+                                StatusCode = StatusCodes.Status400BadRequest,
+                                Message = "Voucher is invalid",
+                                IsSuccess = false
+                            });
+                        }
+
                     }
+                   
                 }
 
                 var MeetingAdd = await _bookingService.Insert(dto, reqObj.barCode!);

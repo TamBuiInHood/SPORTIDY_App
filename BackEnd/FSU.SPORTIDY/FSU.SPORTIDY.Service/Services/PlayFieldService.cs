@@ -28,6 +28,11 @@ namespace FSU.SPORTIDY.Service.Services
         public async Task<PlayFieldModel> CreatePlayField(PlayFieldModel playFieldModel, List<IFormFile> listImage, IFormFile AvatarImage, List<string> subPlayfields)
         {
             var playfield = new PlayField();
+            User getUser = null;
+            if (playFieldModel.UserId != null)
+            {
+                 getUser = await _unitOfWork.UserRepository.GetUserByIdAsync(playFieldModel.UserId.Value);
+            }
             _mapper.Map(playFieldModel, playfield);
             playfield.PlayFieldCode = Guid.NewGuid().ToString();
             playfield.Status = (int)PlayFieldStatus.WAITINGACCEPT;
@@ -60,6 +65,10 @@ namespace FSU.SPORTIDY.Service.Services
 
             }
 
+
+            playfield.User = getUser;
+            await _unitOfWork.PlayFieldRepository.Insert(playfield);
+
             foreach (var nameSubFieldToAdd in subPlayfields)
             {
                 var subplayfield = new PlayField();
@@ -68,11 +77,10 @@ namespace FSU.SPORTIDY.Service.Services
                 subplayfield.Status = (int)PlayFieldStatus.WAITINGACCEPT;
 
                 subplayfield.PlayFieldName = nameSubFieldToAdd;
-                //subplayfield.IsDependency = playfield.PlayFieldId;
-                playfield.ListSubPlayFields!.Add(subplayfield);
+                subplayfield.UserId = playfield.UserId;
+                subplayfield.User = getUser;
+                await _unitOfWork.PlayFieldRepository.Insert(subplayfield);
             }
-
-            await _unitOfWork.PlayFieldRepository.Insert(playfield);
 
 
             var result = await _unitOfWork.SaveAsync() > 0 ? true : false;
