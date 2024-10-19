@@ -249,7 +249,7 @@ namespace FSU.SPORTIDY.Service.Services
 
                 _mapper.Map(entityInsert, booking);
                 // upload barcode to firebase
-                booking.BookingCode = DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString() ;
+                booking.BookingCode = Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds()).ToString() ;
 
                 if (barCode != null)
                 {

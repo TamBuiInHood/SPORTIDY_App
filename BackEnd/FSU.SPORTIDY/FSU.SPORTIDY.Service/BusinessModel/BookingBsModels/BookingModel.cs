@@ -39,6 +39,8 @@ namespace FSU.SPORTIDY.Service.BusinessModel.BookingBsModels
         public string? BankCode { get; set; }
         public string? BankName { get; set; }
         public string? PlayFieldOwnerName { get; set; }
+        public string? Voucher { get; set; }
+
 
         public virtual PlayFieldModel PlayField { get; set; } = null!;
 
