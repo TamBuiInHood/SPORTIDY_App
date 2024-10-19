@@ -48,6 +48,7 @@ namespace FSU.SPORTIDY.API.Controllers
                 playfieldModel.OpenTime = TimeOnly.FromDateTime(reqObj.openTime!.Value);
                 playfieldModel.SportId = reqObj.sportId;
                 playfieldModel.Price = reqObj.price;
+                playfieldModel.UserId = reqObj.currentIdLogin;
 
                 var listImage = new List<IFormFile>();
                 reqObj.addImageField.OrderBy(x => x.ImageIndex);

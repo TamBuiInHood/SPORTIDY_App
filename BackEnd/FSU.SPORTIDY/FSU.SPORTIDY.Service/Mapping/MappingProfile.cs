@@ -101,9 +101,9 @@ namespace FSU.SPORTIDY.Service.Mapping
             CreateMap<PlayField, PlayFieldModel>()
                 .ForMember(dest => dest.Bookings, opt => opt.MapFrom(src => src.Bookings))
                 .ForMember(dest => dest.ImageFields, opt => opt.MapFrom(src => src.ImageFields))  // Nếu ImageFields là collection
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))  // Nếu User là object khác
+                //.ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))  // Nếu User là object khác
                 .ForMember(dest => dest.PlayFieldContainer, opt => opt.MapFrom(src => src.PlayFieldContainer))
-                .ForMember(dest => dest.Sport, opt => opt.MapFrom(src => src.Sport))
+                //.ForMember(dest => dest.Sport, opt => opt.MapFrom(src => src.Sport))
                 .ForMember(dest => dest.ListSubPlayFields, opt => opt.MapFrom(src => src.ListSubPlayFields))  // Nếu ListSubPlayFields là collection
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.SportName, opt => opt.MapFrom(src => src.Sport.SportName))

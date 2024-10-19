@@ -8,11 +8,8 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
 {
     public class AddPlayfiedRequest
     {
-        [Required]
         public int? currentIdLogin { get; set; }
-        [Required]
         public string? playfieldName { get; set; }
-        [Required]
         public int? price { get; set; }
         [Required]
         public string? address { get; set; }
@@ -25,7 +22,6 @@ namespace FSU.SPORTIDY.API.Payloads.Request.PlayfieldRequest
         public List<string> subPlayfieds { get; set; } = new List<string>();
         [Required]
         public int sportId { get; set; }
-        [Required]
         [FromForm]
         [FileFormat(".jpg", ".jpeg", ".png")]
         public IFormFile? avatarImage { get; set; }
