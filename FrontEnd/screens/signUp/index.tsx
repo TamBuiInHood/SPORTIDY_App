@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/types";
 import Divider from "@/components/Divider";
 import { LinearGradient } from "expo-linear-gradient";
+import axios from 'axios';
 
 type SignUpScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -20,11 +21,42 @@ const SignUpScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSignUp = () => {
-    console.log("Sign up with:", email, password);
-    Alert.alert("Sign up successfully")
-    navigation.navigate("Login")
-;  };
+  // API URL
+  const API_URL = "https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/authentication/register";  // Thay đổi URL theo API của bạn
+
+  // Hàm đăng ký tài khoản
+  const handleSignUp = async () => {
+    if (!email || !password || !confirmPassword) {
+      Alert.alert("Error", "All fields are required.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match.");
+      return;
+    }
+
+    const payload = {
+      email: email,
+      password: password,
+      fullName: "FullName",  
+      confirmPassword: confirmPassword,
+      role: 1, 
+    };
+
+    try {
+      const response = await axios.post(API_URL, payload);
+      if (response.status === 200) {
+        Alert.alert("Success", "Account created successfully");
+        navigation.navigate("Login");
+      } else {
+        Alert.alert("Error", "Failed to create account");
+      }
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      Alert.alert("Error", "Something went wrong. Please try again later.");
+    }
+  };
 
   const handleGoogleSignUp = () => {
     console.log("Sign up with Google");
@@ -37,7 +69,7 @@ const SignUpScreen = () => {
         <Text style={styles.subtitle}>Sign Up to get started</Text>
       </View>
       <LinearGradient
-        colors={[ "#F9BC2C","#F74c06"]}
+        colors={["#F9BC2C", "#F74c06"]}
         style={styles.form}
       >
         <View style={styles.inputContainer}>
@@ -81,8 +113,8 @@ const SignUpScreen = () => {
           style={styles.googleButton}
           onPress={handleGoogleSignUp}
         >
-           <Image
-            source={{ uri: 'https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png' }}
+          <Image
+            source={{ uri: "https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" }}
             style={styles.googleIcon}
           />
           <Text style={styles.googleButtonText}>Google</Text>

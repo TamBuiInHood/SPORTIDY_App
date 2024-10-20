@@ -23,7 +23,7 @@ const BookingScreen: React.FC = () => {
   };
   const fetchData = async () => {
     try {
-      const response = await api.getAllPlayField(0, 20);
+      const response = await api.getAllPlayField(0, 50);
       console.log('response:', response);
       console.log('response.data:', response.data);
       const result: PlayField = response.data;
@@ -45,10 +45,8 @@ const BookingScreen: React.FC = () => {
     fetchData();
   }, []);
 
-  const recentPlayfields = playfields.slice(0, 3);
-  const bestPlayfields = playfields
-    .sort((a, b) => a.price - b.price)
-    .slice(0, 3);
+  const recentPlayfields = playfields.slice(0, 15);
+  const bestPlayfields = playfields.slice(16,21);
   const nearestPlayfields = playfields.filter(playfield => playfield.address.includes("Phú Giáo"));
   const renderPlayfields = (playfields: PlayField[]) => (
     <FlatList

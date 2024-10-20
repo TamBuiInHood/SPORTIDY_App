@@ -13,12 +13,13 @@ const PaymentSuccessPage: React.FC = () => {
 
   const {
     bookingCode,
-    totalPrice,
-    dateStart,
-    dateEnd,
+    amount,
     playfieldName,
-    location,
+    buyerName,
+    buyerPhone,
+    dateStart,
     time,
+    location,
   } = route.params || {};
 
   const orderDetails = {
@@ -26,14 +27,15 @@ const PaymentSuccessPage: React.FC = () => {
     paymentMethod: "Chuyển khoản",
     paymentDate: new Date().toLocaleDateString(), // Lấy ngày thanh toán hiện tại
     paymentTime: new Date().toLocaleTimeString(), // Lấy thời gian thanh toán hiện tại
-    amountPaid: `${totalPrice} VND`,
+    amountPaid: `${amount} VND`,
     status: "Successful",
     playfieldName: playfieldName,
     address: location,
     timeSlot: time,
-    dateEnd: dateEnd,
     dateStart: dateStart,
     time: time,
+    buyerName: buyerName,
+    buyerPhone: buyerPhone,
   };
 
   const orderDetailsString = JSON.stringify(orderDetails);
@@ -75,6 +77,14 @@ const PaymentSuccessPage: React.FC = () => {
           <Text style={styles.label}>Playfield:</Text>
           <Text style={styles.value}>{orderDetails.playfieldName}</Text>
         </View>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Name:</Text>
+          <Text style={styles.value}>{orderDetails.buyerName}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Text style={styles.label}>Phone Number:</Text>
+          <Text style={styles.value}>{orderDetails.buyerPhone}</Text>
+        </View>
       </View>
 
       <SvgQRCode value={orderDetailsString} size={150} />
@@ -88,19 +98,19 @@ const PaymentSuccessPage: React.FC = () => {
               playfieldName,
               location,
               time: time,
-              status: 'Not yet', 
-              price: totalPrice,
-              dateStart: dateStart,  
-              dateEnd: dateEnd,
+              status: 'Not yet',
+              price: amount,
+              dateStart: dateStart,
+              buyerName,
+              buyerPhone,
             },
-            // Add more booking items as needed
           ],
         })
         }>
         <Text style={styles.returnButtonText}>My Booking</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.returnButton}
-      onPress={() => navigation.navigate('(tabs)')}>
+        onPress={() => navigation.navigate('(tabs)')}>
         <Text style={styles.returnButtonText}>Return</Text>
       </TouchableOpacity>
     </View>

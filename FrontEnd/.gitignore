@@ -18,3 +18,7 @@ web-build/
 
 expo-env.d.ts
 # @end expo-cli
+
+git rm -r --cached ios
+git rm -r --cached android
+git commit -m "Remove ios and android folders from version control"

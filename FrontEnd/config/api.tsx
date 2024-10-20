@@ -12,11 +12,10 @@ const api = {
     const url = `/sportidy/meetings/${meetingId}`;
     return axiosClient.get<Card>(url)
   },
-  joinMeeting: (userId: number, clubId: number, meetingId: number) => {
+  joinMeeting: (userId: any, meetingId: number) => {
     const url = `/sportidy/meetings/engage-to-meeting`;
     return axiosClient.post(url, {
       userId: userId,
-      clubId: clubId,
       meetingId: meetingId
     })
   },

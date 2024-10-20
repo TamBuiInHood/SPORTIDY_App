@@ -1,158 +1,130 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, Image, Dimensions, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import ProgressBar from '@/components/ProgressBar';
-import { RadioButton } from 'react-native-paper';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, Linking, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import axios from 'axios';
 import { RootStackParamList } from '@/types/types';
-import { Ionicons } from '@expo/vector-icons';
-import QRCode from 'react-native-qrcode-svg';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RadioButton } from 'react-native-paper';  // Assuming you're using this for payment methods
+import ProgressBar from '@/components/ProgressBar';
 
-type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "BookingInformationPage">;
+type CheckoutPageNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CheckoutPage'>;
 
-const { width } = Dimensions.get('window');
-
-const BookingInformationPage: React.FC = () => {
+const CheckoutPage: React.FC = () => {
   const route = useRoute();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('Transfer');
-  const [date, setDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState('1');
-  const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
-  const [bookingCode, setBookingCode] = useState<string | null>(null); // Initialize bookingCode in state
-  const qrCodeRef = useRef<QRCode | null>(null);
-  const navigation = useNavigation<PaymentScreenNavigationProp>();
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const { playfieldName, address, image, price } = route.params;  
-  const timeOptions = [
-    { label: '1h', value: '1' },
-    { label: '2h', value: '2' },
-    { label: '3h', value: '3' },
-  ];
-  const totalPrice = price * parseInt(selectedTime);
+  const navigation = useNavigation<CheckoutPageNavigationProp>();
 
-  const showDatePicker = () => setDatePickerVisibility(true);
-  const hideDatePicker = () => setDatePickerVisibility(false);
-  const handleConfirmDate = (selectedDate: any) => {
-    setDate(selectedDate);
-    hideDatePicker();
-  };
- 
+  // Check xem các giá trị từ route.params có truyền đúng không
+  console.log('Route Params:', route.params);  // Thêm dòng này
+
+  const { bookingCode, bookingDetails, playFieldName, address, userName, phoneNumber } = route.params;
+  console.log('Route Params:', route.params);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('PayOS');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const dateTimeString = bookingDetails.dateStart;
+  const [datePart, timePart] = dateTimeString.split('T');
+  const formattedDate = datePart;
+  const formattedTime = timePart.substring(0, 5);
+  const priceFormatted = new Intl.NumberFormat('vi-VN', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+  }).format(bookingDetails.price);
+
   const handlePlaceOrder = async () => {
+    setIsProcessing(true);
     try {
-      // Step 1: Generate a booking code
-      const randomCode = Math.floor(100000000 + Math.random() * 900000000).toString();
-      setBookingCode(randomCode);
-  
-      // Wait for bookingCode to update in state
-      if (randomCode) {
-        // Step 2: Create payment link
-        const paymentData = {
-          bookingCode: randomCode, // Use the generated randomCode
-          amount: totalPrice,
-          description: "Booking Football Field",
-          buyerName: "User",
-          buyerPhone: "0123456789",
-          userId: "user123",
-          playfieldName,
-          playfieldId: 1,
-          address,
-          hour: parseInt(selectedTime),
-        };
-  
-        const paymentResponse = await axios.post(
-          'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/payment/create-payment-link',
-          paymentData
-        );
-  
-        console.log('Payment API Response:', paymentResponse.data);
-  
-        // Step 3: Check and open payment link
-        if (paymentResponse.data?.data?.checkoutUrl) {
-          const checkoutUrl = paymentResponse.data.data.checkoutUrl;
-  
-          // Open payment link in the default browser
-          await Linking.openURL(checkoutUrl);
-  
-          // Step 4: Navigate to PaymentBookingPage with booking details
-          navigation.navigate('PaymentBooking', {
-            bookingCode: randomCode, // Pass the correct booking code
-            totalPrice: totalPrice,
-            dateStart: date.toISOString(),
-            dateEnd: new Date(date.getTime() + parseInt(selectedTime) * 60 * 60 * 1000).toISOString(),
-            playfieldName ,// Pass here
-            location: address,
-            time: selectedTime,
-          });
-        } else {
-          Alert.alert('Error', 'Failed to retrieve payment URL.');
-        }
+      const paymentData = {
+        bookingCode: bookingCode,
+        amount: bookingDetails.price,
+        description: 'Booking Football Field',
+        playFieldId: bookingDetails.playFiedlId,
+        userId: bookingDetails.customerId.toString(),
+        playfieldName: playFieldName,
+        buyerName: userName,
+        buyerPhone: phoneNumber,
+        hour: 2
+      };
+      console.log(paymentData);
+      const paymentResponse = await axios.post(
+        'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/payment/create-payment-link',
+        paymentData
+      );
+
+      if (paymentResponse.data?.data?.checkoutUrl) {
+        const checkoutUrl = paymentResponse.data.data.checkoutUrl;
+        await Linking.openURL(checkoutUrl);
+        navigation.navigate('PaymentBooking', {
+          bookingCode: bookingCode, 
+          amount: bookingDetails.price,
+          description: 'Booking Football Field',
+          playFieldId: bookingDetails.playFiedlId,
+          playfieldName: playFieldName,
+          buyerName: userName,
+          buyerPhone: phoneNumber,
+          dateStart: formattedDate,
+          time: formattedTime,
+          location: address,
+        });
+      } else {
+        Alert.alert('Error', 'Failed to retrieve payment URL.');
       }
     } catch (error: any) {
-      console.error('Error during booking or payment:', error.response?.data || error.message);
-      Alert.alert('Error', 'Failed to process your request. Please try again.');
+      console.error('Payment error:', error.response?.data || error.message);
+      Alert.alert('Error', 'Failed to process your payment. Please try again.');
+    } finally {
+      setIsProcessing(false);
     }
   };
+
+  // Kiểm tra dữ liệu trước khi render
+  if (!bookingCode || !bookingDetails) {
+    return (
+      <View style={styles.container}>
+        <Text>No booking details found. Please try again later.</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Booking Information</Text>
+      <Text style={styles.header}>Checkout</Text>
       <ProgressBar currentStep={2} />
-      <Image source={{uri: image}} style={styles.fieldImage} />
-      <Text style={styles.fieldName}>{playfieldName}</Text>
-      <Text style={styles.price}>{totalPrice.toLocaleString()}/hours</Text>
-      <Text style={styles.location}>{address}</Text>
 
-      <View style={styles.inputContainer}>
-        <View style={styles.row}>
-          <Ionicons name='card-outline' size={25} style={styles.icon}></Ionicons>
-          <Text style={styles.label}>
-            Payment Method</Text>
-        </View>
-        <View style={styles.radioGroup}>
+      {/* Section 1: Booking Summary */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Booking Summary</Text>
 
-          <Text style={styles.radioLabel}>Pay by Transfer</Text>
-          <Ionicons name='checkbox-sharp' size={25} color={'#ffd591'} />
+        {/* Hiển thị thông tin đặt chỗ */}
+        <Text style={styles.infoText}>Play Field: {playFieldName}</Text>
+        <Text style={styles.infoText}>Address: {address}</Text>
+        <Text style={styles.infoText}>Date: {formattedDate}</Text>
+        <Text style={styles.infoText}>Time: {formattedTime}</Text>
+        {/* Total Price */}
+        <View style={styles.priceContainer}>
+          <Text style={styles.totalPriceLabel}>Total Price:</Text>
+          <Text style={styles.totalPrice}> {priceFormatted} VND</Text>
         </View>
       </View>
 
-      <View style={styles.inputContainer}>
-        <View style={styles.row}>
-          <Ionicons name='calendar-outline' size={25} style={styles.icon} />
-          <Text style={styles.label}>Date</Text>
-          <TouchableOpacity onPress={showDatePicker} style={styles.dateButton}>
-              <Text style={styles.dateText}>{date.toDateString()}</Text>
-            </TouchableOpacity>
+      {/* Section 2: Payment Methods */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Payment Methods</Text>
+
+        {/* Payment Methods Radio Button */}
+        <View style={styles.paymentMethodContainer}>
+          <RadioButton
+            value="PayOS"
+            status={selectedPaymentMethod === 'PayOS' ? 'checked' : 'unchecked'}
+            onPress={() => setSelectedPaymentMethod('PayOS')}
+          />
+          <Text style={styles.paymentMethodText}>PayOS</Text>
         </View>
-        <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirmDate}
-              onCancel={hideDatePicker}
-            />
       </View>
 
-      <View style={styles.inputContainer}>
-        <View style={styles.row}>
-          <Ionicons name='time-outline' size={25} style={styles.icon} />
-          <Text style={styles.label}>Time</Text>
-        </View>
-        <DropDownPicker
-          open={openTimeDropdown}
-          value={selectedTime}
-          items={timeOptions}
-          setOpen={setOpenTimeDropdown}
-          setValue={setSelectedTime}
-          style={styles.dropdown}
-          containerStyle={styles.dropdownContainer}
-        />
-      </View>
-
-      <Text style={styles.totalPrice}>Total price:  {totalPrice.toLocaleString()} VND</Text>
-
-      <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder}>
-        <Text style={styles.orderButtonText}>Place Order</Text>
+      {/* Place Order Button */}
+      <TouchableOpacity style={styles.orderButton} onPress={handlePlaceOrder} disabled={isProcessing}>
+        <Text style={styles.orderButtonText}>
+          {isProcessing ? 'Processing...' : 'Place Order'}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -161,113 +133,71 @@ const BookingInformationPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
+    paddingTop: 30
   },
-  title: {
-    textAlign: 'center',
-    fontSize: 22,
+  header: {
+    fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 30,
-    backgroundColor: '#ff951d',
-    padding: 10,
-    color: '#ffff'
-  },
-  fieldImage: {
-    width: '100%',
-    height: width * 0.6,
-    borderRadius: 10,
+    textAlign: 'center',
     marginVertical: 20,
+    color: '#FF9800',
   },
-  fieldName: {
+  section: {
+    marginVertical: 20,
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+  },
+  sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#F58400',
-    textAlign: 'center',
-  },
-  price: {
-    fontSize: 16,
-    color: '#F58400',
     marginBottom: 10,
-    textAlign: 'center',
   },
-  location: {
-    fontSize: 14,
-    color: 'gray',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontWeight: '500',
-
-  },
-  dropdown: {
+  input: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 5,
+    borderRadius: 8,
+    padding: 12,
     marginVertical: 10,
+    backgroundColor: '#fff',
   },
-  dropdownContainer: {
-    height: 50,
-    width: '100%',
-  },
-  totalPrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  orderButton: {
-    backgroundColor: '#f39c12',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 80
-  },
-  orderButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  radioGroup: {
+  priceContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
-  radioLabel: {
-    marginLeft: 10,
-    fontSize: 16,
-  },
-  row: {
-    flexDirection: 'row', // Align items horizontally
-    alignItems: 'center',
-  },
-  icon: {
-    marginRight: 10, // Adjust space between icon and text
-  },
-  datePicker: {
-    marginRight: 120,
-    marginTop: 5,
-    color: 'white'
-  },
-  dateButton: {
-    backgroundColor: '#f1f1f1',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 10
-  },
-  dateText: {
+  totalPriceLabel: {
     fontSize: 16,
     color: '#333',
   },
+  totalPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FF9800',
+  },
+  paymentMethodContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  paymentMethodText: {
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  orderButton: {
+    backgroundColor: '#FF9800',
+    padding: 15,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  orderButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
 
-export default BookingInformationPage;
+export default CheckoutPage;

@@ -28,6 +28,8 @@ import PlayfieldList from '@/screens/playField';
 import CreatePlayfield from '@/screens/createPlayField';
 import UpdatePlayField from '@/screens/updatePlayField';
 import HomeScreen from './(tabs)';
+import CheckoutPage from '@/screens/booking/bookingInfoPage';
+import QRcodeDetail from '@/screens/scanQR';
 
 SplashScreen.preventAutoHideAsync();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -61,7 +63,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" component={TabLayout} options={{ headerShown: false }} />
           <Stack.Screen name="EventDetail" component={EventDetailScreen} />
           <Stack.Screen name="DetailBookingPage" component={DetailBookingPage} />
-          <Stack.Screen name="BookingInformationPage" component={BookingInformationPage} />
+          <Stack.Screen name="CheckoutPage" component={CheckoutPage} />
           <Stack.Screen name="PaymentBooking" component={PaymentSuccessPage} />
           <Stack.Screen name="YourMeeting" component={YourMeeting} />
           <Stack.Screen name="MyHistory" component={MyHistory} />
@@ -74,6 +76,8 @@ export default function RootLayout() {
           <Stack.Screen name= "UpdatePlayfield" component={UpdatePlayField}/>
           <Stack.Screen name= "BookingDetail" component={BookingDetail}/>
           <Stack.Screen name= "HomeScreen" component={HomeScreen}/>
+          <Stack.Screen name= "QRCode" component={QRcodeDetail}/>
+
 
         </Stack.Navigator>
       </NavigationContainer>

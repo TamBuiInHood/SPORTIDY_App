@@ -1,38 +1,55 @@
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, TextInput, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PlayField, RootStackParamList } from '@/types/types';
 import api from '@/config/api';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
 
 const DetailBookingPage: React.FC = () => {
   const route = useRoute<DetailBookingRouteProp>();
   const navigation = useNavigation();
+
+  const playId = route.params?.playFieldId;
+
+  const [playfields, setPlayFields] = useState<PlayField | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedTime, setSelectedTime] = useState<string>('1'); // Default duration of 1 hour
+  const [dateStart, setDateStart] = useState<Date | null>(null); // Initial state for date start
+  const [isDateTimePickerVisible, setDateTimePickerVisible] = useState(false); // State for controlling DateTimePicker visibility
+  const [openTimeDropdown, setOpenTimeDropdown] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [voucherCode, setVoucherCode] = useState<string>('PHUNUVIETNAM');
+  const formattedDate = dateStart ? dateStart.toISOString().slice(0, 10) : 'Select Date';
+
+  const timeOptions = [
+    { label: '1h', value: '1' },
+    { label: '2h', value: '2' },
+    { label: '3h', value: '3' },
+  ];
+
   const formatTime = (time: any) => {
     if (!time) return '--';
     const [hours, minutes] = time.split(':');
     return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
   };
-  const playId = route.params?.playFieldId;
 
-  const [playfields, setPlayFields] = useState<PlayField | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Loading state to manage API call state
-  const handlePress = () => {
-    if (playfields) {
-      navigation.navigate('BookingInformationPage', {
-        playFieldId: playfields.playFieldId,
-        playfieldName: playfields.playFieldName,  // Pass playfieldName
-        address: playfields.address,              // Pass address
-        price: playfields.price,
-        image: playfields.avatarImage,
-      })
-    } else {
-      console.error('Playfields data is not available');
-    }
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+
+  const handleConfirmDate = (selectedDate: any) => {
+    setDateStart(selectedDate);
+    hideDatePicker();
   };
+
+  // Fetch PlayField details
   useEffect(() => {
     const fetchPlayField = async () => {
       if (!playId) {
@@ -55,8 +72,97 @@ const DetailBookingPage: React.FC = () => {
 
     fetchPlayField();
   }, [playId]);
+
+  // Handle create booking logic
+  const handleCreateBooking = async () => {
+    if (!dateStart) {
+      Alert.alert('Error', 'Please select a date and time.');
+      return;
+    }
+
+    // Retrieve customerId from AsyncStorage
+    let customerId = await AsyncStorage.getItem('userId');
+    if (!customerId) {
+      Alert.alert('Error', 'No user found. Please log in again.');
+      return;
+    }
+
+    const formatDate = (date: Date) => {
+      return date.toISOString().slice(0, 19);  // Removes the last 5 characters (e.g., "Z")
+    };
+    
+  
+    const dateEnd = new Date(dateStart.getTime());
+    dateEnd.setHours(dateEnd.getHours() + parseInt(selectedTime)); // assuming selectedTime is the duration in hours
+    const dateStartString = formatDate(dateStart);
+    const dateEndString = formatDate(dateEnd);
+    if (dateEnd <= dateStart) {
+      Alert.alert('Error', 'End time must be after start time.');
+      return;
+    }
+
+    // Calculate price based on duration (price per hour * selected duration)
+    const totalPrice = playfields?.price * parseInt(selectedTime);
+
+    const bookingData = {
+      playfieldId: playfields?.playFieldId,
+      customerId: customerId,
+      price: totalPrice, // Calculated price based on duration
+      dateStart: dateStartString,
+      dateEnd: dateEndString,
+      voucher: voucherCode,
+    };
+
+    console.log('Booking Data:', bookingData);
+
+    // API call to create booking
+    try {
+      const response = await fetch('https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Booking created successfully:', result);
+        const bookingCode = result.data.bookingCode;
+        const bookingDetails = result.data;
+        navigation.navigate('CheckoutPage', {
+          bookingCode: bookingCode,
+          bookingDetails: bookingDetails,
+          playFieldName: playfields?.playFieldName, // Tên sân chơi
+          address: playfields?.address, // Địa chỉ
+          userName: userName, // Include userName
+          phoneNumber: phoneNumber, // Include phoneNumber
+        });
+        Alert.alert('Booking created successfully!');
+      } else {
+        const errorResponse = await response.json();
+        console.error('API Error:', errorResponse);
+        Alert.alert('Error creating booking', JSON.stringify(errorResponse.errors || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Something went wrong');
+    }
+  };
+
+  // Function to show the DateTime picker
+  const showDateTimePicker = () => {
+    setDateTimePickerVisible(true);
+  };
+
+  // Handle date and time selection
+  const handleDatePicked = (date: Date) => {
+    setDateStart(date);
+    setDateTimePickerVisible(false);
+  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
@@ -88,36 +194,86 @@ const DetailBookingPage: React.FC = () => {
       <View style={styles.details}>
         <Ionicons name='location-outline' size={20} />
         <Text style={styles.locationText}>{playfields?.address}</Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Enter your name</Text>
+          <TextInput
+            style={styles.input}
+            value={userName}
+            onChangeText={setUserName}
+            placeholder="Enter your name"
+          />
+        </View>
 
-        <Text style={styles.pitchStatusText}>Pitch ready:</Text>
-        {/* <FlatList
-          data={playfields?.price}
-          renderItem={({ item }) => (
-            <View style={styles.pitchOption}>
-              <Text style={styles.pitchOptionText}>{item.name} - {item.price}</Text>
-            </View>
-          )}
-          keyExtractor={item => item.name}
-        />
+        {/* Input for Phone Number */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholder="Enter your phone number"
+            keyboardType="phone-pad"
+          />
+        </View>
 
-        <Text style={styles.servicesText}>Services:</Text>
-        {playfield.services.map((service, index) => (
-          <Text key={index} style={styles.amenitiesText}>• {service}</Text>
-        ))} */}
+        <View style={styles.inputContainer}>
+          <View style={styles.row}>
+            <Text style={styles.label}>Duration</Text>
+          </View>
+          <DropDownPicker
+            open={openTimeDropdown}
+            value={selectedTime}
+            items={timeOptions}
+            setOpen={setOpenTimeDropdown}
+            setValue={setSelectedTime}
+            style={styles.dropdown}
+            containerStyle={styles.dropdownContainer}
+          />
+        </View>
 
-        <TouchableOpacity style={styles.bookingButton} onPress={handlePress}>
-          <Text style={styles.bookingButtonText}>Booking PlayFields</Text>
+        {/* Date and Time Picker Button */}
+
+        <Text style={styles.label}>Booking Date & Time</Text>
+
+        <TouchableOpacity style={styles.input} onPress={showDatePicker}>
+          <Text style={styles.dateText}>{formattedDate}</Text>
+          <Ionicons name="calendar-outline" size={24} style={styles.icon} />
         </TouchableOpacity>
+
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="datetime"
+          onConfirm={handleConfirmDate}
+          onCancel={hideDatePicker}
+        />
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Voucher Code</Text>
+          <TextInput
+            style={styles.input}
+            value={voucherCode}
+            onChangeText={setVoucherCode}
+            placeholder="Enter voucher code"
+          />
+        </View>
       </View>
-    </View>
+
+
+      <TouchableOpacity style={styles.bookingButton} onPress={handleCreateBooking}>
+        <Text style={styles.bookingButtonText}>Booking PlayFields</Text>
+      </TouchableOpacity>
+
+
+    </ScrollView >
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 30,
+    paddingBottom: 50
   },
   header: {
     flexDirection: 'row',
@@ -139,6 +295,7 @@ const styles = StyleSheet.create({
     color: '#F58400',
     marginTop: 5
   },
+
   buttonContainer: {
     flexDirection: 'column',
   },
@@ -223,6 +380,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  input: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#F58400',
+    fontWeight: 'bold',
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  icon: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
+    color: '#aaa',
+  },
 });
+
 
 export default DetailBookingPage;

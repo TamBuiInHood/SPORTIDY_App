@@ -8,42 +8,40 @@ export type RootStackParamList = {
   Verification: any;
   NewPassword: any;
   UserProfile: any;
-  '(tabs)': {
+  "(tabs)": {
     params: {
       screen: any;
     };
   };
-  '(ownertabs)': {
+  "(ownertabs)": {
     params: {
       screen: any;
     };
   };
   PlayField: any;
-  EventDetail: {meetingId: number},
+  EventDetail: { meetingId: number };
   HomeScreen: any;
   BookingScreen: any;
   DetailBookingPage: any;
-  BookingInformationPage: {
-    playFieldId: string ;
-    playFieldName: string ;
-    price: number;
-    address: string ;
-  };
+  CheckoutPage: any
   PaymentBooking: any;
   YourMeeting: any;
   MyHistory: any;
-  HistoryDetail: any; 
-  FeedBack: any,
-  PlayFieldDetail: { playfield: PlayField },
-  UpdatePlayfield: any,
-  CreatePlayfield: any,
-  BookingDetail: any,
-  PlayFieldList:any,
+  HistoryDetail: any;
+  FeedBack: any;
+  PlayFieldDetail: { playfield: PlayField };
+  UpdatePlayfield: any;
+  CreatePlayfield: any;
+  BookingDetail: any;
+  PlayFieldList: any;
   PlayfieldDetailCard: any;
-
+  QRCode: any
 };
-export type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
-export type DetailBookingRouteProp = RouteProp<RootStackParamList, 'DetailBookingPage'>;
+export type EventDetailRouteProp = RouteProp<RootStackParamList, "EventDetail">;
+export type DetailBookingRouteProp = RouteProp<
+  RootStackParamList,
+  "DetailBookingPage"
+>;
 
 export type TabParamList = {
   index: undefined;
@@ -53,14 +51,15 @@ export type TabParamList = {
   account: undefined;
 };
 
-export interface Card{
+export interface Card {
+  userMeetings: any;
   meetingId: number;
   meetingCode: string;
   meetingName: string | null;
   meetingImage: string;
   address: string;
-  startDate: string; 
-  endDate: string; 
+  startDate: string;
+  endDate: string;
   host: number;
   totalMember: number;
   isPublic: boolean;
@@ -68,26 +67,26 @@ export interface Card{
   note: string;
   sportId: number;
   cancelBefore: number;
-  clubName:string;
-  imageClub: string
+  clubName: string;
+  imageClub: string;
 }
 
 export interface MeetingsResponse {
   list: Card[];
 }
 
-export interface Booking{
-  bookingId: number,
-  bookingCode: string,
-  bookingDate: Date,
-  price: number,
-  dateStart: Date,
-  dateEnd: Date,
-  status: number,
-  barcode: string,
-  description: string,
-  customerId: number,
-  playField: PlayField
+export interface Booking {
+  bookingId: number;
+  bookingCode: string;
+  bookingDate: Date;
+  price: number;
+  dateStart: Date;
+  dateEnd: Date;
+  status: number;
+  barcode: string;
+  description: string;
+  customerId: number;
+  playField: PlayField;
 }
 
 export interface PlayField {
@@ -122,28 +121,28 @@ export interface MeetingDetail {
 }
 
 export interface Club {
-  clubId: number,
-  clubName: string,
-  clubCode: string,
-  regulation: string,
-  information: string,
-  slogan: string,
-  mainSport: string,
-  createDate: string,
-  location: string,
-  totalMember: number,
-  avatarClub: string,
-  coverImageClub: string
+  clubId: number;
+  clubName: string;
+  clubCode: string;
+  regulation: string;
+  information: string;
+  slogan: string;
+  mainSport: string;
+  createDate: string;
+  location: string;
+  totalMember: number;
+  avatarClub: string;
+  coverImageClub: string;
 }
 
-export interface Comment{
-  commentId: number,
-  commentCode: string,
-  commentDate: Date,
-  userId: number,
-  content: string,
-  image: string,
-  meetingId: number,
+export interface Comment {
+  commentId: number;
+  commentCode: string;
+  commentDate: Date;
+  userId: number;
+  content: string;
+  image: string;
+  meetingId: number;
 }
 
 export interface Sport {

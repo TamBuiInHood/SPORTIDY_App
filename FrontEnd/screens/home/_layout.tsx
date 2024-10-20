@@ -3,9 +3,11 @@ import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView } from 'rea
 import DetailHeader from '../../components/DetailHeader';
 import { Ionicons } from '@expo/vector-icons';
 import Discussion from '../discussion/discussion';
-import { Card, Club, EventDetailRouteProp, MeetingDetail } from '@/types/types';
+import { Card, Club, EventDetailRouteProp } from '@/types/types';
 import { useRoute } from '@react-navigation/native';
 import api from '@/config/api';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EventDetailScreen = () => {
     const route = useRoute<EventDetailRouteProp>();
@@ -15,21 +17,32 @@ const EventDetailScreen = () => {
     const [activeTab, setActiveTab] = useState<'details' | 'discussion'>('details');
     const [meeting, setMeeting] = useState<Card | null>(null);
     const [club, setClub] = useState<Club | null>(null);
-    const [userId, setUserId] = useState(6);
+    const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchMeeting = async () => {
+        const fetchUserIdAndMeeting = async () => {
             try {
+                // Fetch the userId from AsyncStorage
+                const id = await AsyncStorage.getItem('userId');
+                if (id) {
+                    setUserId(id);
+                }
+    
+                // Fetch the meeting details
                 const response = await api.getMeetingById(meetingId);
                 const result: Card = response.data;
                 setMeeting(result);
+    
+                // Check if the user is already in the meeting
+                if (result.userMeetings.some((userMeeting: { userId: number; }) => userMeeting.userId === parseInt(id))) {
+                    setJoined(true);  // User has already joined
+                }
             } catch (error) {
-                console.error('Failed to fetch meeting:', error);
-                setMeeting(null);
+                console.error('Failed to fetch userId or meeting:', error);
             }
         };
-
-        fetchMeeting();
+    
+        fetchUserIdAndMeeting();
     }, [meetingId]);
 
     if (!meeting) {
@@ -41,10 +54,10 @@ const EventDetailScreen = () => {
             return;
         }
         try {
-            const response = await api.joinMeeting(7, meeting.clubId, meeting.meetingId);
+            const response = await axios.post("https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/meetings/engage-to-meeting", {meetingId:meeting.meetingId, userId} );
             console.log('Successfully joined the meeting:', response.data);
             setJoined(true); 
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error joining the meeting:', error.response?.data || error.message);
         }
     };

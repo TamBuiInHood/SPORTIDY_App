@@ -1,8 +1,8 @@
-import ActionButtons from '@/components/ActionButton';
-import SearchBar from '@/components/SearchBar';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Event {
   id: number;
@@ -16,43 +16,67 @@ interface Event {
 }
 
 const YourMeeting = () => {
-  const mockData: Event[] = [
-    {
-      id: 1,
-      date: '08/06/2024',
-      time: '3:30 PM',
-      title: 'Football training with Coach TanHuynh',
-      location: 'Phu Giao, Binh Duong',
-      club: 'THE TAM CLUB',
-      participants: 5,
-      maxParticipants: 5,
-    },
-    {
-      id: 2,
-      date: '08/06/2024',
-      time: '6:00 PM',
-      title: 'Pickleball Training',
-      location: 'District 9, TPHCM',
-      club: 'NO CLUB',
-      participants: 10,
-      maxParticipants: 10,
-    },
-    {
-      id: 3,
-      date: '09/06/2024',
-      time: '5:00 AM',
-      title: 'Volleyball training with Coach TanHuynh',
-      location: 'District 1, TPHCM',
-      club: 'THE TAM CLUB',
-      participants: 1,
-      maxParticipants: 5,
-    },
-  ];
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        if (!userId) {
+          setError('User not found.');
+          setLoading(false);
+          return;  // Stop execution if userId is not found
+        }
+  
+        const response = await axios.get(
+          `https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/meetings/get-all-meeting-of-user/${userId}`
+        );
+  
+        console.log('API response:', response.data);  // Log the response
+  
+        const fetchedData = response.data.data;  // Correctly access the meetings array
+  
+        // Check if fetchedData is an array before calling .map()
+        if (!Array.isArray(fetchedData)) {
+          setError('Unexpected response format');
+          return;
+        }
+  
+        const formattedData = fetchedData.map((meeting: any) => ({
+          id: meeting.meetingId,
+          date: new Date(meeting.startDate).toLocaleDateString(),
+          time: new Date(meeting.startDate).toLocaleTimeString(),
+          title: meeting.meetingName,
+          location: meeting.address,
+          club: meeting.clubName || 'NO CLUB',
+          participants: meeting.totalMember,
+          maxParticipants: 10,
+        }));
+  
+        setEvents(formattedData);
+      } catch (err) {
+        console.error('Error fetching meetings:', err);
+        setError('Failed to fetch meetings.');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchMeetings();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
   return (
     <ScrollView style={styles.container}>
-
-      {mockData.map((event) => (
+      {events.map((event) => (
         <View key={event.id} style={styles.card}>
           <View style={styles.dateContainer}>
             <Text style={styles.dateText}>{event.date}</Text>
@@ -62,16 +86,13 @@ const YourMeeting = () => {
           <View style={styles.detailsContainer}>
             <View style={styles.clubContainer}>
               {event.title.toLowerCase().includes('football') && (
-                <Ionicons name='football-outline' color={'#ffd591'} size={30}
-                />
+                <Ionicons name="football-outline" color={'#ffd591'} size={30} />
               )}
               {event.title.toLowerCase().includes('pickleball') && (
-               <Ionicons name='football-outline' color={'#ffd591'} size={30}
-               />
+                <Ionicons name="football-outline" color={'#ffd591'} size={30} />
               )}
               {event.title.toLowerCase().includes('volleyball') && (
-               <Ionicons name='football-outline' color={'#ffd591'} size={30}
-               />
+                <Ionicons name="football-outline" color={'#ffd591'} size={30} />
               )}
 
               <Text style={styles.clubText}>{event.club}</Text>
@@ -94,17 +115,13 @@ const YourMeeting = () => {
                   />
                 ))}
 
-                {event.participants > 5 && (
-                  <Text>+others</Text> 
-                )}
+                {event.participants > 5 && <Text>+others</Text>}
               </View>
-
             </View>
           </View>
         </View>
-      ))
-      }
-    </ScrollView >
+      ))}
+    </ScrollView>
   );
 };
 
@@ -113,27 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: '#f9f9f9',
-    marginBottom: 100
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 150,
-  },
-  locationText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  notificationButton: {
-    backgroundColor: '#f1f1f1',
-    padding: 10,
-    borderRadius: 20,
-  },
-  availableText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
+    marginBottom: 100,
   },
   card: {
     backgroundColor: '#fff',
@@ -167,7 +164,7 @@ const styles = StyleSheet.create({
     marginTop: 7,
     fontSize: 14,
     fontWeight: 'bold',
-    marginLeft: 10
+    marginLeft: 10,
   },
   hostedText: {
     fontSize: 12,
@@ -175,9 +172,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     borderColor: '#f39c12',
     borderWidth: 1,
-    borderStyle: 'solid',
     borderRadius: 10,
-    padding: 5
+    padding: 5,
   },
   titleText: {
     fontSize: 16,

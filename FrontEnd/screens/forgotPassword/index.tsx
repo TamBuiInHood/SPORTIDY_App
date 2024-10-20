@@ -14,7 +14,6 @@ const ForgotPasswordScreen = () => {
   const navigation = useNavigation<ForgotPasswordScreenNavigationProp>();
 
   const handleResetPassword = () => {
-    // Implement password reset logic here
     if (!email) {
       alert("Please enter your email address");
       return;

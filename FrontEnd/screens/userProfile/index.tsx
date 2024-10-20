@@ -58,12 +58,16 @@ const UserProfile = () => {
                 />
             </View>
             <View style={styles.headerRightIconsContainer}>
-                <AntDesign
-                    style={styles.headerRightIcon}
-                    name="calendar"
-                    size={24}
-                    color="#F8931E"
-                />
+                <TouchableOpacity  onPress={() => navigation.navigate("MyHistory")}>
+                    <AntDesign
+                        style={styles.headerRightIcon}
+                        name="calendar"
+                        size={24}
+                        color="#F8931E"
+                       
+                    />
+                </TouchableOpacity>
+
                 <AntDesign
                     style={styles.headerRightIcon}
                     name="edit"
