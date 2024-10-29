@@ -12,5 +12,7 @@ namespace FSU.SPORTIDY.Repository.Interfaces
         public Task<List<Booking>> GetRevenuesByPlayFieldAndYearAsync(int playFieldId, int year);
         public Task<List<Booking>> GetBookingsByYearAsync(int month);
         public Task<List<Booking>> GetPlayFieldRateInBookingByYearAsync(int year);
+
+        public Task<List<Booking>> GetBookingsByOwnerId(int ownerId);
     }
 }

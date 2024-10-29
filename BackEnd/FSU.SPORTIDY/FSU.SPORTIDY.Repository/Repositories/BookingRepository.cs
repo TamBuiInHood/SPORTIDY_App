@@ -41,5 +41,13 @@ namespace FSU.SPORTIDY.Repository.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Booking>> GetBookingsByOwnerId(int ownerId)
+        {
+           var getListBooking = await context.Bookings
+                        .Include(b => b.PlayField)
+                        .Include(x => x.PlayField.User)
+                        .Where(x => x.PlayField.UserId == ownerId).ToListAsync();   
+           return getListBooking;
+        }
     }
 }

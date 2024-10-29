@@ -1,6 +1,7 @@
 ﻿using FSU.SPORTIDY.Service.BusinessModel.BookingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsBsModels;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,6 @@ namespace FSU.SPORTIDY.Service.Interfaces
         public Task<PlayFieldRevenueResponse> GetPlayFieldRevenueAsync(int playFieldId, int year);
         public Task<PlayFieldRevenueForAdmin> GetAnnualRevenueForAdminAsync(int month);
         public Task<FieldTypeResponse> GetFieldTypePercentageAsync(int year);
+        public Task<PlayFieldStatisticForOwner> GetStatisticPlayFieldForOwner(int ownerId);
     }
 }

@@ -362,5 +362,17 @@ namespace FSU.SPORTIDY.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet(APIRoutes.Booking.StatisticPlayFieldForOwner, Name = "Statistic PlayField For Owner")]
+        public async Task<IActionResult> StatisticPlayFieldForOwner([FromRoute(Name = "ownerId")] int ownerId)
+        {
+            var result = await _bookingService.GetStatisticPlayFieldForOwner(ownerId);
+
+            if (result == null)
+            {
+                return NotFound("No bookings found.");
+            }
+
+            return Ok(result);
+        }
     }
 }

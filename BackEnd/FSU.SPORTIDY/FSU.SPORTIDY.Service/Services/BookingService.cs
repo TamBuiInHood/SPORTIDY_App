@@ -10,6 +10,7 @@ using FSU.SPORTIDY.Repository.Utils;
 using FSU.SPORTIDY.Service.BusinessModel.BookingBsModels;
 using FSU.SPORTIDY.Service.BusinessModel.MeetingModels;
 using FSU.SPORTIDY.Service.BusinessModel.Pagination;
+using FSU.SPORTIDY.Service.BusinessModel.PlayFieldsBsModels;
 using FSU.SPORTIDY.Service.Interfaces;
 using FSU.SPORTIDY.Service.Utils;
 using Microsoft.AspNetCore.Http;
@@ -370,6 +371,15 @@ namespace FSU.SPORTIDY.Service.Services
                 TotalBooking = totalBookings,
                 FieldPercentages = fieldTypePercentages
             };
+        }
+
+        public async Task<PlayFieldStatisticForOwner> GetStatisticPlayFieldForOwner(int ownerId)
+        {
+            var listBooking = await _unitOfWork.BookingRepository.GetBookingsByOwnerId(ownerId);
+            var listBookingModel = _mapper.Map<List<BookingModel>>(listBooking);
+            var totalPrice = listBooking.Sum(booking => booking.Price);
+            var playFieldStatistic = new PlayFieldStatisticForOwner { revenue = totalPrice, listBooking = listBookingModel };
+            return playFieldStatistic;
         }
     }
 }

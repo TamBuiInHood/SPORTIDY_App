@@ -225,6 +225,8 @@
             public const string RevenuePlayFieldForAdmin = Base + "/bookings/statistic/{year}";
 
             public const string StatisticPlayFieldTypePercentage = Base + "/bookings/statistic/play-field-rate/{year}";
+
+            public const string StatisticPlayFieldForOwner = Base + "/bookings/owner/{ownerId}";
         }
 
         public static class Notifcation
