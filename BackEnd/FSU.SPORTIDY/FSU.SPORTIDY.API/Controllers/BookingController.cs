@@ -73,7 +73,8 @@ namespace FSU.SPORTIDY.API.Controllers
                    
                 }
 
-                var MeetingAdd = await _bookingService.Insert(dto, reqObj.barCode!);
+                //var MeetingAdd = await _bookingService.Insert(dto, reqObj.barCode!);
+                var MeetingAdd = await _bookingService.Insert(dto, null!);
                 if (MeetingAdd == null)
                 {
                     return NotFound(new BaseResponse

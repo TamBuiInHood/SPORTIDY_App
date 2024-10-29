@@ -60,7 +60,7 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 // Initialize filter expression
                 Expression<Func<Booking, bool>> filter = x => true;
-
+                Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = x => x.OrderByDescending(x => x.BookingDate);
                 // Try parsing searchKey as DateTime
                 if (DateTime.TryParse(searchKey, out DateTime parsedDate))
                 {
@@ -80,6 +80,7 @@ namespace FSU.SPORTIDY.Service.Services
                 var entities = await _unitOfWork.BookingRepository.Get(
                     filter: filter,
                     includeProperties: includeProperties,
+                    orderBy: orderBy,
                     pageSize: pageSize,
                     pageIndex: pageIndex
                 );
@@ -143,6 +144,7 @@ namespace FSU.SPORTIDY.Service.Services
             {
                 // Initialize filter expression
                 Expression<Func<Booking, bool>> filter = x => true;
+                Func<IQueryable<Booking>, IOrderedQueryable<Booking>> orderBy = x => x.OrderByDescending(x => x.BookingDate);
 
                 // Try parsing searchKey as DateTime
                 if (DateTime.TryParse(searchKey, out DateTime parsedDate))
@@ -163,6 +165,7 @@ namespace FSU.SPORTIDY.Service.Services
                 var entities = await _unitOfWork.BookingRepository.Get(
                     filter: filter,
                     includeProperties: includeProperties,
+                    orderBy: orderBy,
                     pageSize: pageSize,
                     pageIndex: pageIndex
                 );
@@ -251,15 +254,15 @@ namespace FSU.SPORTIDY.Service.Services
                 // upload barcode to firebase
                 booking.BookingCode = Math.Abs(DateTimeOffset.Now.ToUnixTimeMilliseconds()).ToString() ;
 
-                if (barCode != null)
-                {
-                    string fileName = Path.GetFileName(booking.BookingCode)!;
-                    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
-                    await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).PutAsync(barCode.OpenReadStream());
-                    booking.BarCode = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
-                }
+                //if (barCode != null)
+                //{
+                //    string fileName = Path.GetFileName(booking.BookingCode)!;
+                //    var firebaseStorage = new FirebaseStorage(FirebaseConfig.STORAGE_BUCKET);
+                //    await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).PutAsync(barCode.OpenReadStream());
+                //    booking.BarCode = await firebaseStorage.Child(FirebaseRoot.BOOKING_BARCODE).Child(fileName).GetDownloadUrlAsync();
+                //}
                 booking.PaymentMethod = entityInsert.PaymentMethod ?? "VietQR";
-                booking.BookingDate = DateTime.Now;
+                booking.BookingDate = DateTime.Now.ToLocalTime();
                 booking.Status = BookingStatusID.BOOKING_PENDING_ID;
                 
                 // add payment here
