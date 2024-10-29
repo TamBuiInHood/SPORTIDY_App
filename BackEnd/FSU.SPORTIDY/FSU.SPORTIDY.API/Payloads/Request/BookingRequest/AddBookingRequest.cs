@@ -18,8 +18,8 @@ namespace FSU.SPORTIDY.API.Payloads.Request.BookingRequest
         [Required(ErrorMessage = "DateEnd is required.")]
         public DateTime? dateEnd { get; set; }
 
-        [FileFormat(".jpg", ".jpeg", ".png", ".pdf", ErrorMessage = "Please upload a valid file format (.jpg, .jpeg, .png, .pdf).")]
-        public IFormFile? barCode { get; set; }
+        //[FileFormat(".jpg", ".jpeg", ".png", ".pdf", ErrorMessage = "Please upload a valid file format (.jpg, .jpeg, .png, .pdf).")]
+        //public IFormFile? barCode { get; set; }
 
         [Required(ErrorMessage = "PlayFieldId is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "PlayFieldId must be a positive number.")]
