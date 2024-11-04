@@ -6,6 +6,7 @@ import { RootStackParamList } from '@/types/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RadioButton } from 'react-native-paper';  // Assuming you're using this for payment methods
 import ProgressBar from '@/components/ProgressBar';
+import { format } from 'date-fns';
 
 type CheckoutPageNavigationProp = NativeStackNavigationProp<RootStackParamList, 'CheckoutPage'>;
 
@@ -23,8 +24,7 @@ const CheckoutPage: React.FC = () => {
   const dateTimeString = bookingDetails.dateStart;
   const [datePart, timePart] = dateTimeString.split('T');
   const formattedDate = datePart;
-  const formattedTime = timePart.substring(0, 5);
-  const priceFormatted = new Intl.NumberFormat('vi-VN', {
+  const formattedTime = format(new Date(dateTimeString), 'HH:mm'); const priceFormatted = new Intl.NumberFormat('vi-VN', {
     style: 'decimal',
     minimumFractionDigits: 0,
   }).format(bookingDetails.price);
@@ -52,8 +52,16 @@ const CheckoutPage: React.FC = () => {
       if (paymentResponse.data?.data?.checkoutUrl) {
         const checkoutUrl = paymentResponse.data.data.checkoutUrl;
         await Linking.openURL(checkoutUrl);
+        const updateStatusData = {
+          bookingCode: bookingCode,
+          status: 3
+        };
+        await axios.put(
+          'https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/booking/update-status',
+          updateStatusData
+        );
         navigation.navigate('PaymentBooking', {
-          bookingCode: bookingCode, 
+          bookingCode: bookingCode,
           amount: bookingDetails.price,
           description: 'Booking Football Field',
           playFieldId: bookingDetails.playFiedlId,
@@ -97,7 +105,6 @@ const CheckoutPage: React.FC = () => {
         <Text style={styles.infoText}>Play Field: {playFieldName}</Text>
         <Text style={styles.infoText}>Address: {address}</Text>
         <Text style={styles.infoText}>Date: {formattedDate}</Text>
-        <Text style={styles.infoText}>Time: {formattedTime}</Text>
         {/* Total Price */}
         <View style={styles.priceContainer}>
           <Text style={styles.totalPriceLabel}>Total Price:</Text>

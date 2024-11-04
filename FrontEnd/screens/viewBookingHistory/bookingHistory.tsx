@@ -34,7 +34,7 @@ const MyHistory: React.FC = () => {
         try {
             const userId = await AsyncStorage.getItem('userId');
             if (userId) {
-                const response = await axios.get(`https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings/get-by-user-id?currIdLogin=${userId}&pageNumber=1&pageSize=20`);
+                const response = await axios.get(`https://fsusportidyapi20241001230520.azurewebsites.net/sportidy/bookings/get-by-user-id?currIdLogin=${userId}`);
     
                 console.log('Response Data:', response.data); // Log the full response
     
@@ -47,12 +47,13 @@ const MyHistory: React.FC = () => {
                 console.log('Sorted Bookings:', sortedBookings); // Log the sorted bookings
                 setBookings(sortedBookings);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching bookings:', error.response?.data || error.message);
         } finally {
             setLoading(false);
         }
     };
+    
     useEffect(() => {
         fetchBookings();
     }, []);
@@ -65,12 +66,12 @@ const MyHistory: React.FC = () => {
         if (item.status === 3) {
             statusText = 'Used';
             statusColor = 'green';
-        } else if (item.status === 2) {
+        } else if (item.status === 4) {
             statusText = 'Cancel';
             statusColor = 'red';
-        } else if (item.status === 1) {
+        } else if (item.status === 2) {
             statusText = 'Not yet';
-            statusColor = '#ffa500'; // You can set this to any color, e.g., orange
+            statusColor = '#ffa500'; 
         } else {
             statusText = 'Other';
             statusColor = '#5991FF'; // Default color

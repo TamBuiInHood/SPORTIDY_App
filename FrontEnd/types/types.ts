@@ -23,19 +23,19 @@ export type RootStackParamList = {
   HomeScreen: any;
   BookingScreen: any;
   DetailBookingPage: any;
-  CheckoutPage: any
+  CheckoutPage: any;
   PaymentBooking: any;
   YourMeeting: any;
   MyHistory: any;
   HistoryDetail: any;
   FeedBack: any;
-  PlayFieldDetail: { playfield: PlayField };
+  PlayFieldDetail: { playfieldId: number };
   UpdatePlayfield: any;
   CreatePlayfield: any;
   BookingDetail: any;
   PlayFieldList: any;
   PlayfieldDetailCard: any;
-  QRCode: any
+  QRCode: any;
 };
 export type EventDetailRouteProp = RouteProp<RootStackParamList, "EventDetail">;
 export type DetailBookingRouteProp = RouteProp<

@@ -37,7 +37,8 @@
           "microphonePermission": "Allow SPORTIDY to access your microphone",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

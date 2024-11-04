@@ -9,6 +9,7 @@ import create from './create';
 import history from './history';
 import statistic from './statistic';
 import ScanQRCodeScreen from './scan';
+import Statistic from './statistic';
 
 const Tab = createBottomTabNavigator<OwnerTabParamList>();
 
@@ -84,7 +85,7 @@ const OwnerTabLayout: React.FC = () => {
       />
       <Tab.Screen
         name="statistic"
-        component={statistic}
+        component={Statistic}
         options={{
           title: 'Statistic',
           tabBarIcon: ({ color, focused, size }) => (

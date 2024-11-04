@@ -26,9 +26,9 @@ const DetailBookingPage: React.FC = () => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [userName, setUserName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [voucherCode, setVoucherCode] = useState<string>('PHUNUVIETNAM');
+  const [voucherCode, setVoucherCode] = useState<string>('');
   const formattedDate = dateStart ? dateStart.toISOString().slice(0, 10) : 'Select Date';
-
+  const [time, setTime] = useState('');
   const timeOptions = [
     { label: '1h', value: '1' },
     { label: '2h', value: '2' },
@@ -45,11 +45,21 @@ const DetailBookingPage: React.FC = () => {
   const hideDatePicker = () => setDatePickerVisibility(false);
 
   const handleConfirmDate = (selectedDate: any) => {
+    const formattedTime = selectedDate.toTimeString().slice(0, 5);
+    setTime(formattedTime);
     setDateStart(selectedDate);
     hideDatePicker();
   };
 
+  const totalPrice = playfields?.price * parseInt(selectedTime);
+
   // Fetch PlayField details
+  const DISCOUNT_PERCENT = 20 / 100;
+  const discountedPrice = voucherCode === 'PHUNUVIETNAM' ? totalPrice * (1 - DISCOUNT_PERCENT) : totalPrice;
+  const priceFormatted = new Intl.NumberFormat('vi-VN', {
+    style: 'decimal',
+    minimumFractionDigits: 0,
+  }).format(discountedPrice);
   useEffect(() => {
     const fetchPlayField = async () => {
       if (!playId) {
@@ -90,8 +100,8 @@ const DetailBookingPage: React.FC = () => {
     const formatDate = (date: Date) => {
       return date.toISOString().slice(0, 19);  // Removes the last 5 characters (e.g., "Z")
     };
-    
-  
+
+
     const dateEnd = new Date(dateStart.getTime());
     dateEnd.setHours(dateEnd.getHours() + parseInt(selectedTime)); // assuming selectedTime is the duration in hours
     const dateStartString = formatDate(dateStart);
@@ -102,7 +112,6 @@ const DetailBookingPage: React.FC = () => {
     }
 
     // Calculate price based on duration (price per hour * selected duration)
-    const totalPrice = playfields?.price * parseInt(selectedTime);
 
     const bookingData = {
       playfieldId: playfields?.playFieldId,
@@ -162,9 +171,9 @@ const DetailBookingPage: React.FC = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
 
@@ -236,7 +245,7 @@ const DetailBookingPage: React.FC = () => {
         <Text style={styles.label}>Booking Date & Time</Text>
 
         <TouchableOpacity style={styles.input} onPress={showDatePicker}>
-          <Text style={styles.dateText}>{formattedDate}</Text>
+          <Text style={styles.dateText}>{formattedDate} - {time ? time: 'Select Time'}</Text>
           <Ionicons name="calendar-outline" size={24} style={styles.icon} />
         </TouchableOpacity>
 
@@ -254,6 +263,9 @@ const DetailBookingPage: React.FC = () => {
             onChangeText={setVoucherCode}
             placeholder="Enter voucher code"
           />
+        </View>
+        <View>
+          <Text style={styles.label}>Total Price: {priceFormatted} VND</Text>
         </View>
       </View>
 
@@ -273,7 +285,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 30,
-    paddingBottom: 50
+    paddingBottom: 100
   },
   header: {
     flexDirection: 'row',
@@ -371,8 +383,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 50,
     backgroundColor: '#F58400',
-    marginTop: 10,
-    marginHorizontal: 60
+    marginHorizontal: 60,
+    marginBottom: 100
   },
   bookingButtonText: {
     color: '#fff',

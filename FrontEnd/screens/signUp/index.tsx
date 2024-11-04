@@ -41,7 +41,7 @@ const SignUpScreen = () => {
       password: password,
       fullName: "FullName",  
       confirmPassword: confirmPassword,
-      role: 1, 
+      role: 3, 
     };
 
     try {
