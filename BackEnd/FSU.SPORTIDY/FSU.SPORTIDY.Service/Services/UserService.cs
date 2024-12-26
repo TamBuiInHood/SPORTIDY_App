@@ -49,7 +49,7 @@ namespace FSU.SPORTIDY.Service.Services
                         return new AuthenModel
                         {
                             HttpCode = 401,
-                            Message = "Account does not exist"
+                            Message = "Account does not exist. Please try again"
                         };
                     }
                     var verifyPassword = PasswordHelper.VerifyPassword(password, existUser.Password);
