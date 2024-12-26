@@ -21,6 +21,8 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder.Extensions;
 using FSU.SPORTIDY.Service.Services.PaymentServices;
 using FSU.SPORTIDY.Service.BusinessModel.PaymentBsModels;
+using FSU.SPORTIDY.API.Validations;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,13 +39,14 @@ builder.Services.AddSwaggerGen();
 // return json with kabab case 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.PropertyNamingPolicy = new KebabCaseNamingPolicy();
-    options.JsonSerializerOptions.DictionaryKeyPolicy = new KebabCaseNamingPolicy();
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Sportidy API", Version = "v1" });
+    option.OperationFilter<FileUploadOperationFilter>();
+
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -91,6 +94,9 @@ builder.Services.AddScoped<IPlayFieldRepository, PlayFieldRepository>();
 builder.Services.AddScoped<IFriendShipRepository, FriendShipRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICommentInMeetingRepository, CommentInMeetingRepository>();
+builder.Services.AddScoped<IImageFieldRepository, ImageFeldReposiotory>();
 
 
 
@@ -105,8 +111,13 @@ builder.Services.AddScoped<ISystemFeedbackService, SystemFeedbackService>();
 builder.Services.AddScoped<IPlayFieldService, PlayFieldService>();
 builder.Services.AddScoped<IFriendShipService, FriendShipService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<ICommentInMeetingService, CommentInMeetingService>();
+builder.Services.AddScoped<WebSocketService>();
 
 builder.Services.AddScoped<IPayOSService, PayOSService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IImageFieldService, ImageFieldService>();
 
 // add mail settings
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSettings"));
@@ -151,7 +162,7 @@ builder.Services.AddCors(p => p.AddPolicy("Cors", policy =>
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    options.JsonSerializerOptions.WriteIndented = true;
+    options.JsonSerializerOptions.WriteIndented = false;
 });
 
 builder.Services.AddSwaggerGen(options => {
@@ -167,17 +178,22 @@ var app = builder.Build();
 app.UseCors("Cors");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 // Config Middleware
 //app.UseMiddleware<AccountStatusMiddleware>();
-//app.UseMiddleware<TokenValidationMiddleware>();
-app.UseHttpsRedirection();
+app.UseMiddleware<TokenValidationMiddleware>();
 
+app.UseHttpsRedirection();
+var webSocketOptions = new WebSocketOptions()
+{
+    KeepAliveInterval = TimeSpan.FromMinutes(5),
+};
+
+app.UseWebSockets(webSocketOptions);
 app.UseAuthorization();
 app.UseAuthentication();
 

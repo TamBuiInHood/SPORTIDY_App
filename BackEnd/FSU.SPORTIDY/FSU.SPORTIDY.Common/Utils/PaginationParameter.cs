@@ -9,13 +9,13 @@ namespace FSU.SPORTIDY.Common.Utils
 {
     public class PaginationParameter
     {
-        [FromQuery(Name = "page-index")]
+        [FromQuery(Name = "pageIndex")]
         public int PageIndex { get; set; }
-        [FromQuery(Name = "page-size")]
+        [FromQuery(Name = "pageSize")]
         public int PageSize { get; set; }
-        [FromQuery(Name = "search-key")]
+        [FromQuery(Name = "searchKey")]
         public string? Search {  get; set; }
-        [FromQuery(Name = "sort-by")]
+        [FromQuery(Name = "sortBy")]
         public string? SortBy { get; set; }
         [FromQuery(Name = "direction")]
         public string? Direction { get; set; }

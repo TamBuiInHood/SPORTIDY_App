@@ -26,33 +26,35 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost(APIRoutes.Playfields.Add, Name = "AddPlayfieldAsync")]
-        public async Task<IActionResult> AddAsync([FromBody] AddPlayfiedRequest reqObj)
+        public async Task<IActionResult> AddAsync([FromForm] AddPlayfiedRequest reqObj)
         {
             try
             {
-                // check-day hinh len server trc roi moi Add playfield sau 
-                // nen tat ten hinh theo code - code nen dc lay tu playfield + Code de lan sau update vao tam hinh do luon
+                //if (!ModelState.IsValid)
+                //{
+                //    return BadRequest(new BaseResponse
+                //    {
+                //        StatusCode = StatusCodes.Status400BadRequest,
+                //        Message = "your information are not correct",
+                //        Data = ModelState.Values.SelectMany(v => v.Errors),
+                //        IsSuccess = false
+                //    });
+                //}
 
                 var playfieldModel = new PlayFieldModel();
-                playfieldModel.PlayFieldName = reqObj.PlayFieldName;
-                playfieldModel.Address = reqObj.Address;
-                playfieldModel.CloseTime = reqObj.CloseTime;
-                playfieldModel.OpenTime = reqObj.OpenTime;
-                playfieldModel.AvatarImage = reqObj.AvatarImage.FileName;
+                playfieldModel.PlayFieldName = reqObj.playfieldName;
+                playfieldModel.Address = reqObj.address;
+                playfieldModel.CloseTime = TimeOnly.FromDateTime(reqObj.closeTime!.Value);
+                playfieldModel.OpenTime = TimeOnly.FromDateTime(reqObj.openTime!.Value);
+                playfieldModel.SportId = reqObj.sportId;
+                playfieldModel.Price = reqObj.price;
+                playfieldModel.UserId = reqObj.currentIdLogin;
 
-                var listImage = new List<ImageFieldModel>();
-                foreach (var item in reqObj.ImageFields)
-                {
-                    // day tung tam len server
-                    var Image = new ImageFieldModel();
-                    Image.VideoUrl = item.VideoUrl.FileName;
-                    Image.ImageUrl = item.ImageUrl.FileName;
-                    Image.ImageIndex = item.ImageIndex;
-                    listImage.Add(Image);
-                }
+                var listImage = new List<IFormFile>();
+                reqObj.addImageField.OrderBy(x => x.ImageIndex);
+                listImage.AddRange(reqObj.addImageField.Select(x => x.ImageUrl)!);
 
-
-                var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage);
+                var playfieldInsert = await _playFieldService.CreatePlayField(playfieldModel, listImage, reqObj.avatarImage!, reqObj.subPlayfieds);
                 if (playfieldInsert == null)
                 {
                     return NotFound(new BaseResponse
@@ -87,7 +89,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpDelete(APIRoutes.Playfields.Delete, Name = "DeletePlatfiedAsync")]
-        public async Task<IActionResult> DeleteAsynce([FromQuery(Name = "playfied-id")] int playfieldId)
+        public async Task<IActionResult> DeleteAsynce([FromQuery(Name = "playfiedId")] int playfieldId)
         {
             try
             {
@@ -124,16 +126,16 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut(APIRoutes.Playfields.Update, Name = "UpdatePlayfieldAsync")]
-        public async Task<IActionResult> UpdatePlayfieldAsync([FromQuery(Name = "playfield-id")] int playfieldId, [FromBody] UpdatePlayfield reqObj)
+        public async Task<IActionResult> UpdatePlayfieldAsync([FromQuery(Name = "playfieldId")] int playfieldId, [FromBody] UpdatePlayfield reqObj)
         {
             try
             {
                 var dto = new PlayFieldModel();
                 dto.PlayFieldId = playfieldId;
-                dto.PlayFieldName = reqObj.PlayFieldName;
-                dto.CloseTime = reqObj.CloseTime;
-                dto.OpenTime = reqObj.OpenTime;
-                dto.Price = reqObj.Price;
+                dto.PlayFieldName = reqObj.playfieldName;
+                dto.CloseTime = reqObj.closeTime;
+                dto.OpenTime = reqObj.openTime;
+                dto.Price = reqObj.price;
 
                 var result = await _playFieldService.UpdatePlayField(dto);
                 if (result == false)
@@ -168,22 +170,11 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut(APIRoutes.Playfields.UpdateAvatar, Name = "UpdateAvatarPlayfieldAsync")]
-        public async Task<IActionResult> UpdateAvatarPlayfieldAsync([FromQuery(Name = "playfield-id")] int playfieldId, [FromForm] IFormFile avatarImage)
+        public async Task<IActionResult> UpdateAvatarPlayfieldAsync([FromQuery(Name = "playfieldId")] int playfieldId, [FromForm] IFormFile avatarImage)
         {
             try
             {
-                var playfieldExist = _playFieldService.GetPlayFieldById(playfieldId);
-                if (playfieldExist == null)
-                {
-                    return BadRequest(new BaseResponse
-                    {
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Message = "Cannot find a playfield",
-                        Data = null,
-                        IsSuccess = false
-                    });
-                }
-                // day file len server thanh cong thi thoi - chi can lay ra code cu de len tam hinh cu khong can luu lau
+                var playfieldExist = _playFieldService.UpdateAvatarImage(avatarImage,playfieldId);
 
                 return Ok(new BaseResponse
                 {
@@ -207,12 +198,12 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPut(APIRoutes.Playfields.UpdateStatus, Name = "UpdateStatusPlayfieldAsync")]
-        public async Task<IActionResult> UpdatestatusPlayfieldAsync([FromQuery(Name = "playfield-id")] int playfieldId, [FromBody] int Status)
+        public async Task<IActionResult> UpdatestatusPlayfieldAsync([FromQuery(Name = "playfieldId")] int playfieldId, [FromBody] int status)
         {
             try
             {
 
-                var result = await _playFieldService.UpdateStatusPlayfield(playfieldId, Status);
+                var result = await _playFieldService.UpdateStatusPlayfield(playfieldId, status);
                 if (result == false)
                 {
                     return NotFound(new BaseResponse
@@ -245,13 +236,13 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Playfields.GetAll, Name = "GetPlayfieldAsync")]
-        public async Task<IActionResult> GetPlayfieldAsync([FromQuery(Name = "search-key")] string? searchKey
-           , [FromQuery(Name = "page-number")] int pageNumber = Page.DEFAULT_PAGE_INDEX
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
+        public async Task<IActionResult> GetPlayfieldAsync([FromQuery(Name = "searchKey")] string? searchKey
+           , [FromQuery(Name = "pageIndex")] int pageIndex = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "pageSize")] int pageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
-                var getPlayfield = await _playFieldService.GetAllPlayField(searchKey!, pageIndex: pageNumber, pageSize: PageSize);
+                var getPlayfield = await _playFieldService.GetAllPlayField(searchKey!, pageIndex: pageIndex, pageSize: pageSize);
 
                 return Ok(new BaseResponse
                 {
@@ -275,7 +266,7 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Playfields.GetByID, Name = "GetPlayfieldByIdAsync")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute(Name = "playfield-id")] int playfieldId)
+        public async Task<IActionResult> GetByIdAsync([FromRoute(Name = "playfieldId")] int playfieldId)
         {
             try
             {
@@ -303,19 +294,63 @@ namespace FSU.SPORTIDY.API.Controllers
 
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpGet(APIRoutes.Playfields.GetByUserID, Name = "GetPlayfieldByUserIdAsync")]
-        public async Task<IActionResult> GetByUserIdAsync([FromRoute(Name = "user-id")] int userId
-           , [FromQuery(Name = "page-index")] int pageIndex = Page.DEFAULT_PAGE_INDEX
-           , [FromQuery(Name = "page-size")] int PageSize = Page.DEFAULT_PAGE_SIZE)
+        public async Task<IActionResult> GetByUserIdAsync([FromRoute(Name = "userId")] int userId
+           , [FromQuery(Name = "pageIndex")] int pageIndex = Page.DEFAULT_PAGE_INDEX
+           , [FromQuery(Name = "pageSize")] int pageSize = Page.DEFAULT_PAGE_SIZE)
         {
             try
             {
-                var getPlayfield = await _playFieldService.GetPlayFieldsByUserId(userId, pageIndex: pageIndex, pageSize: PageSize);
+                var getPlayfield = await _playFieldService.GetPlayFieldsByUserId(userId, pageIndex: pageIndex, pageSize: pageSize);
 
                 return Ok(new BaseResponse
                 {
                     StatusCode = StatusCodes.Status200OK,
                     Message = "Load successfully",
                     Data = getPlayfield,
+                    IsSuccess = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message,
+                    Data = null,
+                    IsSuccess = false
+                });
+            }
+        }
+
+        //[Authorize(Roles = UserRoles.Admin)]
+        [HttpPut(APIRoutes.Playfields.UpdateForAdmin, Name = "UpdatePlayfieldForAdminAsync")]
+        public async Task<IActionResult> UpdatePlayfieldForAdminAsync([FromRoute(Name = "playfieldId")] int playfieldId, [FromBody] UpdatePlayfield reqObj)
+        {
+            try
+            {
+                var dto = new PlayFieldModel();
+                dto.PlayFieldId = playfieldId;
+                dto.PlayFieldName = reqObj.playfieldName;
+                dto.Status = reqObj.status;
+                dto.Price = reqObj.price;
+                dto.Address = reqObj.address;
+
+                var result = await _playFieldService.UpdatePlayFieldForAdmin(dto);
+                if (result == false)
+                {
+                    return NotFound(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Message = "Update fail",
+                        Data = null,
+                        IsSuccess = false
+                    });
+                }
+                return Ok(new BaseResponse
+                {
+                    StatusCode = StatusCodes.Status200OK,
+                    Message = "Update successfully",
+                    Data = result,
                     IsSuccess = true
                 });
             }

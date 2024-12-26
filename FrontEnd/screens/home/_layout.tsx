@@ -1,101 +1,143 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
-import DetailHeader from '../../components/DetailHeader'; 
+import DetailHeader from '../../components/DetailHeader';
 import { Ionicons } from '@expo/vector-icons';
+import Discussion from '../discussion/discussion';
+import { Card, Club, EventDetailRouteProp, MeetingDetail } from '@/types/types';
 import { useRoute } from '@react-navigation/native';
+import api from '@/config/api';
 
 const EventDetailScreen = () => {
+    const route = useRoute<EventDetailRouteProp>();
+    const meetingId = route.params.meetingId;
+
     const [joined, setJoined] = useState(false);
-    const [activeTab, setActiveTab] = useState('details'); 
-    const route = useRoute();
-    const handleTabChange = (tab: React.SetStateAction<string>) => {
-        setActiveTab(tab);
-    };
+    const [activeTab, setActiveTab] = useState<'details' | 'discussion'>('details');
+    const [meeting, setMeeting] = useState<Card | null>(null);
+    const [club, setClub] = useState<Club | null>(null);
+    const [userId, setUserId] = useState(3);
 
-    const handleJoin = () => {
-        setJoined(true);
-    };
+    useEffect(() => {
+        const fetchMeeting = async () => {
+            try {
+                const response = await api.getMeetingById(meetingId);
+                const result: Card = response.data;
+                setMeeting(result);
+            } catch (error) {
+                console.error('Failed to fetch meeting:', error);
+                setMeeting(null);
+            }
+        };
 
-    const handleCancel = () => {
-        setJoined(false);
-    };
+        fetchMeeting();
+    }, [meetingId]);
 
-    const clubData = {
-        name: "THE TAM CLUB",
-        frequency: "Every day",
-        imageUri: "https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg"
+    if (!meeting) {
+        return <Text>Loading...</Text>;
+    }
+    const handleJoinMeeting = async () => {
+        if (!meeting || !meeting.clubId || !userId) {
+            console.log('Missing data:', { meeting, club:meeting?.clubId, userId });
+            return;
+        }
+        try {
+            const response = await api.joinMeeting(userId, meeting.clubId, meeting.meetingId);
+            console.log('Successfully joined the meeting:', response.data);
+            setJoined(true); 
+        } catch (error) {
+            console.error('Error joining the meeting:', error.response?.data || error.message);
+        }
     };
-
     return (
         <ScrollView style={styles.container}>
             <DetailHeader
-                date="Sat, Jun 8 @ 3:30 PM"
-                title="Football training with Coach TanHuynh"
+                date={new Date(meeting.startDate).toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric'
+                })}
+                title={meeting.meetingName || 'Event Title'}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
             />
-            <View style={styles.clubInfoSection}>
-                <Image source={{ uri: clubData.imageUri }} style={styles.clubImage} />
+            {activeTab === 'details' && (
                 <View>
-                    <Text style={styles.clubName}>{clubData.name}</Text>
-                    <Text style={styles.clubFrequency}>{clubData.frequency}</Text>
-                </View>
-            </View>
-
-            <View style={styles.hostSection}>
-                <Text style={styles.hostTitle}>Host</Text>
-                <View style={styles.hostAvatarContainer}>
-                    <Image source={{ uri: clubData.imageUri }} style={styles.hostAvatar} />
-                    <View style={styles.placeholderAvatar} />
-                    <View style={styles.placeholderAvatar} />
-                    <View style={styles.placeholderAvatar} />
-                    <View style={styles.placeholderAvatar} />
-                </View>
-            </View>
-
-            <View style={styles.detailsSection}>
-                <View style={styles.row}>
-                    <Ionicons name='calendar-clear' size={15} style={styles.icon} />
-                    <Text style={styles.eventDate}>Saturday, June 8, 2024 at 3:30 PM</Text>
-                </View>
-                <Text style={styles.eventDuration}>2 hour(s)</Text>
-                <TouchableOpacity>
-                    <Text style={styles.addToCalendar}>Add to calendar</Text>
-                </TouchableOpacity>
-                <View>
-                    <View style={styles.row}>
-                        <Ionicons name='location-outline' size={15} style={styles.icon} />
-                        <Text style={styles.locationText}>Sân Vận Động Huyện Phú Giáo</Text>
+                    <View style={styles.clubInfoSection}>
+                        <Image source={{ uri: meeting.meetingImage || 'default_image_url_here' }} style={styles.clubImage} />
+                        <View>
+                            <Text style={styles.clubName}>{meeting.clubName || 'Undefined'}</Text>
+                            <Text style={styles.clubFrequency}>{meeting.totalMember} members</Text>
+                        </View>
+                        {joined && (
+                            <View style={styles.joinedBadge}>
+                                <Text style={styles.joinedBadgeText}>Joined</Text>
+                            </View>
+                        )}
                     </View>
-                    <Text style={styles.locationDetail}>7QVR+WH6, TT. Phước Vĩnh, Phú Giáo, Bình Dương</Text>
-                </View>
-                <View style={styles.row}>
-                    <Ionicons name='close-circle' size={15} style={styles.icon} />
-                    <Text style={styles.cancellationInfo}>Cancellation freeze 4 hours before start</Text>
-                </View>
-            </View>
-            <View style={styles.notesSection}>
-                <Text style={styles.notesTitle}>Notes</Text>
-                <Text style={styles.note}>• Phí tham gia là 100.000 đồng</Text>
-                <Text style={styles.note}>• Khi tham gia, sẽ được huấn luyện bởi những người có chuyên môn trong câu lạc bộ...</Text>
-                <Text style={styles.note}>• Mọi trường giao lưu, học hỏi...</Text>
-            </View>
 
-            {!joined ? (
-                <TouchableOpacity style={styles.joinButton} onPress={handleJoin}>
-                    <Text style={styles.joinButtonText}>Join Meet</Text>
-                </TouchableOpacity>
-            ) : (
-                <View style={styles.joinedContainer}>
-                    <Text style={styles.joinedText}>Joined</Text>
-                    <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
-                    </TouchableOpacity>
+                    <View style={styles.hostSection}>
+                        <Text style={styles.hostTitle}>Host</Text>
+                        <View style={styles.hostAvatarContainer}>
+                            <Image source={{ uri: meeting.meetingImage }} style={styles.hostAvatar} />
+                            <View style={styles.placeholderAvatar} />
+                            <View style={styles.placeholderAvatar} />
+                            <View style={styles.placeholderAvatar} />
+                            <View style={styles.placeholderAvatar} />
+                        </View>
+                    </View>
+
+                    <View style={styles.detailsSection}>
+                        <View style={styles.row}>
+                            <Ionicons name='calendar-clear-outline' size={25} style={styles.icon} />
+                            <Text style={styles.eventDate}>{new Date(meeting.startDate).toLocaleString()}</Text>
+                        </View>
+
+                        <TouchableOpacity>
+                            <Text style={styles.eventDuration}>
+                                {(new Date(meeting.endDate).getTime() - new Date(meeting.startDate).getTime()) / 3600000} hour(s)
+                            </Text>
+                        </TouchableOpacity>
+
+                        <View style={styles.row}>
+                            <Ionicons name='location-outline' size={25} style={styles.icon} />
+                            <Text style={styles.locationText}>{meeting.address}</Text>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Ionicons name='close-circle-outline' size={25} style={styles.icon} />
+                            <Text style={styles.cancellationInfo}>
+                                Cancellation freeze {meeting.cancelBefore} hour(s) before start
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.notesSection}>
+                        <Text style={styles.notesTitle}>Notes</Text>
+                        <Text style={styles.note}>{meeting.note}</Text>
+                    </View>
+
+                    {!joined ? (
+                        <TouchableOpacity style={styles.joinButton} onPress={handleJoinMeeting}>
+                            <Text style={styles.joinButtonText}>Join Meet</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={styles.joinedContainer}>
+                            <TouchableOpacity onPress={() => setJoined(false)}>
+                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
             )}
+            {activeTab === 'discussion' && <Discussion meetingId={meetingId} />}
         </ScrollView>
     );
 };
-
 const styles = StyleSheet.create({
+    detailHeader: {
+        position: 'absolute',
+        top: 0,
+        width: '100%',
+        zIndex: 1,
+    },
     container: {
         flex: 1,
         backgroundColor: '#f7f7f7',
@@ -154,15 +196,15 @@ const styles = StyleSheet.create({
 
     },
     icon: {
-        marginRight: 5,
-        color: '#141415',
+        marginRight: 10,
     },
     clubInfoSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 15,
+        padding: 20,
         backgroundColor: "#FFDE59",
-        marginTop: -15
+        marginTop: -15,
+        position: 'relative'
     },
     clubImage: {
         width: 50,
@@ -178,8 +220,47 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#6c757d',
     },
+    joinedBadge: {
+        position: 'absolute',
+        right: 15,
+        top: '50%',
+        backgroundColor: '#4CAF50',
+        borderRadius: 15,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+    },
+    joinedBadgeText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    joinButton: {
+        backgroundColor: '#ffb233',
+        borderRadius: 30,
+        alignItems: 'center',
+        marginHorizontal: 90,
+        paddingVertical: 10,
+    },
+    joinButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    joinedContainer: {
+        backgroundColor: '#FF5252',
+        borderRadius: 30,
+        alignItems: 'center',
+        marginHorizontal: 90,
+        paddingVertical: 10,
+    },
+    cancelButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
     hostSection: {
-        margin: 15,
+        margin: 20,
+
     },
     hostTitle: {
         fontSize: 16,
@@ -203,16 +284,19 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     detailsSection: {
-        margin: 15,
+        marginVertical: 30,
+        marginHorizontal: 25,
     },
     eventDate: {
         fontSize: 16,
         fontWeight: 'bold',
+
     },
     eventDuration: {
         fontSize: 14,
         color: '#6c757d',
         marginBottom: 2,
+        marginLeft: 35
     },
     addToCalendar: {
         color: '#007bff',
@@ -223,6 +307,7 @@ const styles = StyleSheet.create({
     locationText: {
         fontSize: 16,
         fontWeight: 'bold',
+        marginTop: 30
     },
     locationDetail: {
         fontSize: 14,
@@ -231,12 +316,12 @@ const styles = StyleSheet.create({
     cancellationInfo: {
         fontSize: 16,
         color: '#141415',
-        marginTop: 2,
+        marginTop: 40,
         fontWeight: 'bold',
     },
     notesSection: {
-        paddingHorizontal: 15,
-        marginTop: -10
+        paddingHorizontal: 15, // Tăng khoảng cách hai bên
+        marginTop: -5,
     },
     notesTitle: {
         fontSize: 16,
@@ -248,29 +333,10 @@ const styles = StyleSheet.create({
         color: '#6c757d',
         marginBottom: 5,
     },
-    joinButton: {
-        backgroundColor: '#ffb233',
-        borderRadius: 30,
+    row: {
+        flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 90,
-        paddingVertical: 10,
-    },
-    joinButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    joinedContainer: {
-        backgroundColor: '#4CAF50',
-        borderRadius: 30,
-        alignItems: 'center',
-        marginHorizontal: 90,
-        paddingVertical: 10,
-    },
-    cancelButton: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        marginBottom: 10, // Thêm margin để cả icon và text di chuyển cùng nhau
     },
 });
 

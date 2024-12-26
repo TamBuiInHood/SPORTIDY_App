@@ -1,204 +1,171 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import SportChoose from '@/components/SportChoose';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { format } from 'date-fns';
+import api from '@/config/api';
 
 const CreateMeetScreen = () => {
-  const [club, setClub] = useState(null);
-  const [sport, setSport] = useState(null);
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
-  const [duration, setDuration] = useState(1);
-  const [repeat, setRepeat] = useState(false);
-  const [location, setLocation] = useState('');
-  const [cancelTime, setCancelTime] = useState(4);
-  const [numPlayers, setNumPlayers] = useState(12);
-  const [meetName, setMeetName] = useState('');
-  const [notes, setNotes] = useState('');
+  const [sport, setSport] = useState<number | null>(null);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isSelectingStartDate, setIsSelectingStartDate] = useState(true);
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-
-  const handleAddClub = () => {
-    setClub({ name: "THE TAM CLUB", schedule: "Every day", image: 'https://i.pinimg.com/564x/40/98/2a/40982a8167f0a53dedce3731178f2ef5.jpg' });
+  const showDateTimePicker = (isStartDate: boolean) => {
+    setIsSelectingStartDate(isStartDate);
+    setDatePickerVisibility(true);
   };
 
-  const handleRemoveClub = () => {
-    setClub(null);
+
+  const hideDateTimePicker = () => {
+    setDatePickerVisibility(false);
   };
 
-  const handleCreateMeet = () => {
-    console.log('Creating meet:', {
-      club,
-      sport,
-      date,
-      time,
-      duration,
-      repeat,
-      location,
-      cancelTime,
-      numPlayers,
-      meetName,
-      notes,
-    });
+  const handleConfirmDate = (selectedDate: Date) => {
+    const formattedDate = format(selectedDate, "yyyy-MM-dd HH:mm:ss");
+  
+    if (isSelectingStartDate) {
+      setMeeting((prevMeeting) => ({
+        ...prevMeeting,
+        data: { ...prevMeeting.data, startDate: formattedDate }
+      }));
+    } else {
+      setMeeting((prevMeeting) => ({
+        ...prevMeeting,
+        data: { ...prevMeeting.data, endDate: formattedDate }
+      }));
+    }
+  
+    hideDateTimePicker();
   };
+  const [meeting, setMeeting] = useState({
+    data: {
+      address: "Gcctc",
+      cancelBefore: 1,
+      currentLogin: 2,
+      endDate: "2024-10-06T22:46:18",
+      isPublic: true,
+      meetingImage: "",
+      meetingName: "Ctcyf",
+      note: " G gv g",
+      sportId: 1,
+      startDate: "2024-10-07T21:46:18",
+      totalMember: 1
+    }
+  });
+  const handleInputChange = (name: string, value: any) => {
+    setMeeting((prevMeeting) => ({
+      ...prevMeeting,
+      data: { ...prevMeeting.data, [name]: value }
+    }));
+  };
+  const decrementMember = () => {
+    setMeeting((prev) => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        totalMember: Math.max(prev.data.totalMember - 1, 1),
+      },
+    }));
+  };
+  
+  const incrementMember = () => {
+    setMeeting((prev) => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        totalMember: prev.data.totalMember + 1,
+      },
+    }));
+  };
+
+  const handleCreateMeeting = async () => {
+    try {
+        const payload = {
+            address: meeting.data.address,
+            cancelBefore: meeting.data.cancelBefore,
+            currentLogin: meeting.data.currentLogin,
+            endDate: meeting.data.endDate,
+            isPublic: meeting.data.isPublic,
+            meetingImage: meeting.data.meetingImage,
+            meetingName: meeting.data.meetingName,
+            note: meeting.data.note,
+            sportId: meeting.data.sportId,
+            startDate: meeting.data.startDate,
+            totalMember: meeting.data.totalMember,
+            sportId: 2 // Nếu sportId là cần thiết ở đây
+        };
+
+        const response = await api.createMeeting(payload);
+        Alert.alert('Success', 'Meeting created successfully!');
+        console.log(response);
+    } catch (error: any) {
+        console.error('API Error: ', error.response?.data);
+        Alert.alert('Error', 'Failed to create the meeting.');
+    }
+};
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => { /* Handle going back */ }}>
-          <Ionicons name='arrow-back-circle-outline' color={'#ffff'} size={30} />
+        <TouchableOpacity style={styles.backButton} onPress={() => { }}>
+          <Ionicons name="arrow-back-circle-outline" color={"#ffff"} size={30} />
         </TouchableOpacity>
         <Text style={styles.headerText}>CREATE A MEET</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {!club ? (
-          <View style={styles.addClubSection}>
-            <Text style={styles.title}>Creating a meet for your club?</Text>
-            <TouchableOpacity onPress={handleAddClub}>
-              <Text style={styles.addClubText}>Add club</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.clubSection}>
-            <Text style={styles.clubName}>{club.name}</Text>
-            <Text style={styles.clubSchedule}>{club.schedule}</Text>
-            <TouchableOpacity style={styles.removeClubButton} onPress={handleRemoveClub}>
-              <Text style={styles.removeClubText}>Remove</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
         <View style={styles.sportOptions}>
-          <Text style={styles.sectionTitle}>SPORT</Text>
-
-          <View style={styles.sportChoices}>
-            <TouchableOpacity
-              style={[
-                styles.sportOption,
-                sport === 'football' && styles.sportOptionSelected
-              ]}
-              onPress={() => setSport('football')}
-            >
-              <Ionicons name="football" size={30} color={sport === 'football' ? '#fff' : '#000'} />
-              <Text style={[
-                styles.sportOptionText,
-                sport === 'football' && styles.sportOptionTextSelected
-              ]}>
-                Football
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.sportOption,
-                sport === 'basketball' && styles.sportOptionSelected
-              ]}
-              onPress={() => setSport('basketball')}
-            >
-              <Ionicons name="basketball" size={30} color={sport === 'basketball' ? '#fff' : '#000'} />
-              <Text style={[
-                styles.sportOptionText,
-                sport === 'basketball' && styles.sportOptionTextSelected
-              ]}>
-                Basketball
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <SportChoose setSport={(sportId) => {
+            setSport(sportId);
+            setMeeting((prevMeeting) => ({ ...prevMeeting, sportId }));
+          }} />
         </View>
 
         <Text style={styles.sectionTitle}>MEET</Text>
         <View style={styles.form}>
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='calendar-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="calendar-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Select date</Text>
             </View>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
-              <Text style={styles.dateText}>{date.toDateString()}</Text>
+            <TouchableOpacity onPress={() => showDateTimePicker(true)}>
+              <Text>{meeting.data.startDate ? `Start Date: ${meeting.data.startDate}` : 'Select Start Date'}</Text>
             </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  if (selectedDate) setDate(selectedDate);
-                }}
-              />
-            )}
-          </View>
-          <View style={styles.formItem}>
-            <View style={styles.formLabelContainer}>
-              <Ionicons name='timer-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
-              <Text style={styles.formLabel}>Select time</Text>
-            </View>
-            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.dateButton}>
-              <Text>{time.toLocaleTimeString()}</Text>
+
+
+
+
+            <TouchableOpacity onPress={() => showDateTimePicker(false)}>
+              <Text>{meeting.data.endDate ? `End Date: ${meeting.data.endDate}` : 'Select End Date'}</Text>
             </TouchableOpacity>
-            {showTimePicker && (
-              <DateTimePicker
-                value={time}
-                mode="time"
-                display="default"
-                onChange={(event, selectedTime) => {
-                  setShowTimePicker(false);
-                  if (selectedTime) setTime(selectedTime);
-                }}
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="datetime"
+              onConfirm={handleConfirmDate}
+              onCancel={hideDateTimePicker}
+            />
           </View>
 
-          <View style={styles.formItem}>
+          <View style={styles.formItemMeeting}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='time-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
-              <Text style={styles.formLabel}>Duration</Text>
-            </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.formInput}
-                value={duration.toString()}
-                onChangeText={(text) => setDuration(parseInt(text) || 1)}
-                keyboardType="numeric"
-              />
-              <Text style={styles.formUnit}>hour(s)</Text>
-            </View>
-          </View>
-
-          <View style={styles.formItem}>
-            <View style={styles.formLabelContainer}>
-              <Text style={styles.formLabel}>Repeat every day</Text>
-            </View>
-            <TouchableOpacity onPress={() => setRepeat(!repeat)} style={styles.checkbox}>
-              <Ionicons
-                name={repeat ? 'checkbox' : 'square-outline'}
-                size={24}
-                color={repeat ? '#ff951d' : '#000'}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.formItem}>
-            <View style={styles.formLabelContainer}>
-              <Ionicons name='location-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="location-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Set location</Text>
             </View>
-            {/* <TextInput
-              style={styles.formInput}
-              value={location}
-              onChangeText={setLocation}
+            <TextInput
+              style={styles.formInputMeeting}
+              value={meeting.data.address}
+              onChangeText={(value) => handleInputChange('address', value)}
               placeholder="Enter location"
-            /> */}
+            />
           </View>
 
           <View style={styles.formItem}>
             <Text style={styles.formLabel}>Set time to cancel</Text>
             <TextInput
               style={styles.formInput}
-              value={cancelTime.toString()}
-              onChangeText={(text) => setCancelTime(parseInt(text) || 4)} // Ensure it's a number
+              value={meeting.data.cancelBefore.toString()}
+              onChangeText={(value) => handleInputChange('cancelBefore', value)}
               keyboardType="numeric"
             />
             <Text style={styles.formUnit}>hour(s)</Text>
@@ -206,15 +173,15 @@ const CreateMeetScreen = () => {
 
           <View style={styles.formItem}>
             <View style={styles.formLabelContainer}>
-              <Ionicons name='person-add-outline' color={'#ff951d'} size={20} style={styles.formIcon} />
+              <Ionicons name="person-add-outline" color={"#ff951d"} size={20} />
               <Text style={styles.formLabel}>Number of players</Text>
             </View>
             <View style={styles.playerCounter}>
-              <TouchableOpacity onPress={() => setNumPlayers(Math.max(numPlayers - 1, 1))} style={styles.counterButton}>
+              <TouchableOpacity onPress={incrementMember} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>-</Text>
               </TouchableOpacity>
-              <Text style={styles.counterText}>{numPlayers}</Text>
-              <TouchableOpacity onPress={() => setNumPlayers(numPlayers + 1)} style={styles.counterButton}>
+              <Text style={styles.counterText}>{meeting.data.totalMember}</Text>
+              <TouchableOpacity onPress={decrementMember} style={styles.counterButton}>
                 <Text style={styles.counterButtonText}>+</Text>
               </TouchableOpacity>
             </View>
@@ -224,31 +191,28 @@ const CreateMeetScreen = () => {
             <Text style={styles.formLabelMeeting}>Meet Name</Text>
             <TextInput
               style={styles.formInputMeeting}
-              value={meetName}
-              onChangeText={setMeetName}
+              value={meeting.data.meetingName}
+              onChangeText={(value) => handleInputChange('meetingName', value)}
               placeholder="Enter meet name"
             />
-              <TextInput
+            <TextInput
               style={styles.formInputMeeting}
-              value={notes}
-              onChangeText={setNotes}
+              value={meeting.data.note}
+              onChangeText={(value) => handleInputChange('note', value)}
               multiline={true}
               placeholder="Add notes"
             />
           </View>
-
-         
         </View>
-
         <View style={styles.buttonContainer}>
-          <Button title="Create Meet" onPress={handleCreateMeet} color="#f9ca24" />
+          <Button title="Create Meet" onPress={handleCreateMeeting} color="#f9ca24" />
         </View>
       </ScrollView>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -452,6 +416,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     padding: 16,
+    marginBottom: 60
   },
   formInputMeeting: {
     width: '100%', // Make the input take the full width of the screen
@@ -465,14 +430,16 @@ const styles = StyleSheet.create({
   },
   formItemMeeting: {
     marginBottom: 16,
-    flexDirection: 'column', 
+    flexDirection: 'column',
   },
   formLabelMeeting: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8, 
+    marginBottom: 8,
   },
 
 });
+
+
 
 export default CreateMeetScreen;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,24 +7,54 @@ import { Ionicons } from '@expo/vector-icons';
 import SearchBar from '@/components/SearchBar';
 import ActionButtons from '@/components/ActionButton';
 import ActionIcons from '@/components/ActionIcons';
+import api from '@/config/api';
+import { Card, MeetingsResponse, RootStackParamList } from '@/types/types';
+import YourMeeting from '@/screens/home/yourMeet';
 
-interface Card {
-  id: number;
-  image: string;
-  title: string;
-  location: string;
-  time: string;
-  date: string;
-}
-
-const cards: Card[] = [
-  { id: 1, image: 'https://i.pinimg.com/564x/cc/ad/53/ccad53997147640eed2da368eea00783.jpg', title: 'Badminton training with Coach TanHuynh', location: 'Phu Giao, Binh Duong', time: '3:30 PM', date: 'Sat 23/6/2024' },
-  { id: 2, image: 'https://i.pinimg.com/564x/05/e4/fe/05e4fe1aa8d79e7892539ff0214d7015.jpg', title: 'Another training', location: 'Location', time: 'Time', date: 'Date' },
-];
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
 const HomeScreen: React.FC = () => {
+  const [cards, setCards] = useState<Card[]>([]);
   const [likedCards, setLikedCards] = useState<Card[]>([]);
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available');
+  const getSportIcon = (sportId: number) => {
+    switch (sportId) {
+      case 1:
+        return 'football';
+      case 2:
+        return 'basketball';
+      case 3:
+        return 'badminton';
+      default:
+        return 'football';
+    }
+  }
+  const fetchMeetings = async () => {
+    try {
+      const response = await api.getAllMeeting(0, 20);
+      console.log('response:', response);
+      console.log('response.data:', response.data);
+      const result: MeetingsResponse = response.data;
+      console.log('result:', result);
+
+      if (result && result.list && Array.isArray(result.list)) {
+        setCards(result.list);
+      } else {
+        throw new Error('Unexpected data format: data.list is not an array');
+      }
+    } catch (error) {
+      console.error('Failed to fetch meetings:', error);
+      setError('Failed to load meetings. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchMeetings();
+  }, []);
 
   const onSwipedLeft = (cardIndex: number) => {
     console.log('Skipped:', cards[cardIndex]);
@@ -35,32 +65,32 @@ const HomeScreen: React.FC = () => {
     console.log('Liked:', cards[cardIndex]);
   };
 
-  const renderCard = (card: Card) => (
+  const renderCard = (card: Card, index: number) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
-        <Text style={styles.headerTitle}>Practice Day</Text>
+        <Text style={styles.headerTitle}>Meeting</Text>
         <TouchableOpacity style={styles.headerIcon}>
-          <Ionicons name="football" size={24} color="black" />
+          <Ionicons name={getSportIcon(card.sportId)} size={24} color="black" />
         </TouchableOpacity>
       </View>
       <View style={styles.headerLine} />
-      <Image style={styles.image} source={{ uri: card.image }} />
+      <Image style={styles.image} source={{ uri: card.meetingImage }} />
       <View style={styles.cardContent}>
         <View style={styles.infoLeft}>
-          <Text style={styles.infoTitle}>{card.title}</Text>
+          <Text style={styles.infoTitle}>{card.meetingName || 'Unnamed Meeting'}</Text>
           <View style={styles.location}>
             <Ionicons name="location-sharp" size={16} color="black" />
-            <Text style={styles.locationText}>{card.location}</Text>
+            <Text style={styles.locationText}>{card.address}</Text>
           </View>
-          <Text style={styles.time}>{card.time}</Text>
-          <Text style={styles.date}>{card.date}</Text>
+          <Text style={styles.time}>{new Date(card.startDate).toLocaleTimeString()}</Text>
+          <Text style={styles.date}>{new Date(card.startDate).toLocaleDateString()}</Text>
         </View>
         <View style={styles.infoRight}>
           <View style={styles.heartIcon}>
             <Ionicons name="heart" size={20} color="blue" />
           </View>
           <View style={styles.stats}>
-            <Text style={styles.statNumber}>1/5</Text>
+            <Text style={styles.statNumber}>{`${card.host}/${card.totalMember}`}</Text>
             <Text style={styles.statNumber}>+0 others</Text>
           </View>
         </View>
@@ -68,26 +98,59 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" style={{ flex: 1, justifyContent: 'center' }} />;
+  }
+
+  if (error) {
+    return <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>;
+  }
+
   return (
     <View style={styles.container}>
-     <SearchBar/>
-     <ActionButtons/>
-      <Swiper
-        cards={cards}
-        renderCard={renderCard}
-        onSwipedLeft={onSwipedLeft}
-        onSwipedRight={onSwipedRight}
-        onTapCard={() =>navigation.navigate('(routes)/detail')}
-        backgroundColor={'transparent'}
-        stackSize={1}
-        cardIndex={0}
-        infinite={false}
-        verticalSwipe={false}
-        horizontalSwipe={true}
-        containerStyle={styles.swiperContainer}
-        cardStyle={styles.cardStyle}
-      />
-      <ActionIcons onSwipedLeft={onSwipedLeft} onSwipedRight={onSwipedRight}/>
+      <SearchBar />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.meetButton, activeTab === 'available' && styles.activeTabButton]}
+          onPress={() => setActiveTab('available')}
+        >
+          <Text style={[styles.meetButtonText, activeTab === 'available' && styles.activeTabText]}>
+            Available
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.meetButton, activeTab === 'meet' && styles.activeTabButton]}
+          onPress={() => setActiveTab('meet')}
+        >
+          <Text style={[styles.meetButtonText, activeTab === 'meet' && styles.activeTabText]}>
+            Your Meet
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+        {activeTab === 'available' && (
+          cards.length > 0 ? (
+            <Swiper
+              cards={cards}
+              renderCard={renderCard}
+              onSwipedLeft={onSwipedLeft}
+              onSwipedRight={onSwipedRight}
+              onTapCard={(index) => navigation.navigate('EventDetail', { meetingId: cards[index].meetingId })}
+              backgroundColor={'transparent'}
+              stackSize={1}
+              cardIndex={0}
+              infinite={false}
+              verticalSwipe={false}
+              horizontalSwipe={true}
+              cardStyle={styles.cardStyle}
+            />
+          ) : (
+            <Text>No meetings available</Text>
+          )
+        )}
+      </View>
+      {activeTab === 'meet' && <YourMeeting />}
     </View>
   );
 };
@@ -97,25 +160,46 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: '#fff',
-    justifyContent: 'center', 
     marginTop: 50
   },
-  swiperContainer: {
+  buttonContainer: {
+    flexDirection: 'row', 
+    justifyContent: 'space-around', 
+    marginTop: 100
+  },
+  meetButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#FF915D',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 50,
+  },
+  meetButtonText: {
+    color: '#FF915D',
+    fontSize: 16,
+  },
+  activeTabButton: {
+    backgroundColor: '#FF915D',
+  },
+  activeTabText: {
+    color: '#fff',
+  },
+  swiper: {
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
   card: {
-    width: Dimensions.get('window').width * 0.9,
-    height: Dimensions.get('window').height * 0.6,
+    width: '90%',
+    height: '60%',
     borderRadius: 30,
     borderWidth: 1,
     borderColor: '#ddd',
-    alignSelf: 'center', 
+    alignSelf: 'center',
     backgroundColor: '#fff',
     padding: 10,
-    marginTop: 100, 
-    overflow: 'hidden', 
+    overflow: 'hidden',
   },
   cardStyle: {
     flex: 1,
@@ -124,7 +208,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10, 
+    padding: 10,
     position: 'relative'
   },
   headerTitle: {
@@ -134,19 +218,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   headerIcon: {
-    padding: 5, 
+    padding: 5,
     position: 'absolute',
     right: 10,
   },
   headerLine: {
-    height: 5, 
+    height: 5,
     backgroundColor: '#F9BC2C',
     marginHorizontal: 20,
     marginVertical: 10,
   },
   image: {
     width: '90%',
-    height: "50%", 
+    height: "50%",
     borderRadius: 10,
     alignSelf: 'center',
   },
@@ -194,7 +278,7 @@ const styles = StyleSheet.create({
   heartIcon: {
     backgroundColor: '#F0F0F0',
     borderRadius: 50,
-    padding: 8, 
+    padding: 8,
     marginBottom: 5,
   },
   stats: {
@@ -204,8 +288,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
   },
-  
-  
+
+
 });
 
 export default HomeScreen;

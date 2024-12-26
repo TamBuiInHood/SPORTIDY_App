@@ -4,15 +4,16 @@
     {
         public const string Base = "/sportidy";
 
-        public static class Sportidy
+        public static class WebSocket
         {
-            public const string GetAll = Base + "/weatherforecast/";
+            public const string ws = Base + "/websocket";
         }
 
         public static class Payment
         {
             public const string createPaymentLink = Base + "/payment/create-payment-link";
             public const string getPaymentInformation = Base + "/payment/get-payment-information";
+            public const string getPaymentStatistic = Base + "/payment/payment-statistic";
         }
 
         public static class Authentication
@@ -33,39 +34,54 @@
         {
             public const string GetAll = Base + "/meetings/";
 
-            public const string GetByID = Base + "/meetings/{meeting-id}";
+            public const string GetByID = Base + "/meetings/{meetingId}";
 
             public const string Update = Base + "/meetings/";
 
             public const string Delete = Base + "/meetings/";
 
             public const string Add = Base + "/meetings/";
+
+            public const string UpdateRoleInMeeting = Base + "/meetings/update-role-in-meeting";
+
+            public const string KickUser = Base + "/meetings/kick-user";
+
+            public const string EngageToMeeting = Base + "/meetings/engage-to-meeting";
+
+            public const string getAllUserInMeeting  = Base + "/meetings/get-all-user-in-meeting/{meetingId}";
+
+            public const string getAllMeetingOfUser  = Base + "/meetings/get-all-meeting-of-user/{userId}";
+
+
+
         }
 
         public static class Sport
         {
-            public const string GetAll = Base + "/Sports/";
+            public const string GetAll = Base + "/sports/";
 
-            public const string GetByID = Base + "/Sports/{sport-id}";
+            public const string GetByID = Base + "/sports/{sportId}";
 
-            public const string Update = Base + "/Sports/";
+            public const string Update = Base + "/sports/";
 
-            public const string Delete = Base + "/Sports/";
+            public const string Delete = Base + "/sports/";
 
-            public const string Add = Base + "/Sports/";
+            public const string Add = Base + "/sports/";
 
-            public const string GetAllNotPaging = Base + "/Sports/get-all-not-paging";
+            public const string GetAllNotPaging = Base + "/sports/get-all-not-paging";
         }
 
         public static class User
         {
             public const string GetAll = Base + "/users/";
 
+            public const string GetAllByRoleName = Base + "/users/role/{roleName}";
+
             public const string GetByID = Base + "/users/{id}";
 
             public const string GetByEmail = Base + "/users/by-email/{email}";
 
-            public const string Update = Base + "/users/";
+            public const string Update = Base + "/users/update-user";
 
             public const string UpdateAvatar = Base + "/users/update-avatar/{id}";
 
@@ -74,6 +90,10 @@
             public const string Delete = Base + "/users/delete-user/{id}";
 
             public const string Add = Base + "/users/";
+
+            public const string UpdateDeviceCode = Base + "/users/device-code/{id}";
+            public const string StatisticUser = Base + "/users/statistic/{year}";
+            public const string BannedUser = Base + "/users/banned-user/{userId}";
         }
 
         public static class Club
@@ -149,11 +169,12 @@
         {
             public const string GetAll = Base + "/Playfields/";
 
-            public const string GetByID = Base + "/Playfields/{playfield-id}";
+            public const string GetByID = Base + "/Playfields/{playfieldId}";
 
-            public const string GetByUserID = Base + "/Playfields/{user-id}";
+            public const string GetByUserID = Base + "/Playfields/get-by-user-id/{userId}";
 
             public const string Update = Base + "/Playfields/";
+            public const string UpdateForAdmin = Base + "/Playfields/update/{playfieldId}";
 
             public const string UpdateAvatar = Base + "/Playfields/update-avatar";
 
@@ -170,9 +191,9 @@
         {
             public const string GetAll = Base + "/friendships/";
 
-            public const string GetByID = Base + "/friendships/{friendship-id}";
+            public const string GetByID = Base + "/friendships/{friendshipId}";
 
-            public const string GetBy2UserId = Base + "/friendships/{user-id-1}/{user-id-2}";
+            public const string GetBy2UserId = Base + "/friendships/{userId1}/{userId2}";
 
             public const string Update = Base + "/friendships/";
 
@@ -187,7 +208,7 @@
         {
             public const string GetAll = Base + "/bookings/";
 
-            public const string GetByID = Base + "/bookings/{booking-id}";
+            public const string GetByID = Base + "/bookings/{bookingId}";
 
             public const string GetByUserID = Base + "/bookings/get-by-user-id";
 
@@ -195,9 +216,64 @@
 
             public const string UpdateStatus = Base + "/bookings/update-status";
 
-            public const string Delete = Base + "/bookings/{booking-id}";
+            public const string Delete = Base + "/bookings/{bookingId}";
 
             public const string Add = Base + "/bookings/";
+
+            public const string RevenuePlayField = Base + "/bookings/{playFieldId}/{year}";
+
+            public const string RevenuePlayFieldForAdmin = Base + "/bookings/statistic/{year}";
+
+            public const string StatisticPlayFieldTypePercentage = Base + "/bookings/statistic/play-field-rate/{year}";
         }
+
+        public static class Notifcation
+        {
+            public const string GetByEmail = Base + "/notifications/get-by-email/{email}";
+
+            public const string GetByID = Base + "/notifications/get-by-id/{notificationId}";
+
+            public const string GetByCustomerID = Base + "/notifications/get-by-customer-id/{customerId}";
+
+            public const string Update = Base + "/notifications/update";
+
+            public const string Delete = Base + "/notifications/{notificationId}";
+
+            public const string AddByCustomerId = Base + "/notifications/{customerId}";
+
+            public const string AddByRole = Base + "/notifications/add-by-role/{roleName}";
+
+            public const string AddByListUserId = Base + "/notifications/list-user-id";
+
+            public const string MarkAllCustomerNotificationIsReadByCustomerId = Base + "/notifications/mark-is-read-customer-id/{customerId}";
+
+            public const string MarkNotificationIsReadByNotificationId = Base + "/notifications/mark-is-read/{notificationId}";
+        }
+        public static class Comment
+        {
+            public const string GetAll = Base + "/{meetingId}/comments/";
+
+            public const string GetByID = Base + "/comments/{commentId}";
+
+            public const string Update = Base + "/comments/";
+
+            public const string Delete = Base + "/comments/{commentId}";
+
+            public const string Add = Base + "/comments/";
+        }
+
+        public static class ImageField
+        {
+            public const string GetAll = Base + "/{playfieldId}/images-field/";
+
+            public const string GetByID = Base + "/images-field/{imageId}";
+
+            public const string Update = Base + "/images-field/";
+
+            public const string Delete = Base + "/images-field/{imageId}";
+
+            public const string Add = Base + "/images-field/";
+        }
+
     }
 }

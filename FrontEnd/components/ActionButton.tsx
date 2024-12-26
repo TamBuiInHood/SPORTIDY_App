@@ -1,19 +1,46 @@
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { useNavigation } from '@react-navigation/native'; // Import the useNavigation hook
+import { RootStackParamList } from "@/types/types";
+import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "HomeScreen">;
 
 const ActionButtons: React.FC = () => {
-    return (
+  const [activeTab, setActiveTab] = useState<'available' | 'meet'>('available'); // Default tab is 'available'
+  const navigation = useNavigation<HomeScreenNavigationProp>(); // Ensure the correct type for navigation
+
+  const handleMeetButtonPress = () => {
+    setActiveTab('meet');
+    navigation.navigate('YourMeeting'); // Navigate to YourMeeting screen
+  };
+
+  return (
+    <View>
+      {/* Buttons to switch tabs */}
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.availableButton}>
-          <Text style={styles.availableButtonText}>Available</Text>
+        <TouchableOpacity 
+          style={[styles.availableButton, activeTab === 'available' && styles.activeTabButton]} // Apply active style
+          onPress={() => console.log('Available pressed')} 
+        >
+          <Text style={[styles.availableButtonText, activeTab === 'available' && styles.activeTabText]}>
+            Available
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.meetButton}>
-          <Text style={styles.meetButtonText}>Your meet</Text>
+        <TouchableOpacity 
+          style={[styles.meetButton, activeTab === 'meet' && styles.activeTabButton]} // Apply active style
+          onPress={() => {
+            handleMeetButtonPress(); // Navigate to YourMeetScreen
+          }}
+        >
+          <Text style={[styles.meetButtonText, activeTab === 'meet' && styles.activeTabText]}>
+            Your Meet
+          </Text>
         </TouchableOpacity>
       </View>
-    );
-  };
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   actionButtons: {
@@ -24,7 +51,6 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
   },
-
   availableButton: {
     backgroundColor: '#FF915D',
     paddingVertical: 10,
@@ -48,6 +74,17 @@ const styles = StyleSheet.create({
   meetButtonText: {
     color: '#FF915D',
     fontWeight: 'bold',
+  },
+  content: {
+    marginTop: 150,
+    alignItems: 'center',
+  },
+  activeTabButton: {
+    backgroundColor: '#FF915D',
+    borderColor: '#FF915D',
+  },
+  activeTabText: {
+    color: '#fff',
   },
 });
 

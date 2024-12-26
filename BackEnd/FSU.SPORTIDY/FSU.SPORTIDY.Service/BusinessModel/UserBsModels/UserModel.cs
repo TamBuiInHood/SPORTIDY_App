@@ -38,5 +38,6 @@ namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
 
         public string? Phone { get; set; }
         public bool? IsLeader { get; set; }
+        public int RoleId { get; set; }
     }
 }

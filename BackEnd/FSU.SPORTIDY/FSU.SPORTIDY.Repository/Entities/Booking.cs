@@ -29,8 +29,11 @@ public partial class Booking
 
     public int? CustomerId { get; set; }
 
+    public string? Voucher {  get; set; }
+
     public virtual PlayField PlayField { get; set; } = null!;
 
     public virtual ICollection<PlayFieldFeedback> PlayFieldFeedbacks { get; set; } = new List<PlayFieldFeedback>();
+
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

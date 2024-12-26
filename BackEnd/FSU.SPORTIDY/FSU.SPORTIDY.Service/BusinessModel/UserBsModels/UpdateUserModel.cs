@@ -25,5 +25,8 @@ namespace FSU.SPORTIDY.Service.BusinessModel.UserModels
         public int? Gender { get; set; }
 
         public string? Avatar { get; set; }
+        public int? IsDeleted { get; set; }
+
+
     }
 }
